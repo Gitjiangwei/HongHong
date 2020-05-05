@@ -15,8 +15,7 @@ export function postAction(url,parameter) {
   return axios({
     url: url,
     method:'post' ,
-    data: parameter,
-    contentType: "application/json; charset=utf-8",
+    data: parameter
   })
 }
 
