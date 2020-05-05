@@ -179,9 +179,9 @@
 </template>
 
 <script>
-  import {getAction} from '../../api/manage'
-  import {deleteAction} from '../../api/manage'
-  import {postAction} from '../../api/manage'
+  import {getAction} from '../../../api/manage'
+  import {deleteAction} from '../../../api/manage'
+  import {postAction} from '../../../api/manage'
   export default {
     name: 'pinpai',
       data(){

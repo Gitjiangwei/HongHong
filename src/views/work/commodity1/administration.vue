@@ -158,10 +158,10 @@
 </template>
 
 <script>
-    import { deleteAction } from "../../api/manage"
-    import { getAction } from "../../api/manage"
-    import { addlei } from "../../api/interface"
-    import { xiulei } from "../../api/interface"
+    import { deleteAction } from "../../../api/manage"
+    import { getAction } from "../../../api/manage"
+    import { addlei } from "../../../api/interface"
+    import { xiulei } from "../../../api/interface"
     export default {
         data() {
             return {

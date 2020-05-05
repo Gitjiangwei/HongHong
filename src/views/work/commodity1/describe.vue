@@ -66,9 +66,9 @@
 </template>
 
 <script>
-  import {getAction} from '../../api/manage'
-  import {postAction} from '../../api/manage'
-  import {xiufz} from '../../api/interface'
+  import {getAction} from '../../../api/manage'
+  import {postAction} from '../../../api/manage'
+  import {xiufz} from '../../../api/interface'
   import { axios } from '@/utils/request'
   export default {
     name: 'describe',

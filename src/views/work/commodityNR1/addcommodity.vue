@@ -88,8 +88,8 @@
 
 <script>
 
-  import {getAction} from '../../api/manage'
-  import {postAction} from '../../api/manage'
+  import {getAction} from '../../../api/manage'
+  import {postAction} from '../../../api/manage'
   import { getFileAccessHttpUrl } from '@/api/manage'
   import Vue from 'vue'
   export default {
