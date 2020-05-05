@@ -6,8 +6,10 @@
 </template>
 
 <script>
-  import { postAction} from "../../api/manage"
-  import { chaorder} from "../../api/interface"
+  import { postAction} from "@/api/manage"
+
+
+
     export default {
       data() {
         return {
@@ -15,12 +17,12 @@
       },
       methods: {
        fkuan(){
-         let params = {
-           status: "1",
-           userID:"1",
-           shopId:"1"
-         }
-         postAction('/kunze/order/queryOrder',params).then((res)=>{
+         // let params = {
+         //   status: "1",
+         //   userID:"1",
+         //   shopID:"1"
+         // }
+         postAction('/kunze/order/queryOrder',{status: "1",userID:"1",shopID:"1"}).then((res)=>{
            console.log(res);
          })
          // chaorder({
