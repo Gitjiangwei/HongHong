@@ -79,17 +79,23 @@
       </a-table>
     </div>
     <!-- table区域-end -->
+    <super-modules ref="SuperModules" @ok = "modalFormOk"></super-modules>
   </a-card>
 </template>
 <script>
+  import ARow from "ant-design-vue/es/grid/Row";
   import { JeecgListMixin } from '@/mixins/JeecgListMixin';
   import {deleteAction, getAction, postAction} from '@/api/manage';
   import {filterObj,timeFix} from '@/utils/util';
+  import SuperModules from  "./modules/SuperModules";
 
   export default {
     name:"SuperList",
     mixins:[JeecgListMixin],
-    components:{},
+    components:{
+      ARow,
+      SuperModules
+    },
     data(){
       return{
         description: '超市管理页面',
@@ -111,11 +117,6 @@
             dataIndex: 'shopName'
           },
           {
-            title: '创建日期',
-            align:"center",
-            dataIndex: 'createTime'
-          },
-          {
             title: '超市地址',
             align:"center",
             dataIndex: 'shopAddress'
@@ -129,6 +130,26 @@
             title: '营业时间',
             align:"center",
             dataIndex: 'businessHours'
+          },
+          {
+            title: '负责人',
+            align:"center",
+            dataIndex: 'personCharge'
+          },
+          {
+            title:'联系方式',
+            align:"center",
+            dataIndex:'telphone'
+          },
+          {
+            title:'身份证号码',
+            align:"center",
+            dataIndex:'idenitiy'
+          },
+          {
+            title: '创建日期',
+            align:"center",
+            dataIndex: 'createTime'
           },
           {
             title: '操作',
@@ -159,6 +180,7 @@
         selectedRows: [],
         url:{
           list:"/kunze/shop/queryShops",
+          delete:"/kunze/shop/delShops",
         },
       }
     },
@@ -178,6 +200,39 @@
             this.ipagination.total = res.result.total;
           }
         })
+      },
+      handleAdd:function(){
+        this.$refs.SuperModules.add();
+        this.$refs.SuperModules.title = "新增超市信息";
+      },
+      //批量删除
+      batchDel:function(){
+        if (this.selectedRowKeys.length <= 0) {
+          this.$message.warning('请选择一条记录！');
+          return;
+        }else {
+          var ids = "";
+          for (var a = 0; a < this.selectedRowKeys.length; a++) {
+            ids += this.selectionRows[a].id + ",";
+          }
+          debugger;
+          this.$confirm({
+            title:"确认删除",
+            content:"是否确认删除选中数据！",
+            onOk:function () {
+              deleteAction(this.url.delete,{ids:ids}).then((res) =>{
+                  if(res.success){
+                    that.$message.success(res.message);
+                    that.loadData();
+                    that.onClearSelected();
+                  }else {
+                    that.$message.warning(res.message);
+                  }
+              })
+            }
+          })
+        }
+
       },
       modalFormOk() {
         // 新增/修改 成功时，重载列表
