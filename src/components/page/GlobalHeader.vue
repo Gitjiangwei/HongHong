@@ -17,7 +17,7 @@
         :type="collapsed ? 'menu-unfold' : 'menu-fold'"
         @click="toggle"/>
 
-      <span v-if="device === 'desktop'">欢迎进入 商城后台</span>
+      <span v-if="device === 'desktop'">欢迎进入哄哄到家·商城后台</span>
       <span v-else>Jeecg-Boot</span>
 
       <user-menu :theme="theme"/>
