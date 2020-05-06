@@ -3,8 +3,7 @@ import App from './App.vue'
 import Storage from 'vue-ls'
 import router from './router'
 import store from './store/'
-import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
+
 
 import { VueAxios } from "@/utils/request"
 
@@ -20,6 +19,7 @@ import VueApexCharts from 'vue-apexcharts'
 
 import preview from 'vue-photo-preview'
 import 'vue-photo-preview/dist/skin.css'
+
 
 require('@jeecg/antd-online-214')
 require('@jeecg/antd-online-214/dist/OnlineForm.css')
@@ -57,7 +57,8 @@ Vue.component('apexchart', VueApexCharts)
 Vue.use(preview)
 Vue.use(vueBus);
 Vue.use(JeecgComponents);
-Vue.use(ElementUI);
+
+
 
 new Vue({
   router,
