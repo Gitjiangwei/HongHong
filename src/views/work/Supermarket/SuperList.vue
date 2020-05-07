@@ -60,6 +60,14 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
+        <template slot="avatarslot" slot-scope="text, record, index">
+          <div class="anty-img-wrap">
+            <a-avatar shape="square" :src="getAvatarView(record.image)" icon="user"/>
+          </div>
+        </template>
+
+
+
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
 
@@ -85,7 +93,7 @@
 <script>
   import ARow from "ant-design-vue/es/grid/Row";
   import { JeecgListMixin } from '@/mixins/JeecgListMixin';
-  import {deleteAction, getAction, postAction} from '@/api/manage';
+  import {deleteAction, getAction, postAction,getFileAccessHttpUrl} from '@/api/manage';
   import {filterObj,timeFix} from '@/utils/util';
   import SuperModules from  "./modules/SuperModules";
 
@@ -124,7 +132,8 @@
           {
             title: '图片',
             align:"center",
-            dataIndex: 'image'
+            dataIndex: 'image',
+            scopedSlots: {customRender: "avatarslot"}
           },
           {
             title: '营业时间',
@@ -147,9 +156,14 @@
             dataIndex:'idenitiy'
           },
           {
-            title: '创建日期',
+            title: '创建时间',
             align:"center",
             dataIndex: 'createTime'
+          },
+          {
+            title: '修改时间',
+            align:"center",
+            dataIndex: 'updateTime'
           },
           {
             title: '操作',
@@ -181,6 +195,7 @@
         url:{
           list:"/kunze/shop/queryShops",
           delete:"/kunze/shop/delShops",
+          imgerver:window._CONFIG['staticDomainURL'],
         },
       }
     },
@@ -188,6 +203,9 @@
       this.loadData();
     },
     methods:{
+      getAvatarView: function (avatar) {
+        return getFileAccessHttpUrl(avatar,this.url.imgerver,"http")
+      },
       loadData(arg) {
         //加载数据 若传入参数1则加载第一页的内容
         if (arg === 1) {
@@ -204,6 +222,10 @@
       handleAdd:function(){
         this.$refs.SuperModules.add();
         this.$refs.SuperModules.title = "新增超市信息";
+      },
+      handleEdit:function(record){
+        this.$refs.SuperModules.edit(record);
+        this.$refs.SuperModules.title = "修改超市信息";
       },
       //批量删除
       batchDel:function(){

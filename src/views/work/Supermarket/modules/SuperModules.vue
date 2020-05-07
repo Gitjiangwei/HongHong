@@ -118,6 +118,7 @@
           sm: {span: 16},
         },
         headers: {},
+        picUrl:"",
         confirmLoading: false,
         form: this.$form.createForm(this),
         validatorRules:{
@@ -129,6 +130,8 @@
           }
         },
         url: {
+          add:"kunze/shop/insertShop",
+          edit:"kunze/shop/updateShop"
         },
       }
     },
@@ -144,14 +147,24 @@
       edit(record) {
         this.resetScreenSize(); // 调用此方法,根据屏幕宽度自适应调整抽屉的宽度
         this.visible = true;
+        debugger;
         this.form.resetFields();
+        if(record.id!=null && record.id != "" && record.id !=undefined){
+          setTimeout(() => {
+            this.fileList = record.image;
+          }, 5)
+        }
         this.model = Object.assign({}, record);
-
+        if (record.businessHours!=null && record.businessHours !="" && record.businessHours != undefined) {
+          var time = record.businessHours.split("-");
+          this.model.startBusiness = time[0];
+          this.model.endBusiness = time[1];
+        }
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model, 'shopName', 'shopAddress','personCharge','telphone','idenitiy', 'startBusiness', 'endBusiness'))
           //时间格式化
-    /*     this.form.setFieldsValue({startBusiness: this.model.startBusiness ? moment(this.model.startBusiness, 'YYYY-MM-DD') : null});
-          this.form.setFieldsValue({endBusiness: this.model.endBusiness ? moment(this.model.endBusiness, 'YYYY-MM-DD') : null});*/
+          this.form.setFieldsValue({startBusiness: this.model.startBusiness ? moment(this.model.startBusiness, 'HH:mm') : null});
+          this.form.setFieldsValue({endBusiness: this.model.endBusiness ? moment(this.model.endBusiness, 'HH:mm') : null});
         });
 
       },
@@ -159,6 +172,7 @@
       close() {
         this.$emit('close');
         this.visible = false;
+        this.fileList=[];
       },
       isDisabledAuth(code){
         return disabledAuthFilter(code);
@@ -176,12 +190,14 @@
               method = 'post';
             } else {
               httpurl += this.url.edit;
-              method = 'put';
+              method = 'post';
             }
             let formData = Object.assign(this.model, values);
+            formData.image = that.fileList;
+            debugger;
             //时间格式化
-/*            formData.purchaseTime = formData.purchaseTime ? formData.purchaseTime.format('YYYY-MM-DD') : null;
-            formData.arrivalTime = formData.arrivalTime ? formData.arrivalTime.format('YYYY-MM-DD') : null;*/
+            formData.startBusiness = formData.startBusiness ? formData.startBusiness.format('HH:mm') : null;
+            formData.endBusiness = formData.endBusiness ? formData.endBusiness.format('HH:mm') : null;
             httpAction(httpurl, formData, method).then((res) => {
               if (res.success) {
                 that.$message.success(res.message);
