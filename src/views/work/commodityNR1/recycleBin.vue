@@ -1,52 +1,19 @@
 <template>
 <!--    商品展示-->
-  <div class="zs-box">
-    <el-card class="box-card">
-      <div slot="header" class="clearfix">
-        <span>商品展示</span>
-      </div>
-<!--      表格开始-->
-      <el-table
-        :data="tableData"
-        border
-        style="width: 100%">
-        <el-table-column
-          prop="id"
-          label="ID">
-        </el-table-column>
-        <el-table-column
-          prop="title"
-          label="标题">
-        </el-table-column>
-        <el-table-column
-          prop="subTitle"
-          label="子标题">
-        </el-table-column>
-        <el-table-column
-          prop="bname"
-          label="所属分类">
-        </el-table-column>c
-        <el-table-column
-          prop="cname"
-          label="">
-        </el-table-column>
-      </el-table>
-      <!--    分页-->
-      <div class="block">
-        <span class="demonstration">调整每页显示条数</span>
-        <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page.sync="currentPage2"
-          :page-sizes="[10, 20, 30, 40]"
-          :page-size="100"
-          layout="sizes, prev, pager, next"
-          :total=total>
-        </el-pagination>
-      </div>
+  <div>
+  <a-card title="商品展示" >
 
-
-    </el-card>
+    <a-button type="primary" class="modifyBtn1" @click="deleteAllBrandBtn()">批量删除</a-button>
+    <a-table :columns="columns" :data-source="data" :row-selection="{  onChange: onSelectChange }" >
+         <span slot="image" slot-scope="text,record">
+           <img :src=record.image alt="">
+        </span>
+      <span slot="bianji" slot-scope="text,record">
+          <a-button type="primary" class="modifyBtn" @click="xiuBrandBtn(record)">修改</a-button>
+          <a-button type="primary" @click="deleteBrandBtn(record)">删除</a-button>
+        </span>
+    </a-table>
+  </a-card>
   </div>
 </template>
 
@@ -59,47 +26,55 @@
     name: 'recycleBin',
       data(){
         return{
-            tableData: [],
-            currentPage2: 1,
-            total:'',
-            pagee:10
-            // opseng:[]
+          columns:[
+            { title: 'ID', dataIndex: 'id', key: 'id' },
+            { title: '品牌名称', dataIndex: 'bname', key: 'bname' },
+            { title: '图片', dataIndex: 'image', key: 'image',scopedSlots: { customRender: 'image' } },
+            { title: '所属分类', dataIndex: 'cname', key: 'cname' },
+            { title: '商品名称', dataIndex: 'title', key: 'title' },
+            { title: '编辑', dataIndex: 'isflag', key: 'isflag', scopedSlots: { customRender: 'bianji' } },
+          ],
+          data:[],
         }
       },
       methods:{
-
-          // 分页
-          handleSizeChange(val) {
-              this.pagee=val
-              getAction('/kunze/spu/spuList',{pageSize:val}).then((res)=>{
-                  this.tableData=res.result.list
-
+        onSelectChange(selectedRowKeys, selectedRows) {
+          let that=this
+          selectedRows.forEach(e=>{
+            that.bids .push(e.bid)
+          })
+        },
+        //获取所有商品
+        getAllProducts(){
+          let that=this
+          getAction('/kunze/spu/spuList',{pageSize:'1',shopId:'1'}).then((res)=>{
+            getAction('/kunze/spu/spuList',{pageSize:res.result.pages,shopId:'1'}).then((res)=>{
+              that.data=res.result.list
+              let key=0
+              that.data.forEach(e=>{
+                e.image=window._CONFIG['domianURL']+'/'+e.image
+                e.key=key++
               })
-          },
-          handleCurrentChange(val) {
-              getAction('/kunze/spu/spuList',{pageSize:this.pagee,pageNo:val}).then((res)=>{
-                  this.tableData=res.result.list
-
-              })
-          },
-        int(){
-            getAction('/kunze/spu/spuList',{pageSize:10}).then((res)=>{
-                 this.tableData=res.result.list
-
             })
-            getAction('/kunze/spu/spuList',{pageSize:1}).then((res)=>{
-                this.total=res.result.pages
-            })
-
-
+          })
         }
       },
       mounted() {
-        this.int()
+      this.getAllProducts()
       }
   }
 </script>
 
 <style scoped>
-
+  .modifyBtn{
+    margin-right: 10px;
+  }
+  .modifyBtn1{
+    margin-bottom: 10px;
+    margin-right: 10px;
+  }
+  img{
+    width: 50px;
+    height: 50px;
+  }
 </style>
