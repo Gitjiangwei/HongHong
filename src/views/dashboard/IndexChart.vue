@@ -68,12 +68,13 @@
         <a-tabs default-active-key="1" size="large" :tab-bar-style="{marginBottom: '24px', paddingLeft: '16px'}">
           <div class="extra-wrapper" slot="tabBarExtraContent">
             <div class="extra-item">
-              <a>今日</a>
-              <a>本周</a>
-              <a>本月</a>
-              <a>本年</a>
+              <a @click="loaderboard(0,0)">总排行</a>
+              <a @click="loaderboard(0,1)">今日</a>
+              <a @click="loaderboard(0,2)">本周</a>
+              <a @click="loaderboard(0,3)">本月</a>
+              <a @click="loaderboard(0,4)">本年</a>
             </div>
-            <a-range-picker :style="{width: '256px'}" />
+            <!--<a-range-picker :style="{width: '256px'}" />-->
           </div>
           <a-tab-pane loading="true" tab="销售额" key="1">
             <a-row>
@@ -81,7 +82,7 @@
                 <bar title="销售额排行" :dataSource="barData"/>
               </a-col>
               <a-col :xl="8" :lg="12" :md="12" :sm="24" :xs="24">
-                <rank-list title="门店销售排行榜" :list="rankList"/>
+                <rank-list title="门店销售排行榜" @func="loads" :list="rankList"/>
               </a-col>
             </a-row>
           </a-tab-pane>
@@ -146,24 +147,25 @@
   import Bar from '@/components/chart/Bar'
   import LineChartMultid from '@/components/chart/LineChartMultid'
   import HeadInfo from '@/components/tools/HeadInfo.vue'
+  import {getAction} from '@/api/manage'
 
   import Trend from '@/components/Trend'
   import { getLoginfo,getVisitInfo } from '@/api/api'
 
-  const rankList = []
-  for (let i = 0; i < 7; i++) {
+  const rankList = [];
+/*  for (let i = 0; i < 7; i++) {
     rankList.push({
       name: '白鹭岛 ' + (i+1) + ' 号店',
       total: 1234.56 - i * 100
     })
-  }
+  }*/
   const barData = []
-  for (let i = 0; i < 12; i += 1) {
+/*  for (let i = 0; i < 12; i += 1) {
     barData.push({
       x: `${i + 1}月`,
       y: Math.floor(Math.random() * 1000) + 200
     })
-  }
+  }*/
   export default {
     name: "IndexChart",
     components: {
@@ -188,6 +190,10 @@
         loginfo:{},
         visitFields:['ip','visit'],
         visitInfo:[],
+        url:{
+          loaderboard:"/kunze/menu/loaderboard",
+          loaderShop:"/kunze/menu/loaderShop",
+        },
         indicator: <a-icon type="loading" style="font-size: 24px" spin />
       }
     },
@@ -196,8 +202,46 @@
         this.loading = !this.loading
       }, 1000)
       this.initLogInfo();
+      this.loaderboard(0,0);
+      this.loads()
     },
     methods: {
+      loads(data){
+        this.barData = [];
+        let params = {
+          shopId:data,
+          year:"2020",
+        };
+        getAction(this.url.loaderShop,params).then((res) => {
+          if (res.success) {
+            for (let i = 0; i < res.result.length; i += 1) {
+              this.barData.push({
+                x: `${i + 1}月`,
+                y: res.result[i]
+              })
+            }
+            console.log(this.barData)
+          }
+        })
+      },
+      loaderboard (more,choiceTime) {
+        this.rankList = [];
+        let params = {
+          more:more,
+          choiceTime:choiceTime,
+        };
+        getAction(this.url.loaderboard,params).then((res) => {
+          if (res.success) {
+            for (let i = 0; i < res.result.length; i++) {
+              this.rankList.push({
+                id:res.result[i].shopId,
+                name: res.result[i].shopName,
+                total: res.result[i].payment
+              })
+            }
+          }
+        })
+      },
       initLogInfo () {
         getLoginfo(null).then((res)=>{
           if(res.success){

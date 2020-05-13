@@ -3,9 +3,11 @@
     <h4 class="title">{{ title }}</h4>
     <ul class="list" :style="{height:height?`${height}px`:'auto',overflow:'auto'}">
       <li :key="index" v-for="(item, index) in list">
-        <span :class="index < 3 ? 'active' : null">{{ index + 1 }}</span>
-        <span>{{ item.name }}</span>
-        <span>{{ item.total }}</span>
+        <a @click="loads(item.id)">
+          <span :class="index < 3 ? 'active' : null">{{ index + 1 }}</span>
+          <span>{{ item.name }}</span>
+          <span>{{ item.total }}</span>
+        </a>
       </li>
     </ul>
   </div>
@@ -27,6 +29,11 @@
       height: {
         type: Number,
         default: null
+      }
+    },
+    methods:{
+      loads(shopId){
+        this.$emit('func',shopId)
       }
     }
   }
