@@ -40,11 +40,11 @@
           <a-input placeholder="请输入用户姓名" v-decorator="[ 'realname', validatorRules.realname]" />
         </a-form-item>
 
-        <a-form-item label="工号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+        <a-form-item label="工号" :labelCol="labelCol" :wrapperCol="wrapperCol" v-if="shopShow==true">
           <a-input placeholder="请输入工号" v-decorator="[ 'workNo', validatorRules.workNo]" />
         </a-form-item>
 
-        <a-form-item label="职务" :labelCol="labelCol" :wrapperCol="wrapperCol">
+        <a-form-item label="职务" :labelCol="labelCol"  v-if="shopShow==true" :wrapperCol="wrapperCol">
           <j-select-position placeholder="请选择职务" :multiple="false" v-decorator="['post', {}]"/>
         </a-form-item>
 
@@ -54,6 +54,7 @@
             style="width: 100%"
             placeholder="请选择用户角色"
             optionFilterProp = "children"
+            @change="shopShowChange"
             v-model="selectedRole">
             <a-select-option v-for="(role,roleindex) in roleList" :key="roleindex.toString()" :value="role.id">
               {{ role.roleName }}
@@ -61,8 +62,19 @@
           </a-select>
         </a-form-item>
 
+        <a-form-item label="身份" :labelCol="labelCol" :wrapperCol="wrapperCol"  v-if="shShow==true">
+          <a-radio-group
+            v-model="staterShop">
+            <a-radio value="1">库存管理</a-radio>
+            <a-radio value="2">接收订单</a-radio>
+          </a-radio-group>
+        </a-form-item>
+        <a-form-item label="所属超市" :labelCol="labelCol"  v-if="shShow==true" :wrapperCol="wrapperCol">
+<!--          <j-select-position placeholder="请选择超市" :multiple="false" v-decorator="['superShop', {}]"/>-->
+          <j-select-shop placeholder="请选择超市" :multiple="false" v-decorator="['superShop', {}]" />
+        </a-form-item>
         <!--部门分配-->
-        <a-form-item label="部门分配" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="!departDisabled">
+        <a-form-item label="部门分配" :labelCol="labelCol" v-if="shopShow==true" :wrapperCol="wrapperCol" v-show="!departDisabled">
           <a-input-search
             placeholder="点击右侧按钮选择部门"
             v-model="checkedDepartNameString"
@@ -72,7 +84,7 @@
           </a-input-search>
         </a-form-item>
        <!-- update--begin--autor:wangshuai-----date:20200108------for：新增身份和负责部门------ -->
-        <a-form-item label="身份" :labelCol="labelCol" :wrapperCol="wrapperCol">
+        <a-form-item label="身份" :labelCol="labelCol" :wrapperCol="wrapperCol"  v-if="shopShow==true">
           <a-radio-group
             v-model="identity"
             @change="identityChange">
@@ -150,6 +162,7 @@
   // 引入搜索部门弹出框的组件
   import departWindow from './DepartWindow'
   import JSelectPosition from '@/components/jeecgbiz/JSelectPosition'
+  import JSelectShop from  '@/components/jeecgbiz/JSelectShop'
   import { ACCESS_TOKEN } from "@/store/mutation-types"
   import { getAction } from '@/api/manage'
   import {addUser,editUser,queryUserRole,queryall } from '@/api/api'
@@ -162,10 +175,12 @@
     components: {
       JImageUpload,
       departWindow,
-      JSelectPosition
+      JSelectPosition,
+      JSelectShop
     },
     data () {
       return {
+        shShow: false,
         departDisabled: false, //是否是我的部门调用该页面
         roleDisabled: false, //是否是角色维护调用该页面
         modalWidth:800,
@@ -216,7 +231,6 @@
           //  sex:{initialValue:((!this.model.sex)?"": (this.model.sex+""))}
           workNo: {
             rules: [
-              { required: true, message: '请输入工号' },
               { validator: this.validateWorkNo }
             ]
           },
@@ -226,6 +240,7 @@
             ]
           }
         },
+        shopShow:true,
         departIdShow:false,
         departIds:[], //负责部门id
         title:"操作",
@@ -254,12 +269,13 @@
           syncUserByUserName:"/process/extActProcess/doSyncUserByUserName",//同步用户到工作流
         },
         identity:"1",
+        staterShop:"1",
         fileList:[],
       }
     },
     created () {
       const token = Vue.ls.get(ACCESS_TOKEN);
-      this.headers = {"X-Access-Token":token}
+      this.headers = {"X-Access-Token":token};
 
     },
     computed:{
@@ -284,6 +300,7 @@
         queryall().then((res)=>{
           if(res.success){
             this.roleList = res.result;
+          /*  this.shopShowChange(res.result.);*/
           }else{
             console.log(res.message);
           }
@@ -329,7 +346,7 @@
         that.visible = true;
         that.model = Object.assign({}, record);
         that.$nextTick(() => {
-          that.form.setFieldsValue(pick(this.model,'username','sex','realname','email','phone','activitiSync','workNo','telephone','post'))
+          that.form.setFieldsValue(pick(this.model,'username','sex','realname','email','phone','activitiSync','workNo','telephone','post','staterShop','superShop'))
         });
         //身份为上级显示负责部门，否则不显示
         if(this.model.identity=="2"){
@@ -399,6 +416,7 @@
         // 触发表单验证
         this.form.validateFields((err, values) => {
           if (!err) {
+            debugger;
             that.confirmLoading = true;
             if(!values.birthday){
               values.birthday = '';
@@ -410,6 +428,7 @@
             formData.selectedroles = this.selectedRole.length>0?this.selectedRole.join(","):'';
             formData.selecteddeparts = this.userDepartModel.departIdList.length>0?this.userDepartModel.departIdList.join(","):'';
             formData.identity=this.identity;
+            formData.staterShop=this.staterShop;
             //如果是上级择传入departIds,否则为空
             if(this.identity==="2"){
               formData.departIds=this.departIds.join(",");
@@ -627,7 +646,22 @@
         }else{
             this.departIdShow=true;
         }
+      },
+      shopShowChange(e){
+        if(e!=null && e != "" && e != undefined) {
+          if (e[0] === "1258324827190714370") {
+            this.shShow = true;
+            this.shopShow = false;
+          } else {
+            this.shShow = false;
+            this.shopShow = true;
+          }
+        }else {
+          this.shShow = false;
+          this.shopShow = true;
+        }
       }
+
     }
   }
 </script>
