@@ -3,7 +3,8 @@
   <div>
     <a-card title="分类管理" >
       <a-button type="primary" class="modifyBtn1" @click="deleteAllCategories()">批量删除</a-button>
-      <a-table :columns="columns" :data-source="data" :row-selection="{  onChange: onSelectChange }" >
+      <a-button type="primary" class="modifyBtn1" @click="adddjfl()">添加顶级分类</a-button>
+      <a-table :columns="columns" :data-source="data" :row-selection="{  onChange: onSelectChange }" :pagination="false" >
         <span slot="sort" slot-scope="text,record" >
             <a @click="addCategories(record)">排序</a>
         </span>
@@ -16,6 +17,25 @@
         </span>
       </a-table>
     </a-card>
+
+
+    <!--    添加顶级分类弹出框-->
+    <a-modal
+      title="添加顶级分类"
+      :visible="adddjvisible"
+      :confirm-loading="confirmLoading"
+      @ok="adddjhandleOk"
+      @cancel="adddjhandleCancel"
+    >
+      <a-form-model :model="adddjform" :label-col="{ span: 6 }" :wrapper-col="{ span: 12 }">
+        <a-form-model-item label="分类名">
+          <a-input v-model="adddjform.name" />
+        </a-form-model-item>
+        <a-form-model-item label="排序">
+          <a-input v-model="adddjform.sort"  />
+        </a-form-model-item>
+      </a-form-model>
+    </a-modal>
 
 <!--    添加子分类弹出框-->
     <a-modal
@@ -57,9 +77,8 @@
 </template>
 
 <script>
-  import {getAction} from '../../../api/manage'
-  import {postAction} from '../../../api/manage'
-  import {deleteAction} from '../../../api/manage'
+  import {getAction,postAction,deleteAction} from '../../../api/manage'
+
 
 
   export default {
@@ -73,11 +92,16 @@
               ],
               data:[],
               addvisible: false, //控制添加弹出框
+              adddjvisible: false, //控制添加弹出框
               modifyvisible: false, //控制添加弹出框
               confirmLoading: false,
               form:{
                 name:'',
                 isParent:'',
+                sort:''
+              },
+              adddjform:{
+                name:'',
                 sort:''
               },
               pid:'',  //点击添加子分类获取到的父级
@@ -94,7 +118,7 @@
             selectedRows.forEach(e=>{
               that.ids.push(e.id)
             })
-            console.log(1,selectedRows)
+            // console.log(1,selectedRows)
           },
           // 点击批量删除按钮
           deleteAllCategories(){
@@ -109,7 +133,7 @@
                 let param = new URLSearchParams()
                 param.append('ids',that.ids)
                 deleteAction('/kunze/category/categoryDels',param).then((res)=>{
-                  console.log(res)
+
                   if(res.success==true){
                     that.$message.success(
                       '删除成功'
@@ -126,6 +150,7 @@
           //点击删除按钮
           deleteCategories(e){
             let id=e.id
+            let that=this
             this.$confirm({
               title: '确定要删除该分类吗?',
               content: '该分类包含多个子分类',
@@ -135,10 +160,10 @@
               onOk() {
                 deleteAction('/kunze/category/categoryDel',{id:id}).then((res)=>{
                   if(res.success==true){
-                    this.$message.success(
+                    that.$message.success(
                       '删除成功'
                     );
-                    this.getAllCategories()
+                    that.getAllCategories()
                   }
                 })
               },
@@ -154,23 +179,29 @@
           },
           //点击修改确认按钮
           modifyhandleOk(){
-            this.modifyvisible=false
-            let category={
-              id: this.pid,
-              name: this.modifyform.name
-            }
-            postAction('/kunze/category/categoryUpdate',category).then((res)=>{
-              if(res.success){
-                this.$message.success(
-                  '修改成功'
-                );
-                this.getAllCategories()
-              }else {
-                this.$message.error('修改失败');
-                this.modifyform.name=''
+
+            if(this.modifyform.name==''){
+              this.$message.error('分类名不能为空');
+            }else {
+              this.modifyvisible=false
+              let category={
+                id: this.pid,
+                name: this.modifyform.name
               }
-              this.modifyform.name=''
-            })
+              postAction('/kunze/category/categoryUpdate',category).then((res)=>{
+                if(res.success){
+                  this.$message.success(
+                    '修改成功'
+                  );
+                  this.getAllCategories()
+                }else {
+                  this.$message.error('修改失败');
+                  this.modifyform.name=''
+                }
+                this.modifyform.name=''
+              })
+            }
+
           },
           // 点击修改按钮
           modifyCategories(e){
@@ -178,31 +209,81 @@
             this.modifyform.name=e.name
             this.modifyvisible=true
           },
+          adddjhandleOk(){
+            if(this.adddjform.name==''){
+              this.$message.error('分类名不能为空');
+            }else if(this.adddjform.sort==''){
+              this.$message.error('排序不能为空');
+            }else {
+              this.adddjvisible=false
+              let category={
+                isParent:'1',
+                name:this.adddjform.name,
+                parentId:'0',
+                image: "string",
+                index: "string",
+                isflag: "string",
+                sort:this.adddjform.sort
+              }
+              postAction('/kunze/category/categorySave',category).then((res)=>{
+                console.log(res)
+                if(res.success){
+                  this.$message.success(
+                    '添加成功'
+                  );
+                  this.getAllCategories()
+                }else {
+                  this.$message.error('添加失败');
+                }
+                this.adddjform.name=''
+                this.adddjform.sort=''
+              })
+            }
+          },
+          adddjhandleCancel(){
+            this.adddjvisible=false
+            this.adddjform.name=''
+            this.adddjform.sort=''
+          },
+          //点击添加顶级分类按钮
+          adddjfl(){
+            this.adddjvisible=true
+          },
           // 点击添加子分类弹窗确认按钮
           handleOk(){
-            this.addvisible=false
-            let category={
-              isParent: this.form.isParent,
-              name:this.form.name,
-              parentId:this.pid,
-              image: "string",
-              index: "string",
-              isflag: "string",
-              sort:this.form.sort
-            }
-            postAction('/kunze/category/categorySave',category).then((res)=>{
-              if(res.success){
-                this.$message.success(
-                  '添加成功'
-                );
-                this.getAllCategories()
-              }else {
-                this.$message.error('添加失败');
+
+            if(this.form.name==''){
+              this.$message.error('分类名不能为空');
+            }else if(this.form.sort==''){
+              this.$message.error('排序不能为空');
+            }else if(this.form.isParent==''){
+              this.$message.error('请确定是否为父分类');
+            }else {
+              this.addvisible=false
+              let category={
+                isParent: this.form.isParent,
+                name:this.form.name,
+                parentId:this.pid,
+                image: "string",
+                index: "string",
+                isflag: "string",
+                sort:this.form.sort
               }
-              this.form.name=''
-              this.form.sort=''
-              this.form.isParent=''
-            })
+              postAction('/kunze/category/categorySave',category).then((res)=>{
+                if(res.success){
+                  this.$message.success(
+                    '添加成功'
+                  );
+                  this.getAllCategories()
+                }else {
+                  this.$message.error('添加失败');
+                }
+                this.form.name=''
+                this.form.sort=''
+                this.form.isParent=''
+              })
+            }
+
 
           },
           // 点击添加子分类弹窗取消按钮
@@ -257,5 +338,6 @@
 }
   .modifyBtn1{
     margin-bottom: 10px;
+    margin-right: 10px;
   }
 </style>
