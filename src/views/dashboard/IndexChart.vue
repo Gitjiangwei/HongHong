@@ -1,36 +1,36 @@
 <template>
   <div class="page-header-index-wide">
     <a-row :gutter="24">
-      <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
-        <chart-card :loading="loading" title="总销售额" total="￥126,560">
+      <a-col :sm="24" :md="12" :xl="12" :style="{ marginBottom: '24px' }">
+        <chart-card :loading="loading" title="总销售额" :total="totalSales | NumberFormat">
           <a-tooltip title="指标说明" slot="action">
             <a-icon type="info-circle-o" />
           </a-tooltip>
           <div>
-            <trend flag="up" style="margin-right: 16px;">
+            <trend :flag="isDownUp" style="margin-right: 16px;">
               <span slot="term">周同比</span>
-              12%
+              {{onWeek}}
             </trend>
-            <trend flag="down">
+            <trend :flag="isDownUps">
               <span slot="term">日同比</span>
-              11%
+              {{onDays}}
             </trend>
           </div>
-          <template slot="footer">日均销售额<span>￥ 234.56</span></template>
+          <template slot="footer">今日销售额<span>￥ {{toDay | NumberFormat}}</span></template>
         </chart-card>
       </a-col>
-      <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
-        <chart-card :loading="loading" title="订单量" :total="8846 | NumberFormat">
+      <a-col :sm="24" :md="12" :xl="12" :style="{ marginBottom: '24px' }">
+        <chart-card :loading="loading" title="订单量" :total="totalOrder | NumberFormat">
           <a-tooltip title="指标说明" slot="action">
             <a-icon type="info-circle-o" />
           </a-tooltip>
           <div>
-            <mini-area />
+            <mini-area :dataSource="sourceData"/>
           </div>
-          <template slot="footer">日订单量<span> {{ '1234' | NumberFormat }}</span></template>
+          <template slot="footer">日订单量<span> {{ todaysOrder | NumberFormat }}</span></template>
         </chart-card>
       </a-col>
-      <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
+  <!--    <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
         <chart-card :loading="loading" title="支付笔数" :total="6560 | NumberFormat">
           <a-tooltip title="指标说明" slot="action">
             <a-icon type="info-circle-o" />
@@ -60,7 +60,7 @@
             </trend>
           </template>
         </chart-card>
-      </a-col>
+      </a-col>-->
     </a-row>
 
     <a-card :loading="loading" :bordered="false" :body-style="{padding: '0'}">
@@ -86,7 +86,7 @@
               </a-col>
             </a-row>
           </a-tab-pane>
-          <a-tab-pane tab="销售趋势" key="2">
+         <!-- <a-tab-pane tab="销售趋势" key="2">
             <a-row>
               <a-col :xl="16" :lg="12" :md="12" :sm="24" :xs="24">
                 <bar title="销售额趋势" :dataSource="barData"/>
@@ -95,7 +95,7 @@
                 <rank-list title="门店销售排行榜" :list="rankList"/>
               </a-col>
             </a-row>
-          </a-tab-pane>
+          </a-tab-pane>-->
         </a-tabs>
       </div>
     </a-card>
@@ -159,6 +159,8 @@
       total: 1234.56 - i * 100
     })
   }*/
+  const sourceData = []
+
   const barData = []
 /*  for (let i = 0; i < 12; i += 1) {
     barData.push({
@@ -166,6 +168,8 @@
       y: Math.floor(Math.random() * 1000) + 200
     })
   }*/
+
+  const orderData = []
   export default {
     name: "IndexChart",
     components: {
@@ -186,13 +190,25 @@
         loading: true,
         center: null,
         rankList,
+        sourceData,
         barData,
+        isDownUp: "down",
+        isDownUps: "down",
+        totalSales:"0",
+        onWeek:"",
+        onDays:"",
+        toDay:"0",
+        totalOrder:"0",
+        todaysOrder:"0",
         loginfo:{},
         visitFields:['ip','visit'],
         visitInfo:[],
         url:{
           loaderboard:"/kunze/menu/loaderboard",
           loaderShop:"/kunze/menu/loaderShop",
+          loaderOrder:"/kunze/menu/orderLeader",
+          loaderOrders:"/kunze/menu/orderLeaders",
+          loaderSales:"/kunze/menu/sales",
         },
         indicator: <a-icon type="loading" style="font-size: 24px" spin />
       }
@@ -203,9 +219,58 @@
       }, 1000)
       this.initLogInfo();
       this.loaderboard(0,0);
-      this.loads()
+      this.loads();
+      this.loaderOrder();
+      this.loaderSales();
     },
     methods: {
+      loaderSales(shopId){
+        let params = {
+          shopId:shopId,
+        };
+        getAction(this.url.loaderSales,params).then((res) => {
+          if(res.success){
+            this.totalSales = "￥"+res.result.total;
+            this.onWeek = res.result.onWeek;
+            var reg = RegExp(/-/);
+            if(this.onWeek.match("-")){
+              this.isDownUp = "down";
+            }else {
+              this.isDownUp = "up";
+            }
+            this.onDays = res.result.onDay;
+            if(this.onDays.match("-")){
+              this.isDownUps = "down";
+            }else {
+              this.isDownUps = "up";
+            }
+            this.toDay = res.result.toDays;
+          }
+        });
+      },
+      loaderOrder(shopId){
+        let params = {
+          shopId:shopId,
+        };
+        getAction(this.url.loaderOrder,params).then((res) => {
+          if(res.success){
+            this.totalOrder = res.result.totalOrder;
+            this.todaysOrder = res.result.todaysOrder;
+          }
+        });
+        let old = this.sourceData.length;
+        getAction(this.url.loaderOrders,params).then((res) => {
+          if(res.success){
+            for (let i = 0; i < res.result.length; i+=1) {
+             this.sourceData.push({
+               x: res.result[i].clickDate,
+               y: res.result[i].counts
+              })
+            }
+            this.sourceData.splice(0,old);
+          }
+        })
+      },
       loads(data){
         this.barData = [];
         let params = {
@@ -220,11 +285,17 @@
                 y: res.result[i]
               })
             }
-            console.log(this.barData)
           }
         })
+        this.loaderOrder(data);
+        this.loaderSales(data);
       },
       loaderboard (more,choiceTime) {
+        if(more==0&&choiceTime==0){
+          this.loads();
+          this.loaderOrder();
+          this.loaderSales();
+        }
         this.rankList = [];
         let params = {
           more:more,
