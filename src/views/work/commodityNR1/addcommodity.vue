@@ -57,14 +57,14 @@
       <a-form-model-item label="商品库存" >
         <a-input v-model="form.stock" />
       </a-form-model-item>
-      <a-form-model-item label="商品库存" >
-        <a-input v-model="form.stock" />
-      </a-form-model-item>
       <a-form-model-item label="包装清单" >
         <a-input v-model="form.packingList" />
       </a-form-model-item>
       <a-form-model-item label="售后服务" >
-        <j-editor v-model="form.afterService"/>
+        <a-input v-model="form.afterService" />
+      </a-form-model-item>
+      <a-form-model-item label="商品描述" >
+        <j-editor v-model="form.description"/>
       </a-form-model-item>
       <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
         <a-button type="primary" @click="onSubmit">
@@ -81,7 +81,7 @@
 </template>
 
 <script>
-  import {getAction} from '../../../api/manage'
+  import {getAction,postAction} from '../../../api/manage'
   import JImageUpload from '../../../components/jeecg/JImageUpload'
   import JEditor from '@/components/jeecg/JEditor'
 
@@ -115,10 +115,12 @@
           index:[],
           specTemplate:{},
           specifications:[],
-          fileList:[]
+          fileList:[],
+          cids:[]
         }
       },
       methods:{
+
         //点击参数单选框
         onChange2(e){
           let val=e.target.value
@@ -140,11 +142,20 @@
                   })
                 }
               }
+              that.specifications.forEach(e=>{
+                e.params.forEach(e=>{
+                  if(e.k==key){
+                    e.v=val
+                  }
+                })
+              })
             }
           })
 
         },
         onChange(value){
+
+          this.cids=value
           let that=this
           that.indexes=[]
           that.ownSpec={}
@@ -171,10 +182,19 @@
                       Vue.set(that.specTemplate,y.k,y.options)
                       that.indexes.push(0)
                       that.index.push(y.k)
+                      let nn= {
+                          k:y.k,
+                          v:y.options[0],
+                          global: true,
+                          searchable: true
+                        }
+                        let nm=[]
+                      nm.push(nn)
                       that.specifications.push({
                         group:e.group,
-                        params:e.params
+                        params:nm
                       })
+
                     }
 
                   }
@@ -185,10 +205,53 @@
             }
 
           })
-          console.log(that.specifications)
-        },
-        onSubmit(){
 
+        },
+
+        onSubmit(){
+          // form: {
+          //     price:"",
+          //     stock:'',
+          //     description:'',
+          //     afterService:'',
+          //     packingList:'',
+          //     subTitle:'',
+          //     title:'',
+          // },
+
+          let shopId=this.$store.state.shopId
+          let spuBo={
+            brandId: this.form.brand,
+            cid1: this.cids[0],
+            cid2: this.cids[1],
+            cid3: this.cids[2],
+            image: this.fileList,
+            shopId:shopId,
+            skuVos: [
+              {
+                indexes: this.indexes,
+                ownSpec:  this.ownSpec,
+                price: this.form.price,
+                stock: this.form.stock
+              }
+            ],
+            spuDetail: {
+              afterService: this.form.afterService,
+              description: this.form.description,
+              packingList: this.form.packingList,
+              specTemplate: this.specTemplate,
+              specifications: this.specifications,
+            },
+            subTitle: this.form.subTitle,
+            form:this.form.form
+          }
+
+          // let param = new URLSearchParams()
+          // param.append('spuBo',spuBo)
+          console.log(spuBo)
+          postAction('/kunze/spu/saveGood', {spuBo:spuBo}).then((res)=>{
+            console.log(res)
+          })
         },
         resetForm(){},
         getBrand(){
