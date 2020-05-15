@@ -471,7 +471,7 @@
             if(that.csdatas.length==0){
 
               deleteAction('/kunze/spec/delSpec',{categoryId:that.selectedKeys[0]}).then((res)=>{
-
+                // console.log(res)
                 if(res.success==true){
                       that.hqcsmb()
                       that.$message.success('删除成功');
@@ -503,7 +503,7 @@
       onSelect(selectedKeys, info) {
         let that=this
         this.selectedKeys = selectedKeys;
-
+        // console.log( selectedKeys[0]);
         this.treeData.forEach(e=>{
           if(e.id==selectedKeys[0]){
 
@@ -516,13 +516,13 @@
                 e.childrenList.forEach(e=>{
                   if(e.id==selectedKeys[0]){
                     getAction('/kunze/spec/specList',{categoryId:selectedKeys[0]}).then((res)=>{
-
+                      // console.log(res.result)
                       if(res.result==null){
                         // that.csdatas=JSON.parse(res.result.specifications)
                         that.tianjiavisible=true
                       }else {
                         that.csdatas=JSON.parse(res.result.specifications)
-
+                        // console.log(that.csdatas)
                         let key=0
                         that.csdatas.forEach(e=>{
                           e.params.forEach(e=>{
@@ -536,7 +536,7 @@
                             // }
                           })
                         })
-
+                        // console.log(that.csdatas.length)
                         if(that.csdatas.length==0){
                           that.tianjiavisible=true
                         }else {
@@ -559,7 +559,6 @@
       hqcsmb(){
         let that=this
         getAction('/kunze/spec/specList',{categoryId:this.selectedKeys[0]}).then((res)=>{
-
           if(res.result==null){
 
           }else {
