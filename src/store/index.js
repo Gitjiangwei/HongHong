@@ -15,10 +15,14 @@ export default new Vuex.Store({
     permission
   },
   state: {
-
+    shopId:''
   },
   mutations: {
+    gaishopid(state,msg){
 
+  state.shopId=msg
+
+}
   },
   actions: {
 
