@@ -2,35 +2,35 @@
 <!--    新增商品-->
   <a-card title="新增商品">
     <div style="width: 65%">
-    <a-form-model
+    <a-form
       ref="ruleForm"
       :model="form"
       :label-col="labelCol"
       :wrapper-col="wrapperCol"
     >
-      <a-form-model-item label="标题" >
+      <a-form-item label="标题" >
         <a-input v-model="form.title" />
-      </a-form-model-item>
-      <a-form-model-item label="子标题" >
+      </a-form-item>
+      <a-form-item label="子标题" >
         <a-input v-model="form.subTitle" />
-      </a-form-model-item>
-      <a-form-model-item label="品牌" >
+      </a-form-item>
+      <a-form-item label="品牌" >
         <a-select v-model="form.brand" placeholder="选择品牌">
-          <a-select-option  v-for="v in brand" :value=v.bid :key="v.keys">
-            {{v.bname}}
-          </a-select-option>
-        </a-select>
-      </a-form-model-item>
-      <a-form-model-item label="分类" >
+        <a-select-option  v-for="v in brand" :value=v.bid :key="v.keys">
+          {{v.bname}}
+        </a-select-option>
+      </a-select>
+      </a-form-item>
+      <a-form-item label="分类" >
         <a-cascader
           :field-names="{ label: 'name', value: 'id', children: 'childrenList' }"
           :options="options"
           placeholder="选择所属分类"
           @change="onChange"
         />
-      </a-form-model-item>
+      </a-form-item>
       <template v-if="dxuandatas.length!=0">
-        <a-form-model-item label="选择参数" >
+        <a-form-item label="选择参数" >
           <template v-for="v in dxuandatas">
             <template v-for="x in v.params">
               <template v-if="x.options!=''">
@@ -46,42 +46,42 @@
               </template>
             </template>
           </template>
-        </a-form-model-item>
+        </a-form-item>
       </template>
-      <a-form-model-item label="商品图片" >
+      <a-form-item label="商品图片" >
         <j-image-upload class="avatar-uploader" text="上传" v-model="fileList" ></j-image-upload>
-      </a-form-model-item>
-      <a-form-model-item label="销售价格" >
+      </a-form-item>
+      <a-form-item label="销售价格" >
         <a-input v-model="form.price" placeholder="单位为分" />
-      </a-form-model-item>
-      <a-form-model-item label="商品库存" >
+      </a-form-item>
+      <a-form-item label="商品库存" >
         <a-input v-model="form.stock" />
-      </a-form-model-item>
-      <a-form-model-item label="包装清单" >
+      </a-form-item>
+      <a-form-item label="包装清单" >
         <a-input v-model="form.packingList" />
-      </a-form-model-item>
-      <a-form-model-item label="售后服务" >
+      </a-form-item>
+      <a-form-item label="售后服务" >
         <a-input v-model="form.afterService" />
-      </a-form-model-item>
-      <a-form-model-item label="商品描述" >
+      </a-form-item>
+      <a-form-item label="商品描述" >
         <j-editor v-model="form.description"/>
-      </a-form-model-item>
-      <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
+      </a-form-item>
+      <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
         <a-button type="primary" @click="onSubmit">
           添加
         </a-button>
         <a-button style="margin-left: 10px;" @click="resetForm">
           重置
         </a-button>
-      </a-form-model-item>
-    </a-form-model>
+      </a-form-item>
+    </a-form>
     </div>
   </a-card>
 
 </template>
 
 <script>
-  import {getAction,postAction} from '../../../api/manage'
+  import {getAction,httpAction} from '../../../api/manage'
   import JImageUpload from '../../../components/jeecg/JImageUpload'
   import JEditor from '@/components/jeecg/JEditor'
 
@@ -245,11 +245,11 @@
             subTitle: this.form.subTitle,
             form:this.form.form
           }
-
+          debugger;
+          console.log(spuBo)
           // let param = new URLSearchParams()
           // param.append('spuBo',spuBo)
-          console.log(spuBo)
-          postAction('/kunze/spu/saveGood', {spuBo:spuBo}).then((res)=>{
+          httpAction('/kunze/spu/saveGood', spuBo,"post").then((res)=>{
             console.log(res)
           })
         },

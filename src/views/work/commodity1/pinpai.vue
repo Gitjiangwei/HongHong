@@ -3,11 +3,17 @@
   <div>
     <a-card title="品牌管理" >
       <a-button type="primary" class="modifyBtn1" @click="deleteAllBrandBtn()">批量删除</a-button>
-      <a-button type="primary" class="modifyBtn1" @click="addBrandBtn()">添加商品</a-button>
+      <a-button type="primary" class="modifyBtn1" @click="addBrandBtn()">添加商品品牌</a-button>
       <a-table :columns="columns" :data-source="data" :row-selection="{  onChange: onSelectChange }" >
-         <span slot="image" slot-scope="text,record">
-           <img :src=record.image alt="">
+        <span slot="avatarslot" slot-scope="text,record">
+          <!-- <img :src="getAvatarView(record.image)" alt="" >-->
+            <a-avatar shape="square" :src="getAvatarView(record.image)" icon="user"/>
         </span>
+<!--        <template slot="avatarslot" slot-scope="text, record, index">
+          <div class="anty-img-wrap">
+            <a-avatar shape="square" :src="getAvatarView(record.image)" icon="user"/>
+          </div>
+        </template>-->
         <span slot="bianji" slot-scope="text,record">
           <a-button type="primary" class="modifyBtn" @click="xiuBrandBtn(record)">修改</a-button>
           <a-button type="primary" @click="deleteBrandBtn(record)">删除</a-button>
@@ -23,20 +29,20 @@
       :body-style="{ paddingBottom: '80px' }"
       @close="onBrandClose"
     >
-      <a-form-model :model="brandForm" :label-col="{ span: 6 }" :wrapper-col="{ span: 12 }" :rules="rules">
-        <a-form-model-item label="品牌名" prop="name">
+      <a-form :model="brandForm" :label-col="{ span: 6 }" :wrapper-col="{ span: 12 }" :rules="rules">
+        <a-form-item label="品牌名" prop="name">
           <a-input v-model="brandForm.name"/>
-        </a-form-model-item>
-          <a-form-model-item label="首字母" prop="letter">
+        </a-form-item>
+          <a-form-item label="首字母" prop="letter">
           <a-input v-model="brandForm.letter" />
-        </a-form-model-item>
-        <a-form-model-item label="所属商品ID" prop="kid">
+        </a-form-item>
+        <a-form-item label="所属商品ID" prop="kid">
           <a-input v-model="brandForm.kid"  />
-        </a-form-model-item>
-        <a-form-model-item label="品牌商标">
+        </a-form-item>
+        <a-form-item label="品牌商标">
           <j-image-upload class="avatar-uploader" text="上传" v-model="fileList" ></j-image-upload>
-        </a-form-model-item>
-      </a-form-model>
+        </a-form-item>
+      </a-form>
       <div
         :style="{
           position: 'absolute',
@@ -67,20 +73,20 @@
       :body-style="{ paddingBottom: '80px' }"
       @close="xiuBrandClose"
     >
-      <a-form-model :model="xiubrandForm" :label-col="{ span: 6 }" :wrapper-col="{ span: 12 }" :rules="rules">
-        <a-form-model-item label="品牌名" prop="name">
+      <a-form :model="xiubrandForm" :label-col="{ span: 6 }" :wrapper-col="{ span: 12 }" :rules="rules">
+        <a-form-item label="品牌名" prop="name">
           <a-input v-model="xiubrandForm.name"/>
-        </a-form-model-item>
-        <a-form-model-item label="首字母" prop="letter">
+        </a-form-item>
+        <a-form-item label="首字母" prop="letter">
           <a-input v-model="xiubrandForm.letter" />
-        </a-form-model-item>
-        <a-form-model-item label="所属商品ID" prop="kid">
+        </a-form-item>
+        <a-form-item label="所属商品ID" prop="kid">
           <a-input v-model="xiubrandForm.kid"  />
-        </a-form-model-item>
-        <a-form-model-item label="品牌商标">
+        </a-form-item>
+        <a-form-item label="品牌商标">
           <j-image-upload class="avatar-uploader" text="上传" v-model="fileList" ></j-image-upload>
-        </a-form-model-item>
-      </a-form-model>
+        </a-form-item>
+      </a-form>
       <div
         :style="{
           position: 'absolute',
@@ -107,7 +113,7 @@
 </template>
 
 <script>
-  import {getAction,postAction,deleteAction} from '../../../api/manage'
+  import {getAction,postAction,deleteAction,getFileAccessHttpUrl} from '@/api/manage'
   import JImageUpload from '../../../components/jeecg/JImageUpload'
 
 
@@ -118,9 +124,18 @@
     data() {
       return {
         columns:[
-          { title: 'ID', dataIndex: 'bid', key: 'bid' },
+          {
+            title: '序号',
+            dataIndex: '',
+            key:'rowIndex',
+            width:60,
+            align:"center",
+            customRender:function (t,r,index) {
+              return parseInt(index)+1;
+            }
+          },
           { title: '品牌名称', dataIndex: 'bname', key: 'bname' },
-          { title: '商标', dataIndex: 'image', key: 'image',scopedSlots: { customRender: 'image' } },
+          { title: '商标', dataIndex: 'image', key: 'image',scopedSlots: { customRender: 'avatarslot' } },
           { title: '首字母', dataIndex: 'letter', key: 'letter' },
           { title: '更新人', dataIndex: 'updateName', key: 'updateName' },
           { title: '所属商品', dataIndex: 'kname', key: 'kname' },
@@ -152,9 +167,15 @@
           letter: [{ required: true, message: '请填写名称首字母', trigger: 'change' },
             { min: 0, max: 1, message: '只能填写一位', trigger: 'blur' },],
         },
+        url:{
+          imgerver:window._CONFIG['staticDomainURL'],
+        }
       };
     },
     methods: {
+      getAvatarView: function (avatar) {
+        return getFileAccessHttpUrl(avatar,this.url.imgerver,"http")
+      },
       // 点击批量删除按钮
       deleteAllBrandBtn(){
 
@@ -225,8 +246,8 @@
         let brandVo=this.xiubrandForm
         postAction('/kunze/brand/updateBrand',brandVo).then((res)=>{
           console.log(res)
-          if(res.success==true){
-            this.$message.success('品牌修改成功');
+          if(res.success){
+            this.$message.success(res.message);
             this.getAllBrand()
             that.xiuBrandvisible=false
             that.xiubrandForm.name=''
@@ -236,7 +257,7 @@
             that.xiubrandForm.id=''
             that.fileList=[]
           }else {
-            this.$message.warning('品牌修改失败');
+            this.$message.warning(res.message);
             that.xiuBrandvisible=false
             that.xiubrandForm.name=''
             that.xiubrandForm.letter=''

@@ -39,7 +39,7 @@
           </span>
         </a-table>
       </template>
-      <a-button  type="primary" @click="addxiFenzhu" style="margin-left: 80%" >添加新属性</a-button>
+      <a-button  type="primary" @click="addxiFenzhu" style="margin-left: 80%" >添加分組</a-button>
     </a-modal>
 
 <!--    添加新的分组弹出框-->
@@ -50,16 +50,16 @@
       @ok="fenzuhandleOk"
       @cancel="fenzuhandleCancel"
     >
-      <a-form-model
+      <a-form
         ref="ruleForm"
         :model="fenzudatas"
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
-        <a-form-model-item label="分组名" prop="brand">
+        <a-form-item label="分组名" prop="brand">
           <a-input v-model="fenzudatas.group"/>
-        </a-form-model-item>
-      </a-form-model>
+        </a-form-item>
+      </a-form>
 
     </a-modal>
 
@@ -71,19 +71,19 @@
       @ok="shuxinhandleOk"
       @cancel="shuxinhandleCancel"
     >
-      <a-form-model
+      <a-form
         ref="ruleForm"
         :model="shuxindatas"
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
-        <a-form-model-item label="属性名" prop="brand">
+        <a-form-item label="属性名" prop="brand">
           <a-input v-model="shuxindatas.k"/>
-        </a-form-model-item>
-        <a-form-model-item label="属性值" prop="brand">
+        </a-form-item>
+        <a-form-item label="属性值" prop="brand">
           <a-input v-model="shuxindatas.options"/>
-        </a-form-model-item>
-      </a-form-model>
+        </a-form-item>
+      </a-form>
 
     </a-modal>
 
@@ -95,19 +95,19 @@
       @ok="xiugaihandleOk"
       @cancel="xiugaihandleCancel"
     >
-      <a-form-model
+      <a-form
         ref="ruleForm"
         :model="xiugaidatas"
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
-        <a-form-model-item label="属性名" prop="brand">
+        <a-form-item label="属性名" prop="brand">
           <a-input v-model="xiugaidatas.k"/>
-        </a-form-model-item>
-        <a-form-model-item label="属性值" prop="brand">
+        </a-form-item>
+        <a-form-item label="属性值" prop="brand">
           <a-input v-model="xiugaidatas.options"/>
-        </a-form-model-item>
-      </a-form-model>
+        </a-form-item>
+      </a-form>
 
     </a-modal>
 
@@ -130,22 +130,22 @@
       @ok="tianjiahandleOk"
       @cancel="tianjiahandleCancel"
     >
-      <a-form-model
+      <a-form
         ref="ruleForm"
         :model="tianjiadatas"
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
-        <a-form-model-item label="分组名" prop="brand">
+        <a-form-item label="分组名" prop="brand">
           <a-input v-model="tianjiadatas.group"/>
-        </a-form-model-item>
-        <a-form-model-item label="属性名" prop="brand">
+        </a-form-item>
+        <a-form-item label="属性名" prop="brand">
           <a-input v-model="tianjiadatas.params[0].k"/>
-        </a-form-model-item>
-        <a-form-model-item label="属性值" prop="brand">
+        </a-form-item>
+        <a-form-item label="属性值" prop="brand">
           <a-input v-model="tianjiadatas.params[0].options"/>
-        </a-form-model-item>
-      </a-form-model>
+        </a-form-item>
+      </a-form>
 
     </a-modal>
 
