@@ -209,15 +209,7 @@
         },
 
         onSubmit(){
-          // form: {
-          //     price:"",
-          //     stock:'',
-          //     description:'',
-          //     afterService:'',
-          //     packingList:'',
-          //     subTitle:'',
-          //     title:'',
-          // },
+
 
           let shopId=this.$store.state.shopId
           let spuBo={
@@ -247,8 +239,7 @@
           }
           debugger;
           console.log(spuBo)
-          // let param = new URLSearchParams()
-          // param.append('spuBo',spuBo)
+
           httpAction('/kunze/spu/saveGood', spuBo,"post").then((res)=>{
             console.log(res)
           })
