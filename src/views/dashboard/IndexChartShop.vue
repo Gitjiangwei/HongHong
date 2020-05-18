@@ -101,7 +101,7 @@
         <a-row>
           <a-col :span="17">
             <span style="font-weight: bold; font-size: 16px;display: inline-block;margin: 20px 0 0 10px">最近7日</span>
-            <a-card >
+            <a-card :loading="loading">
               <line-chart-multid :fields="visitFields" :dataSource="visitInfo"></line-chart-multid>
             </a-card>
           </a-col>
@@ -239,8 +239,8 @@
           if(res.success){
               for(let i = 0;i<res.result.length;i++){
                  let result = {
-                   "成交量":res.result[i].count,
-                   "type":res.result[i].clickDate
+                   "成交量":res.result[res.result.length-(i+1)].count,
+                   "type":res.result[res.result.length-(i+1)].clickDate
                  }
                   this.visitInfo.push(result);
               }
