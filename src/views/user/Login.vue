@@ -267,9 +267,8 @@
               loginParams.checkKey = that.currdatetime
               console.log("登录参数",loginParams)
               that.Login(loginParams).then((res) => {
-                console.log(res,1111)
                 res.result.userInfo.shopId = res.result.shopId;
-                this.$store.commit('gaishopid',res.result.shopId)
+                this.$store.commit('gaishopid',res.result.shopId);
                 this.departConfirm(res)
               }).catch((err) => {
                 that.requestFailed(err);

@@ -3,6 +3,7 @@
     <index-chart v-if="indexStyle==1"></index-chart>
     <index-bdc v-if="indexStyle==2"></index-bdc>
     <index-task v-if="indexStyle==3"></index-task>
+    <index-chart-shop v-if="indexStyle==4"></index-chart-shop>
 <!--    <div style="width: 100%;text-align: right;margin-top: 20px">
       请选择首页样式：
       <a-radio-group v-model="indexStyle">
@@ -18,21 +19,27 @@
   import IndexChart from './IndexChart'
   import IndexTask from "./IndexTask"
   import IndexBdc from './IndexBdc'
+  import IndexChartShop from "./IndexChartShop"
 
   export default {
     name: "Analysis",
     components: {
       IndexChart,
       IndexTask,
-      IndexBdc
+      IndexBdc,
+      IndexChartShop
     },
     data() {
       return {
-        indexStyle:1
+        indexStyle:1,
       }
     },
     created() {
-
+      debugger;
+      let shopId=this.$store.state.shopId;
+      if(shopId!=null && shopId!="" && shopId != undefined){
+        this.indexStyle = 4;
+      }
     },
     methods: {
 
