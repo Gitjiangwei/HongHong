@@ -179,6 +179,7 @@
           other: '',
           current:0,
           skuVos:[],
+          shopId:"",
           form: {
             brand:'',
             price:"",
@@ -221,10 +222,13 @@
           this.$refs.ruleForm.validate(valid => {
             if (valid) {
               // alert('submit!');
+
               this.current=this.current-(-1)
             } else {
+
               console.log('error submit!!');
               return false;
+
             }
           })
 
@@ -373,24 +377,30 @@
         },
 
         onSubmit(){
+          // let that=this
+
           this.$refs.ruleForm.validate(valid => {
             if (valid) {
+              this.skuVos.forEach(e=>{
+                e.indexes=JSON.stringify(e.indexes)
+                e.ownSpec=JSON.stringify(e.ownSpec)
+              })
 
-              let shopId=this.$store.state.shopId
+              // console.log(spuBo)
               let spuBo={
                 'brandId': this.form.brand,
                 'cid1': this.cids[0],
                 'cid2': this.cids[1],
                 'cid3': this.cids[2],
                 'image': this.fileList,
-                'shopId':shopId,
-                'skuVos':JSON.stringify(this.skuVos),
+                'shopId':this.shopId,
+                'skuVos':this.skuVos,
                 'spuDetail': {
                   'afterService': this.form.afterService,
                   'description': this.form.description,
                   'packingList': this.form.packingList,
-                  'specTemplate': this.specTemplate,
-                  'specifications': JSON.stringify(this.specifications),
+                  'specTemplate': JSON.stringify(this.specTemplate),
+                  'specifications':JSON.stringify(this.specifications),
                 },
                 'subTitle': this.form.subTitle,
                 'title':this.form.title
@@ -428,6 +438,8 @@
         },
       },
       mounted() {
+        this.shopId=this.$store.state.shopId
+        console.log(this.shopId)
       this.getBrand()
       }
   }
