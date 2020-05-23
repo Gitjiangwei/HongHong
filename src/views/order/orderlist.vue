@@ -54,7 +54,7 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">查看</a>
+          <a @click="handleDetail(record)">查看</a>
           <span v-if="record.status==2">
             <a-divider type="vertical" />
           <a-dropdown>
@@ -75,11 +75,7 @@
 
       </a-table>
     </div>
-    <div id="print-area" v-show="false">
-      <div style="text-align: center">
-        <p style="font-size: 24px;font-weight: 800">打印测试表单</p>
-      </div>
-    </div>
+    <order-detail ref="OrderDetail" @ok = "modalFormOk"></order-detail>
   </a-card>
 </template>
 
@@ -89,11 +85,14 @@
   import {deleteAction, getAction, postAction} from '@/api/manage';
   import {filterObj,timeFix} from '@/utils/util';
   import $ from 'jquery';
+  import OrderDetail from "./model/OrderDetail"
+
   export default {
       name: "orderlist",
       mixins:[JeecgListMixin],
       components:{
-        ARow
+        ARow,
+        OrderDetail
       },
       data() {
         return {
@@ -271,6 +270,7 @@
                     +'{"type": "", "name": "shippingAddress","value": "'+res.result.distributionVo.shippingAddress+'","required": false},'
                     +'{"type": "", "name": "contact","value": "'+res.result.distributionVo.contact+'","required": false},'
                     +'{"type": "", "name": "call","value": "'+res.result.distributionVo.call+'","required": false},'
+                    +'{"type": "", "name": "buyerMessage","value": "'+res.result.buyerMessage+'","required": false},'
                     +']',
 
                   "Field": '['  ///*字段， type ftBlob (base64格式) ,ftString ftInteger ftBoolean, ftFloat, ftCurrency,ftDateTime,  size (ftString 设置为实际长度,其他的设置为0,例如 ftInteger ftBlob 等设置为0 )
@@ -311,11 +311,19 @@
               }
             });
         },
+        handleDetail(record) {
+          this.$refs.OrderDetail.detail(record);
+          this.$refs.OrderDetail.title = "订单详情";
+        },
+        modalFormOk() {
+          // 新增/修改 成功时，重载列表
+          this.loadData();
+        },
         handleCancel() {
           this.close()
         },
         close() {
-          this.$emit('close');
+          this.$emit('ok');
           this.visible = false;
         },
         loadData(arg) {
