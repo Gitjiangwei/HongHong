@@ -107,6 +107,9 @@
     data(){
       return{
         description: '超市管理页面',
+        loading: false,
+        // 查询条件
+        queryParam: {},
         // 表头
         columns: [
           {

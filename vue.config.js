@@ -14,6 +14,7 @@ module.exports = {
   // 如果你不需要生产环境的 source map，可以将其设置为 false 以加速生产环境构建。
   productionSourceMap: false,
 
+
   // 打包app时放开该配置
   // publicPath:'./',
   configureWebpack: config => {
@@ -55,6 +56,7 @@ module.exports = {
   },
 
   devServer: {
+    host: 'api.hohodj.com',
     port: 3000,
     proxy: {
       /* '/api': {
@@ -66,7 +68,7 @@ module.exports = {
         }
       }, */
       '/jeecg-boot': {
-        target: 'http://192.168.1.12:8080', // 请求本地 需要jeecg-boot后台项目
+        target: 'http://192.168.1.5:8080', // 请求本地 需要jeecg-boot后台项目
         ws: false,
         changeOrigin: true
       }
