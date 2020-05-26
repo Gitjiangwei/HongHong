@@ -56,7 +56,7 @@ module.exports = {
   },
 
   devServer: {
-    host: 'api.hohodj.com',
+    host: '192.168.2.104',
     port: 3000,
     proxy: {
       /* '/api': {
@@ -65,10 +65,10 @@ module.exports = {
         changeOrigin: true,
         pathRewrite: {
           '/jeecg-boot': ''  //默认所有请求都加了jeecg-boot前缀，需要去掉
-        }
+        }s
       }, */
       '/jeecg-boot': {
-        target: 'http://image.hohodj.com', // 请求本地 需要jeecg-boot后台项目
+        target: 'http://192.168.2.110:8080', // 请求本地 需要jeecg-boot后台项目
         ws: false,
         changeOrigin: true
       }

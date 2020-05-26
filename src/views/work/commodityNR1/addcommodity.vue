@@ -377,7 +377,7 @@
         },
 
         onSubmit(){
-          // let that=this
+          let that=this
 
           this.$refs.ruleForm.validate(valid => {
             if (valid) {
@@ -408,7 +408,25 @@
               // debugger;
               console.log(spuBo)
               httpAction('/kunze/spu/saveGood', spuBo,'post').then((res)=>{
-                console.log(res)
+                if(res.success==true){
+                  that.current=0
+                  that.form.brand=[]
+                  that.cids=[]
+                  that.fileList=[]
+                  that.skuVos=[]
+                  that.form.afterService=''
+                  that.form.description=''
+                  that.form.price=''
+                  that.form.stock=''
+                  that.form.packingList=''
+                  that.specTemplate=[]
+                  that.specifications=[]
+                  that.indexes=[]
+                  that.form.subTitle=''
+                  that.form.title=''
+                  that.$message.success('添加成功');
+                }
+                // console.log(res)
               })
             } else {
               console.log('error submit!!');
