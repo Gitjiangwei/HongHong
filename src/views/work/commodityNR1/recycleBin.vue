@@ -91,9 +91,10 @@
           <a-form-model-item label="分类" >
             <a-input v-model="fenl"  type="hidden" />
             <a-cascader
-              :field-names="{ label: 'name', value: 'id', children: 'childrenList' }"
+              :field-names="{ label: 'name', value: 'id', children: 'childrenList'}"
               :options="options"
               placeholder="选择所属分类"
+              :value="cids"
               @change="onChange"
             />
           </a-form-model-item>
@@ -107,7 +108,7 @@
                         <span class="fenzu">{{x.k}}:</span>
                       </a-col>
                       <a-col :span="20">
-                        <a-radio-group  :name=x.k :v-model=x.value :options="x.options" :default-value="x.options[0]" @change="onChange2" />
+                        <a-radio-group  :name=x.k :v-model=x.value :options="x.options" :default-value="x.options[x.opens]" @change="onChange2" />
                       </a-col>
                     </a-row>
                     <br />
@@ -234,6 +235,7 @@
           wrapperCol: { span: 14 },
           dxuandatas:[],
           brand:[],
+          cids:[],
           form: {
             brand:'',
             price:"",
@@ -250,6 +252,9 @@
           xiushopForm:{},
           fileList:[],
           indexes:[],
+          index:[],
+          specifications:[],
+          ownSpec:{},
           rules:{
             title: [{ required: true, message: '必填', trigger: 'blur' }],
             subTitle: [{ required: true, message: '必填', trigger: 'blur' }],
@@ -269,6 +274,58 @@
       },
       methods:{
         xiuskuBrandBtn(e){
+          let that=this
+          this.cids.push(e.cid1)
+          this.cids.push(e.cid2)
+          this.cids.push(e.cid3)
+          // console.log(e.cid3)
+          getAction('/kunze/spec/specList',{categoryId:e.cid3}).then((res)=>{
+            if(res.result==null){
+              that.dxuandatas=[]
+            }else {
+
+              that.dxuandatas=JSON.parse(res.result.specifications)
+              that.dxuandatas.forEach(e=>{
+                e.params.forEach((y,i)=>{
+                  y.value=''
+                  y.options=y.options.split(',');
+                  if(typeof y.options=='string'){
+                    y.options=y.options.split(',');
+                    if(y.options[0]==''){
+
+                    }else {
+                      // console.log(y.options,11111)
+                      Vue.set(that.ownSpec,y.k,y.options[0])
+                      // Vue.set(e.params[i],'opens',0)
+                      Vue.set(that.specTemplate,y.k,y.options)
+                      that.indexes.push(0)
+                      that.index.push(y.k)
+                      let nn= {
+                        k:y.k,
+                        v:y.options[0],
+                        global: true,
+                        searchable: true
+                      }
+                      let nm=[]
+                      nm.push(nn)
+                      that.specifications.push({
+                        group:e.group,
+                        params:nm
+                      })
+
+                    }
+
+                  }
+                })
+
+              })
+
+            }
+            console.log(this.dxuandatas)
+
+          })
+
+
           this.xiuBrandvisible=true
           console.log(e)
           // this.xiuBrandvisible=true
@@ -282,13 +339,14 @@
           //     subTitle:'',
           //     title:'',
           // },
-          e.indexes=e.indexes.split('_')
-          this.indexes=e.indexes
+          // e.indexes=e.indexes.split('_')
+          // this.indexes=e.indexes
+          that.indexes=e.indexes.split(',')
           this.form.title=this.spu.title
           this.form.subTitle=this.spu.subTitle
-          this.form.brand=e.bname
-          this.form.price=e.price
-          this.form.stock=e.price
+          this.form.brand=this.spu.bname
+          this.form.price=e.newPrice
+          this.form.stock=e.stock
         },
         deleteskuBrandBtn(e){},
         handleCancel(){
@@ -314,6 +372,8 @@
         //点击查看按钮
         xiuBrandBtn(e){
           console.log(e)
+          this.spu=[]
+          this.skudata=[]
           let that=this
           let param = new URLSearchParams()
           param.append('spuId',e.id)
@@ -323,17 +383,15 @@
               e.images=window._CONFIG['domianURL']+'/'+e.images
               e.ownSpec=e.ownSpec.slice(1,e.ownSpec.length-1)
             })
-            console.log(that.skudata)
           })
           this.visible=true
           that.spu=e
         },
-        onSelectChange(selectedRowKeys, selectedRows) {
+        onSelectChange(selectedRowKeys, selectedRows){
           let that=this
           selectedRows.forEach(e=>{
             that.ids.push(e.id)
           })
-          console.log(that.ids)
         },
         //获取所有商品
         getAllProducts(){
@@ -357,11 +415,10 @@
           this.$refs.ruleForm.validate(valid => {
             if (valid) {
               // alert('submit!');
-
               this.current=this.current-(-1)
             } else {
 
-              console.log('error submit!!');
+              // console.log('error submit!!');
               return false;
 
             }
@@ -390,7 +447,7 @@
 
 
             } else {
-              console.log('error submit!!');
+
               return false;
             }
           })
@@ -419,7 +476,7 @@
               }
 
             } else {
-              console.log('error submit!!');
+
               return false;
             }
           })
@@ -481,7 +538,6 @@
                     if(y.options[0]==''){
 
                     }else {
-                      // console.log(y.k,y.options[0])
                       Vue.set(that.ownSpec,y.k,y.options[0])
                       Vue.set(that.specTemplate,y.k,y.options)
                       that.indexes.push(0)
@@ -510,6 +566,7 @@
 
           })
 
+
         },
 
         onSubmit(){
@@ -522,7 +579,7 @@
                 e.ownSpec=JSON.stringify(e.ownSpec)
               })
 
-              // console.log(spuBo)
+
               let spuBo={
                 'brandId': this.form.brand,
                 'cid1': this.cids[0],
@@ -541,8 +598,8 @@
                 'subTitle': this.form.subTitle,
                 'title':this.form.title
               }
-              // debugger;
-              console.log(spuBo)
+
+
               httpAction('/kunze/spu/saveGood', spuBo,'post').then((res)=>{
                 if(res.success==true){
                   that.current=0
@@ -562,10 +619,10 @@
                   that.form.title=''
                   that.$message.success('添加成功');
                 }
-                // console.log(res)
+
               })
             } else {
-              console.log('error submit!!');
+
               return false;
             }
           })
@@ -594,7 +651,7 @@
       mounted() {
       this.getAllProducts()
         this.shopId=this.$store.state.shopId
-        console.log(this.shopId)
+
         this.getBrand()
       }
   }

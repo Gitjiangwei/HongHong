@@ -457,7 +457,7 @@
       },
       mounted() {
         this.shopId=this.$store.state.shopId
-        console.log(this.shopId)
+        // console.log(this.shopId)
       this.getBrand()
       }
   }
