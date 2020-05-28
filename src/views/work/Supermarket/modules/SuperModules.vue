@@ -147,7 +147,7 @@
       edit(record) {
         this.resetScreenSize(); // 调用此方法,根据屏幕宽度自适应调整抽屉的宽度
         this.visible = true;
-        debugger;
+        // debugger;
         this.form.resetFields();
         if(record.id!=null && record.id != "" && record.id !=undefined){
           setTimeout(() => {
@@ -194,7 +194,7 @@
             }
             let formData = Object.assign(this.model, values);
             formData.image = that.fileList;
-            debugger;
+            // debugger;
             //时间格式化
             formData.startBusiness = formData.startBusiness ? formData.startBusiness.format('HH:mm') : null;
             formData.endBusiness = formData.endBusiness ? formData.endBusiness.format('HH:mm') : null;
@@ -266,7 +266,7 @@
         }
       },
       validateidenitiy(rule, value, callback){
-        debugger;
+        // debugger;
         if(!value){
           callback("身份证号码不能为空！")
         }else {

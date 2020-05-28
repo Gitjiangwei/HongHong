@@ -240,7 +240,7 @@
           for (var a = 0; a < this.selectedRowKeys.length; a++) {
             ids += this.selectionRows[a].id + ",";
           }
-          debugger;
+          // debugger;
           this.$confirm({
             title:"确认删除",
             content:"是否确认删除选中数据！",
