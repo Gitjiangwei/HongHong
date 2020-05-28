@@ -205,6 +205,7 @@
           },
           // 点击修改按钮
           modifyCategories(e){
+            console.log(e)
             this.pid=e.id
             this.modifyform.name=e.name
             this.modifyvisible=true

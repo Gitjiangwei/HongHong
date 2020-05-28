@@ -4,7 +4,12 @@
   <a-card title="商品展示" >
 
     <a-button type="primary" class="modifyBtn1" @click="deleteAllBrandBtn()">批量删除</a-button>
-    <a-table :columns="columns" :data-source="data" :row-selection="{  onChange: onSelectChange }" >
+    <a-table
+      :columns="columns"
+      :data-source="data"
+      :row-selection="{  onChange: onSelectChange }"
+      :pagination="ipagination"
+      @change="handleTableChange">
          <span slot="image" slot-scope="text,record">
            <img :src=record.image alt="">
         </span>
@@ -228,6 +233,7 @@
           ],
           data:[],
           skudata:[],
+          shopId:'',
           ids:[],
           current:0,
           fenl:'',
@@ -269,10 +275,32 @@
             afterService: [{ required: true, message: '必填', trigger: 'blur' }],
             description: [{ required: true, message: '必填', trigger: 'blur' }],
           },
-          spu:{}
+          spu:{},
+          ipagination:{
+            current: 1,
+            pageSize: 30,
+            pageSizeOptions: ['30', '40', '50'],
+            showTotal: (total, range) => {
+              return range[0] + "-" + range[1] + " 共" + total + "条"
+            },
+            showQuickJumper: true,
+            showSizeChanger: true,
+            total: 0
+          }
         }
       },
       methods:{
+        handleTableChange(pagination, filters, sorter) {
+          //分页、排序、筛选变化时触发
+          console.log(sorter);
+          //TODO 筛选
+          if (Object.keys(sorter).length > 0) {
+            this.isorter.column = sorter.field;
+            this.isorter.order = "ascend" == sorter.order ? "asc" : "desc"
+          }
+          this.ipagination = pagination;
+          this.getAllProducts(this.shopId);
+        },
         xiuskuBrandBtn(e){
           let that=this
           this.cids.push(e.cid1)
@@ -364,7 +392,9 @@
         xiushop(){
           this.xiuBrandvisible=false
         },
-        deleteBrandBtn(){},
+        deleteBrandBtn(e){
+          console.log(e)
+        },
         //批量删除
         deleteAllBrandBtn(){
 
@@ -393,19 +423,30 @@
             that.ids.push(e.id)
           })
         },
+
         //获取所有商品
-        getAllProducts(){
+        getAllProducts(e){
+
           let that=this
-          getAction('/kunze/spu/spuList',{pageSize:'1',shopId:'1'}).then((res)=>{
-            getAction('/kunze/spu/spuList',{pageSize:res.result.pages,shopId:'1'}).then((res)=>{
-              that.data=res.result.list
-              let key=0
-              that.data.forEach(e=>{
-                e.image=window._CONFIG['domianURL']+'/'+e.image
-                e.key=key++
-              })
+          // console.log(that.shopId)
+          getAction('/kunze/spu/spuList',{
+            pageNo :that.ipagination.current,
+            pageSize : that.ipagination.pageSize,
+            shopId : e
+          }).then((res)=>{
+            // console.log(res)
+            that.data=res.result.list
+
+            let key=0
+            that.data.forEach(e=>{
+              e.image=window._CONFIG['domianURL']+'/'+e.image
+              e.key=key++
             })
+            that.ipagination.total = res.result.total;
           })
+
+
+
         },
 
 
@@ -649,9 +690,9 @@
         },
       },
       mounted() {
-      this.getAllProducts()
-        this.shopId=this.$store.state.shopId
-
+        this.shopId=JSON.parse(sessionStorage.getItem("store")).shopId
+      this.getAllProducts(this.shopId)
+        // console.log(this.shopId)
         this.getBrand()
       }
   }

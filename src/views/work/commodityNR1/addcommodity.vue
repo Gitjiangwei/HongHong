@@ -38,7 +38,8 @@
         <a-form-model-item label="子标题" prop="subTitle">
           <a-input v-model="form.subTitle"  />
         </a-form-model-item>
-        <a-form-model-item label="品牌" prop="brand" >
+        <a-form-model-item label="品牌" >
+<!--          prop="brand"-->
           <a-select v-model="form.brand" placeholder="选择品牌">
           <a-select-option  v-for="v in brand" :value=v.bid :key="v.keys">
             {{v.bname}}
@@ -95,7 +96,7 @@
                   </a-form-model-item>
                 </template>
                 <a-form-model-item label="销售价格" prop="price">
-                  <a-input v-model="form.price" placeholder="单位为分" />
+                  <a-input v-model="form.price" placeholder="单位为元" />
                 </a-form-model-item>
                 <a-form-model-item label="商品库存"  prop="stock">
                   <a-input v-model="form.stock" />
@@ -128,10 +129,15 @@
                 <a-form-model-item label="商品图片" >
                   <j-image-upload class="avatar-uploader" text="上传" v-model="fileList" ></j-image-upload>
                 </a-form-model-item>
-                <a-form-model-item label="包装清单" prop="packingList" >
+                <a-form-model-item label="商品轮播图片" >
+                  <j-image-upload class="avatar-uploader" text="上传" v-model="fileList1" style="width: 104px;margin-right: 30px"></j-image-upload>
+                  <j-image-upload class="avatar-uploader" text="上传" v-model="fileList2" style="width: 104px;margin-right: 30px"></j-image-upload>
+                  <j-image-upload class="avatar-uploader" text="上传" v-model="fileList3" style="width: 104px"></j-image-upload>
+                </a-form-model-item>
+                <a-form-model-item label="包装清单"  >
                   <a-input v-model="form.packingList" />
                 </a-form-model-item>
-                <a-form-model-item label="售后服务"  prop="afterService"  >
+                <a-form-model-item label="售后服务"   >
                   <a-input v-model="form.afterService" />
                 </a-form-model-item>
                 <a-form-model-item label="商品描述" >
@@ -199,19 +205,22 @@
           specTemplate:{},
           specifications:[],
           fileList:[],
+          fileList1:[],
+          fileList2:[],
+          fileList3:[],
           cids:[],
           rules:{
             title: [{ required: true, message: '必填', trigger: 'blur' }],
             subTitle: [{ required: true, message: '必填', trigger: 'blur' }],
-            brand: [{ required: true, message: '必填', trigger: 'blur' }],
+            // brand: [{ required: true, message: '必填', trigger: 'blur' }],
           },
           rules1:{
             price: [{ required: true, message: '必填', trigger: 'blur' }],
             stock: [{ required: true, message: '必填', trigger: 'blur' }],
           },
           rules2:{
-            packingList: [{ required: true, message: '必填', trigger: 'blur' }],
-            afterService: [{ required: true, message: '必填', trigger: 'blur' }],
+            // packingList: [{ required: true, message: '必填', trigger: 'blur' }],
+            // afterService: [{ required: true, message: '必填', trigger: 'blur' }],
             description: [{ required: true, message: '必填', trigger: 'blur' }],
           }
         }
@@ -385,14 +394,19 @@
                 e.indexes=JSON.stringify(e.indexes)
                 e.ownSpec=JSON.stringify(e.ownSpec)
               })
+              // fileList1:[],
+              //   fileList2:[],
+              //   fileList3:[],
 
-              // console.log(spuBo)
+
+              // console.log(this.form.brand)
               let spuBo={
                 'brandId': this.form.brand,
                 'cid1': this.cids[0],
                 'cid2': this.cids[1],
                 'cid3': this.cids[2],
                 'image': this.fileList,
+                'images': this.fileList1+","+this.fileList2+","+this.fileList3,
                 'shopId':this.shopId,
                 'skuVos':this.skuVos,
                 'spuDetail': {
@@ -410,7 +424,7 @@
               httpAction('/kunze/spu/saveGood', spuBo,'post').then((res)=>{
                 if(res.success==true){
                   that.current=0
-                  that.form.brand=[]
+                  that.form.brand=''
                   that.cids=[]
                   that.fileList=[]
                   that.skuVos=[]
@@ -425,8 +439,10 @@
                   that.form.subTitle=''
                   that.form.title=''
                   that.$message.success('添加成功');
+                }else {
+                  that.$message.warning('添加失败');
+                  console.log(res)
                 }
-                // console.log(res)
               })
             } else {
               console.log('error submit!!');
@@ -456,7 +472,14 @@
         },
       },
       mounted() {
-        this.shopId=this.$store.state.shopId
+      // if(this.$store.state.shopId!=null){
+      //
+      // }else if(JSON.parse(sessionStorage.getItem("store")).shopId!=nill){
+      //
+      // }
+      //   this.shopId=this.$store.state.shopId
+        this.shopId=JSON.parse(sessionStorage.getItem("store")).shopId
+        // this.$message.success(this.shopId);
         // console.log(this.shopId)
       this.getBrand()
       }
