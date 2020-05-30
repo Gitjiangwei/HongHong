@@ -223,6 +223,7 @@
         preview(orderId){
             let params = {
               orderId:orderId,
+              status:"2",
             }
             postAction(this.url.dayin,params).then((res)=>{
               if(res.success){
