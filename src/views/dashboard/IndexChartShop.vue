@@ -45,7 +45,7 @@
             <div class="dd-box-item">
               <div class="dd-box-item2">
                 <div class="dd-box-item2-font">
-                  <span>{{pending}}</span>
+                  <span @click="handList">{{pending}}</span>
                 </div>
                 <div class="dd-box-item2-font">
                   <span class="dian"></span><span class="font">待处理订单</span>
@@ -55,7 +55,7 @@
             <div class="dd-box-item">
               <div class="dd-box-item2" style="border-right: 0">
                 <div class="dd-box-item2-font">
-                  <span>{{completed}}</span>
+                  <span @click="handListEnd">{{completed}}</span>
                 </div>
                 <div class="dd-box-item2-font">
                   <span class="dianOk"></span><span class="font">已完成的订单</span>
@@ -132,7 +132,7 @@
 
       </a-col>
     </a-row>
-
+    <order-status-list ref="OrderStatusList"></order-status-list>
   </div>
 </template>
 <script>
@@ -141,6 +141,7 @@
   import ATooltip from "ant-design-vue/es/tooltip/Tooltip"
   import {getAction} from '@/api/manage'
   import LineChartMultid from '@/components/chart/LineChartMultid'
+  import OrderStatusList from "../order/model/OrderStatusList"
 
 
   export default {
@@ -149,7 +150,8 @@
       ChartCard,
       ACol,
       ATooltip,
-      LineChartMultid
+      LineChartMultid,
+      OrderStatusList
     },
     data(){
       return{
@@ -161,6 +163,7 @@
         completed:"0",
         stock:"0",
         notsheif:"0",
+        shopId:"",
         visitFields:['成交量'],
         visitInfo:[
           {成交量: 2,
@@ -189,7 +192,8 @@
       setTimeout(() => {
         this.loading = !this.loading
       }, 1000);
-      let shopId=this.$store.state.shopId
+      let shopId=this.$store.state.shopId;
+      this.shopId = shopId;
       this.loaders(shopId);
       this.loaderOrder(shopId);
       this.loaderStock(shopId);
@@ -207,6 +211,14 @@
               this.spuNum = res.result.spuNum;
             }
         })
+      },
+      handList(){
+        this.$refs.OrderStatusList.handList("2",this.shopId);
+        this.$refs.OrderStatusList.title = "待处理订单";
+      },
+      handListEnd(){
+        this.$refs.OrderStatusList.handList("5",this.shopId);
+        this.$refs.OrderStatusList.title = "已完成订单";
       },
       loaderOrder(shopId){
         let params = {
