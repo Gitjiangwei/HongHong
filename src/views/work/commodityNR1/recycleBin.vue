@@ -2,6 +2,58 @@
 <!--    商品展示-->
   <div>
   <a-card title="商品展示" >
+    <a-form :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }" >
+      <a-row>
+        <a-col :span="6">
+          <a-form-item label="商品ID">
+            <a-input placeholder="商品ID" v-model="search.shopId"></a-input>
+          </a-form-item>
+        </a-col>
+        <a-col :span="6">
+          <a-form-item label="商品名称">
+            <a-input placeholder="商品名称" v-model="search.title"></a-input>
+          </a-form-item>
+        </a-col>
+        <a-col :span="6">
+          <a-form-item label="是否上架">
+            <a-select v-model="search.saleable"  >
+              <a-select-option value='1'>已上架</a-select-option>
+              <a-select-option value='0'>已下架</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row>
+        <a-col :span="6">
+          <a-form-item label="品牌" prop="brand" >
+            <a-select v-model="search.brandId" placeholder="选择品牌" :default-value=form.brand >
+              <a-select-option  v-for="v in brand" :value=v.bid :key="v.keys" >
+                {{v.bname}}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+        <a-col :span="6">
+          <a-form-item label="商品分类">
+            <a-cascader
+              :field-names="{ label: 'name', value: 'id', children: 'childrenList'}"
+              :options="options"
+              placeholder="选择所属分类"
+              :value="cids"
+              @change="onChangeShop"
+            />
+          </a-form-item>
+        </a-col>
+        <a-col :span="2">
+        </a-col>
+        <a-col :span="4">
+        <a-button type="primary" icon="search" @click="searchShop">
+          搜索
+        </a-button>
+        </a-col>
+      </a-row>
+    </a-form>
+
 
     <a-button type="primary" class="modifyBtn1" @click="deleteAllBrandBtn()">批量删除</a-button>
     <a-table
@@ -13,10 +65,14 @@
          <span slot="image" slot-scope="text,record">
            <img :src=record.image alt="">
         </span>
+      <span slot="saleable" slot-scope="text,record">
+          <a-button type="primary" class="modifyBtn" style="background-color:#ff4d34;" @click="shangjia(record)" v-if="record.saleable==1">下架</a-button>
+          <a-button type="danger" class="modifyBtn" style="background-color:#ff4d34;" @click="shangjia(record)" v-if="record.saleable==0">上架</a-button>
+      </span>
       <span slot="bianji" slot-scope="text,record">
           <a-button type="primary" class="modifyBtn" @click="xiuBrandBtn(record)">查看</a-button>
           <a-button type="primary" @click="deleteBrandBtn(record)">删除</a-button>
-        </span>
+      </span>
     </a-table>
   </a-card>
 
@@ -222,6 +278,7 @@
             { title: '图片', dataIndex: 'image', key: 'image',scopedSlots: { customRender: 'image' } },
             { title: '所属分类', dataIndex: 'cname', key: 'cname' },
             { title: '商品名称', dataIndex: 'title', key: 'title' },
+            { title: '是否上架', dataIndex: 'saleable', key: 'saleable', scopedSlots: { customRender: 'saleable' } },
             { title: '编辑', dataIndex: 'isflag', key: 'isflag', scopedSlots: { customRender: 'bianji' } },
           ],
           skucolumns:[
@@ -233,6 +290,13 @@
           ],
           data:[],
           skudata:[],
+          search:{
+            shopId:"",
+            title:'',
+            brandId:'',
+            cid3:'',
+            saleable:""
+          },
           shopId:'',
           ids:[],
           current:0,
@@ -290,6 +354,47 @@
         }
       },
       methods:{
+      //选择分类
+        onChangeShop(e){
+          // console.log(e)
+          this.search.cid3=e[2]
+        },
+      //点击搜索商品
+        searchShop(){
+
+
+          let that=this
+          // console.log(that.shopId)
+          getAction('/kunze/spu/spuList',{
+            pageNo :that.ipagination.current,
+            pageSize : that.ipagination.pageSize,
+            shopId : that.shopId,
+            brandId:that.search.brandId,
+            cid3:that.search.cid3,
+            subTitle:that.search.subTitle,
+            saleable:that.search.saleable,
+            id:that.search.shopId
+          }).then((res)=>{
+            console.log(res)
+            that.data=res.result.list
+
+            let key=0
+            that.data.forEach(e=>{
+              e.image=window._CONFIG['domianURL']+'/'+e.image
+              e.key=key++
+            })
+            that.ipagination.total = res.result.total;
+          })
+
+
+
+        },
+      //点击商品上架或下架
+        shangjia(e){
+          console.log(e)
+          this.xiuBrandBtn(e)
+
+        },
         handleTableChange(pagination, filters, sorter) {
           //分页、排序、筛选变化时触发
           console.log(sorter);
@@ -302,6 +407,7 @@
           this.getAllProducts(this.shopId);
         },
         xiuskuBrandBtn(e){
+          // console.log(e)
           let that=this
           this.cids.push(e.cid1)
           this.cids.push(e.cid2)
@@ -401,7 +507,6 @@
         },
         //点击查看按钮
         xiuBrandBtn(e){
-          console.log(e)
           this.spu=[]
           this.skudata=[]
           let that=this
@@ -434,7 +539,7 @@
             pageSize : that.ipagination.pageSize,
             shopId : e
           }).then((res)=>{
-            // console.log(res)
+            console.log(res)
             that.data=res.result.list
 
             let key=0
@@ -692,7 +797,7 @@
       mounted() {
         this.shopId=JSON.parse(sessionStorage.getItem("store")).shopId
       this.getAllProducts(this.shopId)
-        // console.log(this.shopId)
+
         this.getBrand()
       }
   }
