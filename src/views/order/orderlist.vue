@@ -10,7 +10,7 @@
               <a-input placeholder="请输入订单编号" v-model="queryParam.orderId"></a-input>
             </a-form-item>
           </a-col>
-         <a-col :md="6" :sm="24">
+          <a-col :md="6" :sm="24">
             <a-form-item label="订单状态">
               <a-select placeholder="请输入订单状态"  v-model="queryParam.status">
                 <a-select-option value="1">未付款</a-select-option>
@@ -21,7 +21,7 @@
                 <a-select-option value="6">交易关闭</a-select-option>
               </a-select>
             </a-form-item>
-         </a-col>
+          </a-col>
 
           <a-col :md="6" :sm="24" >
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -96,9 +96,6 @@
       },
       data() {
         return {
-          modalWidth:800,
-          drawerWidth:700,
-          visible:true,
           description: '全部订单',
           // 表头
           columns: [
@@ -226,6 +223,7 @@
         preview(orderId){
             let params = {
               orderId:orderId,
+              status:"2",
             }
             postAction(this.url.dayin,params).then((res)=>{
               if(res.success){

@@ -106,6 +106,8 @@
         &nbsp;
         <a-button type="primary" v-show="status==2"  @click="nextStep">确认接单</a-button>
           <a-button type="dashed" v-show="status!=2"  @click="nextStops">下一步</a-button>
+          &nbsp;
+          <a-button type="primary" v-show="status1=2"  @click="nextStep">打印小票</a-button>
         </a-col>
       </a-row>
     </a-form>
@@ -288,6 +290,7 @@
       nextStep () {
         let params = {
           orderId:this.orderId,
+          status:this.status,
         }
         postAction(this.url.dayin,params).then((res)=>{
           if(res.success){
