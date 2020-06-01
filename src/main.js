@@ -43,11 +43,12 @@ import JDictSelectTag from './components/dict/index.js'
 import hasPermission from '@/utils/hasPermission'
 import vueBus from '@/utils/vueBus';
 import JeecgComponents from '@/components/jeecg/index'
-import { FormModel } from 'ant-design-vue';
-Vue.use(FormModel);
+import FormModel from 'ant-design-vue';
+
 
 Vue.config.productionTip = false
 Vue.use(Storage, config.storageOptions)
+Vue.use(FormModel);
 Vue.use(Antd)
 Vue.use(VueAxios, router)
 Vue.use(Viser)
