@@ -25,28 +25,26 @@
       </template>
 <!--第一步-->
     <template v-if="current==0">
-      <a-form-model
-        ref="ruleForm"
+      <a-form
         :model="form"
-        :rules="rules"
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
-        <a-form-model-item label="标题" prop="title" >
-          <a-input v-model="form.title" />
-        </a-form-model-item>
-        <a-form-model-item label="子标题" prop="subTitle">
+        <a-form-item label="标题"  >
+          <a-input v-model="form.title"  />
+        </a-form-item>
+        <a-form-item label="子标题" prop="subTitle">
           <a-input v-model="form.subTitle"  />
-        </a-form-model-item>
-        <a-form-model-item label="品牌" >
+        </a-form-item>
+        <a-form-item label="品牌" >
 <!--          prop="brand"-->
           <a-select v-model="form.brand" placeholder="选择品牌">
           <a-select-option  v-for="v in brand" :value=v.bid :key="v.keys">
             {{v.bname}}
           </a-select-option>
         </a-select>
-        </a-form-model-item>
-      </a-form-model>
+        </a-form-item>
+      </a-form>
       <div style="margin-left: 35%">
         <a-button type="primary" disabled style="margin-right: 20px">
           上一步
@@ -60,14 +58,14 @@
 
 <!--第二步-->
       <template v-if="current==1">
-        <a-form-model
+        <a-form
           ref="ruleForm"
           :model="form"
           :rules="rules1"
           :label-col="labelCol"
           :wrapper-col="wrapperCol"
         >
-                <a-form-model-item label="分类" >
+                <a-form-item label="分类" >
                   <a-input v-model="fenl"  type="hidden" />
                   <a-cascader
                     :field-names="{ label: 'name', value: 'id', children: 'childrenList' }"
@@ -75,9 +73,9 @@
                     placeholder="选择所属分类"
                     @change="onChange"
                   />
-                </a-form-model-item>
+                </a-form-item>
                 <template v-if="dxuandatas.length!=0">
-                  <a-form-model-item label="选择参数" >
+                  <a-form-item label="选择参数" >
                     <template v-for="v in dxuandatas">
                       <template v-for="x in v.params">
                         <template v-if="x.options!=''">
@@ -93,16 +91,16 @@
                         </template>
                       </template>
                     </template>
-                  </a-form-model-item>
+                  </a-form-item>
                 </template>
-                <a-form-model-item label="销售价格" prop="price">
+                <a-form-item label="销售价格" prop="price">
                   <a-input v-model="form.price" placeholder="单位为元" />
-                </a-form-model-item>
-                <a-form-model-item label="商品库存"  prop="stock">
+                </a-form-item>
+                <a-form-item label="商品库存"  prop="stock">
                   <a-input v-model="form.stock" />
-                </a-form-model-item>
+                </a-form-item>
 
-        </a-form-model>
+        </a-form>
         <div style="margin-left: 35%">
           <a-button type="primary"  style="margin-right: 20px" @click="nextStep1">
             上一步
@@ -119,32 +117,32 @@
 
       <!--第三步-->
       <template v-if="current==2">
-        <a-form-model
+        <a-form
           ref="ruleForm"
           :model="form"
           :rules="rules2"
           :label-col="labelCol"
           :wrapper-col="wrapperCol"
         >
-                <a-form-model-item label="商品图片" >
+                <a-form-item label="商品图片" >
                   <j-image-upload class="avatar-uploader" text="上传" v-model="fileList" ></j-image-upload>
-                </a-form-model-item>
-                <a-form-model-item label="商品轮播图片" >
+                </a-form-item>
+                <a-form-item label="商品轮播图片" >
                   <j-image-upload class="avatar-uploader" text="上传" v-model="fileList1" style="width: 104px;margin-right: 30px"></j-image-upload>
                   <j-image-upload class="avatar-uploader" text="上传" v-model="fileList2" style="width: 104px;margin-right: 30px"></j-image-upload>
                   <j-image-upload class="avatar-uploader" text="上传" v-model="fileList3" style="width: 104px"></j-image-upload>
-                </a-form-model-item>
-                <a-form-model-item label="包装清单"  >
+                </a-form-item>
+                <a-form-item label="包装清单"  >
                   <a-input v-model="form.packingList" />
-                </a-form-model-item>
-                <a-form-model-item label="售后服务"   >
+                </a-form-item>
+                <a-form-item label="售后服务"   >
                   <a-input v-model="form.afterService" />
-                </a-form-model-item>
-                <a-form-model-item label="商品描述" >
+                </a-form-item>
+                <a-form-item label="商品描述" >
                   <j-editor v-model="form.description"/>
-                </a-form-model-item>
+                </a-form-item>
 
-        </a-form-model>
+        </a-form>
         <div style="margin-left: 35%">
           <a-button type="primary"  style="margin-right: 20px" @click="nextStep3">
             上一步
@@ -196,6 +194,7 @@
             subTitle:'',
             title:'',
           },
+
           brand:[],  //品牌的集合
           options:[],  //分类级联下拉
           dxuandatas:[],  //参数集合
@@ -209,20 +208,7 @@
           fileList2:[],
           fileList3:[],
           cids:[],
-          rules:{
-            title: [{ required: true, message: '必填', trigger: 'blur' }],
-            subTitle: [{ required: true, message: '必填', trigger: 'blur' }],
-            // brand: [{ required: true, message: '必填', trigger: 'blur' }],
-          },
-          rules1:{
-            price: [{ required: true, message: '必填', trigger: 'blur' }],
-            stock: [{ required: true, message: '必填', trigger: 'blur' }],
-          },
-          rules2:{
-            // packingList: [{ required: true, message: '必填', trigger: 'blur' }],
-            // afterService: [{ required: true, message: '必填', trigger: 'blur' }],
-            description: [{ required: true, message: '必填', trigger: 'blur' }],
-          }
+
         }
       },
       methods:{
