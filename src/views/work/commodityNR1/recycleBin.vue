@@ -393,101 +393,6 @@
         },
       //点击商品上架或下架
         shangjia(e){
-          console.log(e)
-          let that=this
-          this.spu=[]
-          this.skudata=[]
-          getAction('/kunze/spu/spuList',{
-            pageNo :1,
-            pageSize :1,
-            shopId :this.shopId,
-            id:e.id
-          }).then((res)=>{
-            console.log(res)
-            that.spu=res.result.list[0]
-
-            this.form.title=that.spu.title
-            this.form.subTitle=that.spu.subTitle
-            this.form.brand=that.spu.bname
-
-
-
-            let param = new URLSearchParams()
-            param.append('spuId',e.id)
-            postAction('/kunze/sku/qrySkuBySpuId',param).then((res)=>{
-
-              that.skudata=res.result
-              console.log(that.skudata)
-              that.skudata.forEach(e=>{
-                that.indexes=e.indexes.split(',')
-                that.indexes=JSON.stringify(that.indexes)
-
-                that.form.price=e.newPrice
-                that.form.stock=e.stock
-                that.form.afterService=e.afterService
-                that.form.description=e.description
-                that.form.packingList=e.packingList
-                that.cids.push(that.skudata[0].cid1)
-                that.cids.push(that.skudata[0].cid2)
-                that.cids.push(that.skudata[0].cid3)
-              })
-
-              that.skuVos=that.skudata
-              that.getParameters(that.cids)
-
-              let spuBo={
-                'brandId': that.form.brand,
-                'cid1': that.cids[0],
-                'cid2': that.cids[1],
-                'cid3': that.cids[2],
-                'image': that.spu.image,
-                'shopId':that.shopId,
-                'saleable':'1',
-                'skuVos':that.skuVos,
-                'spuDetail': {
-                  'afterService': that.form.afterService,
-                  'description': that.form.description,
-                  'packingList': that.form.packingList,
-                  'specTemplate': JSON.stringify(this.specTemplate),
-                  'specifications':JSON.stringify(this.specifications),
-                },
-                'subTitle': that.form.subTitle,
-                'title':that.form.title
-              }
-              console.log(spuBo)
-
-              httpAction('/kunze/spu/saveGood', spuBo,'post').then((res)=>{
-                console.log(res,111)
-                if(res.success==true){
-                  that.current=0
-                  that.form.brand=[]
-                  that.cids=[]
-                  that.fileList=[]
-                  that.skuVos=[]
-                  that.form.afterService=''
-                  that.form.description=''
-                  that.form.price=''
-                  that.form.stock=''
-                  that.form.packingList=''
-                  that.specTemplate=[]
-                  that.specifications=[]
-                  that.indexes=[]
-                  that.form.subTitle=''
-                  that.form.title=''
-                  that.$message.success('添加成功');
-                }
-
-              })
-
-
-
-            })
-
-          })
-
-
-
-
 
 
 
@@ -495,60 +400,7 @@
 
         },
 
-        //获取参数
-        getParameters(value){
-          this.cids=value
-          let that=this
-          that.indexes=[]
-          that.ownSpec={}
-          that.index=[]
-          that.specTemplate={}
-          that.specifications=[]
-          getAction('/kunze/spec/specList',{categoryId:value[2]}).then((res)=>{
-            if(res.result==null){
-              that.dxuandatas=[]
-            }else {
-              that.dxuandatas=JSON.parse(res.result.specifications)
-              that.dxuandatas.forEach(e=>{
 
-                e.params.forEach((y,i)=>{
-                  y.value=''
-
-                  if(typeof y.options=='string'){
-                    y.options=y.options.split(',');
-                    if(y.options[0]==''){
-
-                    }else {
-                      // console.log(y.k,y.options[0])
-                      Vue.set(that.ownSpec,y.k,y.options[0])
-                      Vue.set(that.specTemplate,y.k,y.options)
-                      that.indexes.push(0)
-                      that.index.push(y.k)
-                      let nn= {
-                        k:y.k,
-                        v:y.options[0],
-                        global: true,
-                        searchable: true
-                      }
-                      let nm=[]
-                      nm.push(nn)
-                      that.specifications.push({
-                        group:e.group,
-                        params:nm
-                      })
-
-                    }
-
-                  }
-                })
-
-              })
-
-            }
-
-          })
-
-        },
 
 
         //分页
@@ -693,6 +545,7 @@
               e.key=key++
             })
             that.ipagination.total = res.result.total;
+            console.log(that.data)
           })
 
 

@@ -87,6 +87,7 @@
   import $ from 'jquery';
   import OrderDetail from "./model/OrderDetail"
 
+
   export default {
       name: "orderlist",
       mixins:[JeecgListMixin],
@@ -221,24 +222,27 @@
       },
       methods:{
         preview(orderId){
+          for(let i=0;i<2;i++){
+            console.log(1)
             let params = {
               orderId:orderId,
               status:"2",
             }
             postAction(this.url.dayin,params).then((res)=>{
+
               if(res.success){
                 this.$message.success("接单成功！");
                 this.loadData();
                 this.onClearSelected();
                 let Data = [];
                 for(let i = 0;i<res.result.commodityList.length;i++){
-                    let spuList = {
-                      spuName: res.result.commodityList[i].spuName,
-                      shuliang: res.result.commodityList[i].spuNum,
-                      je: res.result.commodityList[i].unitPrice,
-                      unitPriceTotle:" "+res.result.commodityList[i].unitPriceTotle,
-                    }
-                    Data.push(spuList);
+                  let spuList = {
+                    spuName: res.result.commodityList[i].spuName,
+                    shuliang: res.result.commodityList[i].spuNum,
+                    je: res.result.commodityList[i].unitPrice,
+                    unitPriceTotle:" "+res.result.commodityList[i].unitPriceTotle,
+                  }
+                  Data.push(spuList);
                 }
 
                 let ss ={
@@ -296,11 +300,11 @@
                       //alert(data);
                       var obj = JSON.parse(data);
                       //alert(obj.status);
-/*
-                      if(obj.status=="ok"){
-                      }else{
-                        alert("打印失败:"+obj.data);
-                      }*/
+                      /*
+                                            if(obj.status=="ok"){
+                                            }else{
+                                              alert("打印失败:"+obj.data);
+                                            }*/
                       //console.log(data);
 
                     }
@@ -308,6 +312,9 @@
 
               }
             });
+          }
+
+
         },
         handleDetail(record) {
           this.$refs.OrderDetail.detail(record);

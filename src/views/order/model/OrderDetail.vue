@@ -23,7 +23,7 @@
       <a-steps class="steps" :current="currentTab">
         <a-step title="订单" />
         <a-step title="配货" />
-        <a-step title="记录" />
+        <a-step title="交易完成" />
       </a-steps>
       <div class="content">
         <order1
@@ -61,6 +61,7 @@
   import Order1 from  "./Order1";
   import Order2 from  "./Order2";
   import Order3 from  "./Order3";
+  import Vue from 'vue'
 
   export default {
     name:"OrderDetail",
@@ -132,9 +133,11 @@
       },
       handleOk (){
         this.close()
+        this.currentTab=0
       },
       handleCancel () {
         this.close()
+        this.currentTab=0
       },
       nextStep () {
         if (this.currentTab < 2) {

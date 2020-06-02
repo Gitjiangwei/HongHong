@@ -84,7 +84,7 @@
                 :columns="columns"
                 :dataSource="dataSource"
                 :pagination="ipagination"
-                :loading="loading"
+
                 @change="handleTableChange">
                 <template slot="avatarslot" slot-scope="text, record, index">
                   <div class="anty-img-wrap">
@@ -276,6 +276,7 @@
       }
     },
     methods: {
+      handleTableChange(){},
      async loads(arg){
         let {result} = await getAction(this.url.detail,{orderId:this.orderId});
         this.dataSource = result.orderSpuVos;

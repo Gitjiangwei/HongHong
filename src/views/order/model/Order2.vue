@@ -34,7 +34,7 @@
 
       <a-button type="primary" v-show="status==3" @click="nextStep" style="margin-left: 20px">配货完成，开始配送</a-button>
       &nbsp;
-      <a-button  v-show="status!=2"  @click="nextStops">下一步</a-button>
+      <a-button  v-show="status!=2"  @click="nextStops" >交易完成</a-button>
     </a-col>
   </a-row>
   </div>
@@ -137,6 +137,7 @@
       this.ipagination.total = this.salesNum;
     },
     methods:{
+      handleTableChange(){},
       async loads(arg){
         let {result} = await getAction(this.url.detail,{orderId:this.orderId});
         this.dataSource = result.orderSpuVos;
@@ -150,6 +151,13 @@
       },
       nextStops (){
         this.$emit('nextStep');
+        let orderStatus={
+          status:5,
+          orderId:this.orderId
+        }
+        postAction("kunze/order/updateStatus", orderStatus).then((res)=>{
+          console.log(res)
+        })
       },
       nextStep () {
         let params = {

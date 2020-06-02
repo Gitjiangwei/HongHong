@@ -5,11 +5,12 @@
       <a-button type="primary" class="modifyBtn1" @click="deleteAllCategories()">批量删除</a-button>
       <a-button type="primary" class="modifyBtn1" @click="adddjfl()">添加顶级分类</a-button>
       <a-table :columns="columns" :data-source="data" :row-selection="{  onChange: onSelectChange }" :pagination="false" >
-        <span slot="sort" slot-scope="text,record" >
-            <a @click="addCategories(record)">排序</a>
-        </span>
+<!--        <span slot="sort" slot-scope="text,record" >-->
+<!--            <a @click="addCategories(record)">排序</a>-->
+<!--        </span>-->
         <span slot="category" slot-scope="text,record">
-          <a @click="addCategories(record)">添加子分类</a>
+          <a @click="addCategories(record)" v-if="record.isParent==1">添加子分类</a>
+          <a @click="addCategoriesImg(record)" v-if="record.isParent==0">添加图片</a>
         </span>
         <span slot="bianji" slot-scope="text,record">
           <a-button type="primary" class="modifyBtn" @click="modifyCategories(record)">修改</a-button>
@@ -73,28 +74,45 @@
       </a-form-model>
     </a-modal>
 
+    <!--    三级分类添加图片弹出窗-->
+    <a-modal
+      title="添加图片"
+      :visible="addvisibleImg"
+      :confirm-loading="confirmLoading"
+      @ok="addImgOk"
+      @cancel="addImgCancel"
+    >
+      <j-image-upload class="avatar-uploader" text="上传" v-model="fileList1" style="width: 104px;margin-right: 30px"></j-image-upload>
+    </a-modal>
+
   </div>
 </template>
 
 <script>
   import {getAction,postAction,deleteAction} from '../../../api/manage'
-
+  import JImageUpload from '../../../components/jeecg/JImageUpload'
 
 
   export default {
+    components: {
+      JImageUpload
+    },
         data() {
             return {
               columns:[
                 { title: '分类名称', dataIndex: 'name', key: 'name' },
-                { title: '排序', dataIndex: 'sort', key: 'sort', scopedSlots: { customRender: 'sort' } },
+                // { title: '排序', dataIndex: 'sort', key: 'sort', scopedSlots: { customRender: 'sort' } },
                 { title: '添加子分类', dataIndex: 'id', key: 'id', scopedSlots: { customRender: 'category' } },
                 { title: '编辑', dataIndex: 'isflag', key: 'isflag', scopedSlots: { customRender: 'bianji' } },
               ],
               data:[],
               addvisible: false, //控制添加弹出框
+              addvisibleImg:false, //控制添加图片弹出框
               adddjvisible: false, //控制添加弹出框
               modifyvisible: false, //控制添加弹出框
               confirmLoading: false,
+              fileList1:"",
+              citem3:{},
               form:{
                 name:'',
                 isParent:'',
@@ -294,16 +312,46 @@
             this.form.sort=''
             this.form.isParent=''
           },
+          addImgOk(){
+            let category=this.citem3
+            category.image=this.fileList1
+
+            postAction('kunze/category/categoryUpdate',category).then((res)=>{
+              console.log(res)
+              if(res.success==true){
+                this.addvisibleImg=false
+                this.fileList1=""
+              }
+            })
+          },
+          addImgCancel(){
+            this.addvisibleImg=false
+            this.fileList1=""
+          },
+          //点击三级分类添加图片
+          addCategoriesImg(e){
+            console.log(e)
+            if(e.image==null){
+              this.fileList1=""
+            }else {
+              this.fileList1= window._CONFIG['domianURL']+"/"+e.image
+            }
+            console.log(this.fileList1)
+
+            this.citem3=e
+            this.addvisibleImg=true
+          },
           // 点击添加子集分类
           addCategories(e){
+            this.addvisible=true
             // console.log(e.isParent)
-            this.pid=e.id
-            if(e.isParent==0){
-              this.$message.warning('底层分类不可添加子分类');
-            }
-            if(e.isParent==1){
-              this.addvisible=true
-            }
+            // this.pid=e.id
+            // if(e.isParent==0){
+            //   this.$message.warning('底层分类不可添加子分类');
+            // }
+            // if(e.isParent==1){
+            //   this.addvisible=true
+            // }
           },
           // 获取全部分类
           getAllCategories(){
