@@ -61,6 +61,7 @@
       :data-source="data"
       :row-selection="{  onChange: onSelectChange }"
       :pagination="ipagination"
+
       @change="handleTableChange">
          <span slot="image" slot-scope="text,record">
            <img :src=record.image alt="">
@@ -78,9 +79,9 @@
 
 
 
-<!--        修改商品品牌弹出框-->
+<!--        修改商品弹出框-->
     <a-drawer
-      title="修改商品品牌"
+      title="修改商品"
       :width="720"
       :visible="xiuBrandvisible"
       :body-style="{ paddingBottom: '80px' }"
@@ -108,27 +109,25 @@
       </template>
       <!--第一步-->
       <template v-if="current==0">
-        <a-form-model
-          ref="ruleForm"
-          :model="form"
-          :rules="rules"
+        <a-form
+          :form="formTranslate"
           :label-col="labelCol"
           :wrapper-col="wrapperCol"
         >
-          <a-form-model-item label="标题" prop="title" >
-            <a-input v-model="form.title" />
-          </a-form-model-item>
-          <a-form-model-item label="子标题" prop="subTitle">
-            <a-input v-model="form.subTitle"  />
-          </a-form-model-item>
-          <a-form-model-item label="品牌" prop="brand" >
+          <a-form-item label="标题"  hasFeedback>
+            <a-input v-decorator="['title', {rules: [{ required: true, message: '请输入商品名称', }]}]"  />
+          </a-form-item>
+          <a-form-item label="子标题" hasFeedback>
+            <a-input    v-decorator="['subTitle', {rules: [{ required: true, message: '请输入子标题', }]}]" />
+          </a-form-item>
+          <a-form-item label="品牌">
             <a-select v-model="form.brand" placeholder="选择品牌" :default-value=form.brand >
               <a-select-option  v-for="v in brand" :value=v.bid :key="v.keys" >
                 {{v.bname}}
               </a-select-option>
             </a-select>
-          </a-form-model-item>
-        </a-form-model>
+          </a-form-item>
+        </a-form>
         <div style="margin-left: 35%">
           <a-button type="primary" disabled style="margin-right: 20px">
             上一步
@@ -142,14 +141,12 @@
 
       <!--第二步-->
       <template v-if="current==1">
-        <a-form-model
-          ref="ruleForm"
-          :model="form"
-          :rules="rules1"
+        <a-form
+          :form="formTranslate"
           :label-col="labelCol"
           :wrapper-col="wrapperCol"
         >
-          <a-form-model-item label="分类" >
+          <a-form-item label="分类" >
             <a-input v-model="fenl"  type="hidden" />
             <a-cascader
               :field-names="{ label: 'name', value: 'id', children: 'childrenList'}"
@@ -158,9 +155,9 @@
               :value="cids"
               @change="onChange"
             />
-          </a-form-model-item>
+          </a-form-item>
           <template v-if="dxuandatas.length!=0">
-            <a-form-model-item label="选择参数" >
+            <a-form-item label="选择参数" >
               <template v-for="v in dxuandatas">
                 <template v-for="x in v.params">
                   <template v-if="x.options!=''">
@@ -169,23 +166,23 @@
                         <span class="fenzu">{{x.k}}:</span>
                       </a-col>
                       <a-col :span="20">
-                        <a-radio-group  :name=x.k :v-model=x.value :options="x.options" :default-value="x.options[x.opens]" @change="onChange2" />
+                        <a-radio-group  :name=x.k :v-model=x.value :options="x.options" :default-value="x.options[0]" @change="onChange2" />
                       </a-col>
                     </a-row>
                     <br />
                   </template>
                 </template>
               </template>
-            </a-form-model-item>
+            </a-form-item>
           </template>
-          <a-form-model-item label="销售价格" prop="price">
+          <a-form-item label="销售价格" prop="price">
             <a-input v-model="form.price" placeholder="单位为分" />
-          </a-form-model-item>
-          <a-form-model-item label="商品库存"  prop="stock">
+          </a-form-item>
+          <a-form-item label="商品库存"  prop="stock">
             <a-input v-model="form.stock" />
-          </a-form-model-item>
+          </a-form-item>
 
-        </a-form-model>
+        </a-form>
         <div style="margin-left: 35%">
           <a-button type="primary"  style="margin-right: 20px" @click="nextStep1">
             上一步
@@ -202,27 +199,25 @@
 
       <!--第三步-->
       <template v-if="current==2">
-        <a-form-model
-          ref="ruleForm"
-          :model="form"
-          :rules="rules2"
+        <a-form
+          :form="formTranslate"
           :label-col="labelCol"
           :wrapper-col="wrapperCol"
         >
-          <a-form-model-item label="商品图片" >
+          <a-form-item label="商品图片" >
             <j-image-upload class="avatar-uploader" text="上传" v-model="fileList" ></j-image-upload>
-          </a-form-model-item>
-          <a-form-model-item label="包装清单" prop="packingList" >
+          </a-form-item>
+          <a-form-item label="包装清单" prop="packingList" >
             <a-input v-model="form.packingList" />
-          </a-form-model-item>
-          <a-form-model-item label="售后服务"  prop="afterService"  >
+          </a-form-item>
+          <a-form-item label="售后服务"  prop="afterService"  >
             <a-input v-model="form.afterService" />
-          </a-form-model-item>
-          <a-form-model-item label="商品描述" >
+          </a-form-item>
+          <a-form-item label="商品描述" >
             <j-editor v-model="form.description"/>
-          </a-form-model-item>
+          </a-form-item>
 
-        </a-form-model>
+        </a-form>
         <div style="margin-left: 35%">
           <a-button type="primary"  style="margin-right: 20px" @click="nextStep3">
             上一步
@@ -262,6 +257,7 @@
   import { getAction, httpAction, postAction } from '../../../api/manage'
   import JImageUpload from '../../../components/jeecg/JImageUpload'
   import Vue from 'vue'
+  import pick from 'lodash.pick'
 
 
 
@@ -274,7 +270,7 @@
       data(){
         return{
           columns:[
-            { title: 'ID', dataIndex: 'id', key: 'id' },
+            { title: '*', dataIndex: '',  key: 'rowIndex', width: 60, align: "center", customRender: function (t, r, index) {return parseInt(index) + 1;}},
             { title: '品牌名称', dataIndex: 'bname', key: 'bname' },
             { title: '图片', dataIndex: 'image', key: 'image',scopedSlots: { customRender: 'image' } },
             { title: '所属分类', dataIndex: 'cname', key: 'cname' },
@@ -317,6 +313,7 @@
             subTitle:'',
             title:'',
           },
+          formTranslate: this.$form.createForm(this),
           xiuBrandvisible:false,
           visible:false,
           id:'',
@@ -326,20 +323,6 @@
           index:[],
           specifications:[],
           ownSpec:{},
-          rules:{
-            title: [{ required: true, message: '必填', trigger: 'blur' }],
-            subTitle: [{ required: true, message: '必填', trigger: 'blur' }],
-            brand: [{ required: true, message: '必填', trigger: 'blur' }],
-          },
-          rules1:{
-            price: [{ required: true, message: '必填', trigger: 'blur' }],
-            stock: [{ required: true, message: '必填', trigger: 'blur' }],
-          },
-          rules2:{
-            packingList: [{ required: true, message: '必填', trigger: 'blur' }],
-            afterService: [{ required: true, message: '必填', trigger: 'blur' }],
-            description: [{ required: true, message: '必填', trigger: 'blur' }],
-          },
           spu:{},
           ipagination:{
             current: 1,
@@ -472,12 +455,23 @@
           this.xiuBrandvisible=true
           console.log(e)
 
-          that.indexes=e.indexes.split(',')
+          this.indexes=e.indexes.split(',')
           this.form.title=this.spu.title
           this.form.subTitle=this.spu.subTitle
           this.form.brand=this.spu.bname
           this.form.price=e.newPrice
           this.form.stock=e.stock
+
+
+
+          this.$nextTick(() => {
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock'))
+          });
+
+
+
+
+
         },
         deleteskuBrandBtn(e){},
         handleCancel(){
@@ -552,25 +546,31 @@
 
         },
 
+        edit(record) {
+          this.$nextTick(() => {
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock'))
+          });
 
+        },
 
         // 点击下一步
         nextStep(){
-          this.$refs.ruleForm.validate(valid => {
-            if (valid) {
-              // alert('submit!');
+          let that = this
+          // 触发表单验证
+          this.formTranslate.validateFields((err, values) => {
+            console.log(values)
+            if(values.title && values.subTitle){
+              that.form.title=values.title
+              that.form.subTitle=values.subTitle
               this.current=this.current-(-1)
-            } else {
-
-              // console.log('error submit!!');
-              return false;
-
             }
           })
-
         },
         nextStep1(){
           this.current=this.current-1
+          this.$nextTick(() => {
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock'))
+          });
         },
         nextStep2(){
           // this.current=this.current-(-1)

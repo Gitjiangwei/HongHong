@@ -26,19 +26,18 @@
 <!--第一步-->
     <template v-if="current==0">
       <a-form
-        :model="form"
+        :form="formTranslate"
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
-        <a-form-item label="标题"  >
-          <a-input v-model="form.title"  />
+        <a-form-item label="标题"  hasFeedback>
+          <a-input  v-decorator="['title', {rules: [{ required: true, message: '请输入商品名称', }]}]" />
         </a-form-item>
-        <a-form-item label="子标题" prop="subTitle">
-          <a-input v-model="form.subTitle"  />
+        <a-form-item label="子标题" hasFeedback>
+          <a-input  v-decorator="['subTitle', {rules: [{ required: true, message: '请输入子标题', }]}]" />
         </a-form-item>
-        <a-form-item label="品牌" >
-<!--          prop="brand"-->
-          <a-select v-model="form.brand" placeholder="选择品牌">
+        <a-form-item label="品牌" hasFeedback>
+          <a-select v-model="form.brand" placeholder="选择品牌"  >
           <a-select-option  v-for="v in brand" :value=v.bid :key="v.keys">
             {{v.bname}}
           </a-select-option>
@@ -59,13 +58,11 @@
 <!--第二步-->
       <template v-if="current==1">
         <a-form
-          ref="ruleForm"
-          :model="form"
-          :rules="rules1"
+          :form="formTranslate"
           :label-col="labelCol"
           :wrapper-col="wrapperCol"
         >
-                <a-form-item label="分类" >
+                <a-form-item label="分类" hasFeedback >
                   <a-input v-model="fenl"  type="hidden" />
                   <a-cascader
                     :field-names="{ label: 'name', value: 'id', children: 'childrenList' }"
@@ -93,11 +90,11 @@
                     </template>
                   </a-form-item>
                 </template>
-                <a-form-item label="销售价格" prop="price">
-                  <a-input v-model="form.price" placeholder="单位为元" />
+                <a-form-item label="销售价格" hasFeedback>
+                  <a-input  placeholder="单位为元" v-decorator="['price', {rules: [{ required: true, message: '请输入销售价格', }]}]" />
                 </a-form-item>
-                <a-form-item label="商品库存"  prop="stock">
-                  <a-input v-model="form.stock" />
+                <a-form-item label="商品库存"  hasFeedback>
+                  <a-input   v-decorator="['stock', {rules: [{ required: true, message: '请输入商品库存', }]}]"  />
                 </a-form-item>
 
         </a-form>
@@ -106,7 +103,7 @@
             上一步
           </a-button>
           <a-button type="primary" @click="determine" style="margin-right: 20px">
-            确定参数
+            保存并再次添加
           </a-button>
           <a-button type="primary" @click="nextStep2">
             下一步
@@ -118,9 +115,7 @@
       <!--第三步-->
       <template v-if="current==2">
         <a-form
-          ref="ruleForm"
           :model="form"
-          :rules="rules2"
           :label-col="labelCol"
           :wrapper-col="wrapperCol"
         >
@@ -128,9 +123,9 @@
                   <j-image-upload class="avatar-uploader" text="上传" v-model="fileList" ></j-image-upload>
                 </a-form-item>
                 <a-form-item label="商品轮播图片" >
-                  <j-image-upload class="avatar-uploader" text="上传" v-model="fileList1" style="width: 104px;margin-right: 30px"></j-image-upload>
-                  <j-image-upload class="avatar-uploader" text="上传" v-model="fileList2" style="width: 104px;margin-right: 30px"></j-image-upload>
-                  <j-image-upload class="avatar-uploader" text="上传" v-model="fileList3" style="width: 104px"></j-image-upload>
+                  <j-image-upload class="avatar-uploader" text="上传" v-model="fileList1" style="width: 104px;margin-right: 30px;float: left"></j-image-upload>
+                  <j-image-upload class="avatar-uploader" text="上传" v-model="fileList2" style="width: 104px;margin-right: 30px;float: left"></j-image-upload>
+                  <j-image-upload class="avatar-uploader" text="上传" v-model="fileList3" style="width: 104px;float: left "></j-image-upload>
                 </a-form-item>
                 <a-form-item label="包装清单"  >
                   <a-input v-model="form.packingList" />
@@ -169,6 +164,8 @@
   import JEditor from '@/components/jeecg/JEditor'
 
   import Vue from 'vue'
+  import pick from 'lodash.pick'
+  import moment from 'moment'
   export default {
     name: 'addcommodity',
     components: {
@@ -208,51 +205,64 @@
           fileList2:[],
           fileList3:[],
           cids:[],
+          formTranslate: this.$form.createForm(this),
 
         }
       },
       methods:{
+
+
+        edit(record) {
+          this.$nextTick(() => {
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock'))
+          });
+
+        },
+
+
       // 点击下一步
         nextStep(){
-          this.$refs.ruleForm.validate(valid => {
-            if (valid) {
-              // alert('submit!');
 
+
+
+          let that = this
+          // 触发表单验证
+          this.formTranslate.validateFields((err, values) => {
+            if(values.title && values.subTitle){
+              that.form.title=values.title
+              that.form.subTitle=values.subTitle
               this.current=this.current-(-1)
-            } else {
-
-              console.log('error submit!!');
-              return false;
-
             }
           })
+
 
         },
         nextStep1(){
           this.current=this.current-1
         },
         nextStep2(){
-          this.$refs.ruleForm.validate(valid => {
-            if (valid) {
-              // alert('submit!');
-              if(this.indexes.length!=0){
+
+
+          this.formTranslate.validateFields((err, values) => {
+
+            if (values.price && values.stock) {
+
+              if (this.indexes.length != 0) {
                 this.skuVos.push({
                   indexes: this.indexes,
-                  ownSpec:  this.ownSpec,
-                  price: this.form.price,
-                  stock: this.form.stock
+                  ownSpec: this.ownSpec,
+                  price: values.price,
+                  stock: values.stock
                 })
-                this.current=this.current-(-1)
-              }else {
+                this.current = this.current - (-1)
+              } else {
                 this.$message.warning('请选择所属分类');
               }
-
-
-            } else {
-              console.log('error submit!!');
-              return false;
             }
           })
+
+
+
         },
         nextStep3(){
           this.current=this.current-1
@@ -261,9 +271,13 @@
           // this.current=this.current-(-1)
         },
         determine(){
-          this.$refs.ruleForm.validate(valid => {
-            if (valid) {
+
+          this.formTranslate.validateFields((err, values) => {
+
+            if(values.price && values.stock){
+
               if(this.indexes.length!=0){
+                console.log(1)
                 this.skuVos.push({
                   indexes: this.indexes,
                   ownSpec:  this.ownSpec,
@@ -273,13 +287,11 @@
                 this.form.stock=''
                 this.form.price=''
                 this.dxuandatas=[]
+                this.$message.success('保存成功，可以再次添加');
               }else {
                 this.$message.warning('请选择所属分类');
               }
 
-            } else {
-              console.log('error submit!!');
-              return false;
             }
           })
 
@@ -374,8 +386,6 @@
         onSubmit(){
           let that=this
 
-          this.$refs.ruleForm.validate(valid => {
-            if (valid) {
               this.skuVos.forEach(e=>{
                 e.indexes=JSON.stringify(e.indexes)
                 e.ownSpec=JSON.stringify(e.ownSpec)
@@ -405,8 +415,8 @@
                 'subTitle': this.form.subTitle,
                 'title':this.form.title
               }
-              // debugger;
-              console.log(spuBo)
+
+              // console.log(spuBo)
               httpAction('/kunze/spu/saveGood', spuBo,'post').then((res)=>{
                 if(res.success==true){
                   that.current=0
@@ -427,14 +437,10 @@
                   that.$message.success('添加成功');
                 }else {
                   that.$message.warning('添加失败');
-                  console.log(res)
+                  // console.log(res)
                 }
               })
-            } else {
-              console.log('error submit!!');
-              return false;
-            }
-          })
+
 
 
 
