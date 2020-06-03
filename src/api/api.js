@@ -103,7 +103,11 @@ const queryUserRoleMap = (params)=>getAction("/sys/user/queryUserRoleMap",params
 const duplicateCheck = (params)=>getAction("/sys/duplicate/check",params);
 // 加载分类字典
 const loadCategoryData = (params)=>getAction("/sys/category/loadAllData",params);
-const checkRuleByCode = (params) => getAction('/sys/checkRule/checkByCode', params)
+const checkRuleByCode = (params) => getAction('/sys/checkRule/checkByCode', params);
+
+//轮播图管理
+const queryByShopId = (params)=>getAction("/kunze/wheel/selectByShopId",params);
+
 
 export {
   // imgView,
@@ -114,6 +118,7 @@ export {
   addUser,
   editUser,
   queryUserRole,
+  queryByShopId,
   getUserList,
   queryall,
   frozenBatch,

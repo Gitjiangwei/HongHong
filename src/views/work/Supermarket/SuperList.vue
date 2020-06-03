@@ -196,7 +196,7 @@
         selectedRowKeys: [],
         selectedRows: [],
         url:{
-          list:"/kunze/shop/queryShops",
+          list:"/kunze/shop/list",
           delete:"/kunze/shop/delShops",
           imgerver:window._CONFIG['staticDomainURL'],
         },
