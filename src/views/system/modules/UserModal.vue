@@ -300,7 +300,6 @@
         queryall().then((res)=>{
           if(res.success){
             this.roleList = res.result;
-          /*  this.shopShowChange(res.result.);*/
           }else{
             console.log(res.message);
           }
@@ -309,6 +308,7 @@
       loadUserRoles(userid){
         queryUserRole({userid:userid}).then((res)=>{
           if(res.success){
+            debugger;
             this.selectedRole = res.result;
           }else{
             console.log(res.message);
@@ -331,6 +331,7 @@
         this.edit({activitiSync:'1'});
       },
       edit (record) {
+        debugger;
         this.resetScreenSize(); // 调用此方法,根据屏幕宽度自适应调整抽屉的宽度
         let that = this;
         that.initialRoleList();
