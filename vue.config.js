@@ -56,7 +56,6 @@ module.exports = {
   },
 
   devServer: {
-    host: '192.168.2.104',
     port: 3000,
     proxy: {
       /* '/api': {
@@ -68,7 +67,7 @@ module.exports = {
         }s
       }, */
       '/jeecg-boot': {
-        target: 'http://192.168.2.110:8080', // 请求本地 需要jeecg-boot后台项目
+        target: 'http://150.158.181.66:8080', // 请求本地 需要jeecg-boot后台项目
         ws: false,
         changeOrigin: true
       }
