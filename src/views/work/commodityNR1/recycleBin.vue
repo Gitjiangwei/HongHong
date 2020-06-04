@@ -376,8 +376,30 @@
         },
       //点击商品上架或下架
         shangjia(e){
-
-
+          console.log(e)
+          if(e.saleable==0){
+            let saleable=1
+            let spuBo={
+              'saleable':saleable,
+              "shopId": this.shopId,
+              "id":  e.id,
+            }
+            console.log(spuBo)
+            postAction('/kunze/spu/updateSpu',spuBo).then((res)=>{
+              console.log(res)
+            })
+          }else {
+            let saleable=0
+            let spuBo={
+              'saleable':saleable,
+              "shopId": this.shopId,
+              "id":e.id,
+            }
+            console.log(spuBo)
+            postAction('/kunze/spu/updateSpu',spuBo).then((res)=>{
+              console.log(res)
+            })
+          }
 
 
 

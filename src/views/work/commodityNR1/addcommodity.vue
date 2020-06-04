@@ -281,8 +281,8 @@
                 this.skuVos.push({
                   indexes: this.indexes,
                   ownSpec:  this.ownSpec,
-                  price: this.form.price,
-                  stock: this.form.stock
+                  price: values.price,
+                  stock: values.stock
                 })
                 this.form.stock=''
                 this.form.price=''
@@ -395,7 +395,7 @@
               //   fileList3:[],
 
 
-              // console.log(this.form.brand)
+              console.log(this.skuVos)
               let spuBo={
                 'brandId': this.form.brand,
                 'cid1': this.cids[0],
@@ -418,6 +418,7 @@
 
               // console.log(spuBo)
               httpAction('/kunze/spu/saveGood', spuBo,'post').then((res)=>{
+                console.log(res)
                 if(res.success==true){
                   that.current=0
                   that.form.brand=''

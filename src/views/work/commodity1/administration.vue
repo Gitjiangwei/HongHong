@@ -46,17 +46,17 @@
       @ok="handleOk"
       @cancel="handleCancel"
     >
-      <a-form-model :model="form" :label-col="{ span: 6 }" :wrapper-col="{ span: 12 }">
-        <a-form-model-item label="分类名">
-          <a-input v-model="form.name" />
-        </a-form-model-item>
-        <a-form-model-item label="是否是父级分类">
-          <a-input v-model="form.isParent"  placeholder="1代表是，0表示否" />
-        </a-form-model-item>
-        <a-form-model-item label="排序">
-          <a-input v-model="form.sort"  />
-        </a-form-model-item>
-      </a-form-model>
+      <a-form :form="formTranslate" :label-col="{ span: 6 }" :wrapper-col="{ span: 12 }">
+        <a-form-item label="分类名" hasFeedback>
+          <a-input  v-decorator="['name', {rules: [{ required: true, message: '请输入分类名', }]}]" />
+        </a-form-item>
+<!--        <a-form-item label="是否是父级分类" hasFeedback>-->
+<!--          <a-input v-model="form.isParent"  placeholder="1代表是，0表示否" />-->
+<!--        </a-form-item>-->
+        <a-form-item label="排序" hasFeedback>
+          <a-input  v-decorator="['sort', {rules: [{ required: true, message: '请输入排序', }]}]" />
+        </a-form-item>
+      </a-form>
     </a-modal>
 
     <!--    修改分类弹出框-->
@@ -94,6 +94,7 @@
 <script>
   import {getAction,postAction,deleteAction} from '../../../api/manage'
   import JImageUpload from '../../../components/jeecg/JImageUpload'
+  import pick from 'lodash.pick'
 
 
   export default {
@@ -117,6 +118,7 @@
               isdataimg:false,
               fileList1:"",
               fileList1ss:"",
+              formTranslate: this.$form.createForm(this),
               citem3:{},
               form:{
                 name:'',
@@ -135,6 +137,15 @@
             };
         },
         methods: {
+
+
+          edit(record) {
+            this.$nextTick(() => {
+              this.formTranslate.setFieldsValue(pick(this.form, 'name', 'sort','price','stock'))
+            });
+
+          },
+
           onSelectChange(selectedRowKeys, selectedRows) {
             // console.log(selectedRows)
             let that=this
@@ -275,38 +286,73 @@
           },
           // 点击添加子分类弹窗确认按钮
           handleOk(){
+            let that = this
+            // 触发表单验证
+            this.formTranslate.validateFields((err, values) => {
+              if(values.name && values.sort){
+                that.form.name=values.name
+                that.form.sort=values.sort
 
-            if(this.form.name==''){
-              this.$message.error('分类名不能为空');
-            }else if(this.form.sort==''){
-              this.$message.error('排序不能为空');
-            }else if(this.form.isParent==''){
-              this.$message.error('请确定是否为父分类');
-            }else {
-              this.addvisible=false
-              let category={
-                isParent: this.form.isParent,
-                name:this.form.name,
-                parentId:this.pid,
-                image: "string",
-                index: "string",
-                isflag: "string",
-                sort:this.form.sort
+
+
+                this.addvisible=false
+                    let category={
+                      isParent: 1,
+                      name:that.form.name,
+                      parentId:this.pid,
+                      image: "string",
+                      index: "string",
+                      isflag: "string",
+                      sort:that.form.sort
+                    }
+                    postAction('/kunze/category/categorySave',category).then((res)=>{
+                      console.log(res)
+                      if(res.success){
+                        this.$message.success(
+                          '添加成功'
+                        );
+                        this.getAllCategories()
+                      }else {
+                        this.$message.error('添加失败');
+                      }
+                      this.form.name=''
+                      this.form.sort=''
+                    })
+
               }
-              postAction('/kunze/category/categorySave',category).then((res)=>{
-                if(res.success){
-                  this.$message.success(
-                    '添加成功'
-                  );
-                  this.getAllCategories()
-                }else {
-                  this.$message.error('添加失败');
-                }
-                this.form.name=''
-                this.form.sort=''
-                this.form.isParent=''
-              })
-            }
+            })
+          //
+          //   if(this.form.name==''){
+          //     this.$message.error('分类名不能为空');
+          //   }else if(this.form.sort==''){
+          //     this.$message.error('排序不能为空');
+          //   }else if(this.form.isParent==''){
+          //     this.$message.error('请确定是否为父分类');
+          //   }else {
+          //     this.addvisible=false
+          //     let category={
+          //       isParent: this.form.isParent,
+          //       name:this.form.name,
+          //       parentId:this.pid,
+          //       image: "string",
+          //       index: "string",
+          //       isflag: "string",
+          //       sort:this.form.sort
+          //     }
+          //     postAction('/kunze/category/categorySave',category).then((res)=>{
+          //       if(res.success){
+          //         this.$message.success(
+          //           '添加成功'
+          //         );
+          //         this.getAllCategories()
+          //       }else {
+          //         this.$message.error('添加失败');
+          //       }
+          //       this.form.name=''
+          //       this.form.sort=''
+          //       this.form.isParent=''
+          //     })
+          //   }
 
 
           },
@@ -329,6 +375,7 @@
                 // console.log(res)
                 if(res.success==true){
                   this.$message.success('添加成功')
+                  this.fileList1=""
                   this.addvisibleImg=false
                 }
               })
@@ -344,6 +391,7 @@
           addCategoriesImg(e){
             if(e.image==null){
               this.fileList1=""
+              this.fileList1ss=""
             }else {
               this.fileList1ss= window._CONFIG['staticDomainURL'] +"/"+e.image
             }
@@ -353,14 +401,7 @@
           // 点击添加子集分类
           addCategories(e){
             this.addvisible=true
-            // console.log(e.isParent)
-            // this.pid=e.id
-            // if(e.isParent==0){
-            //   this.$message.warning('底层分类不可添加子分类');
-            // }
-            // if(e.isParent==1){
-            //   this.addvisible=true
-            // }
+
           },
           // 获取全部分类
           getAllCategories(){
