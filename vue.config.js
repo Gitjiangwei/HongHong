@@ -56,6 +56,7 @@ module.exports = {
   },
 
   devServer: {
+    // host: '192.168.2.104',
     port: 3000,
     proxy: {
       /* '/api': {
