@@ -217,7 +217,7 @@
         }
       },
       created(){
-        this.shopId=this.$store.state.shopId
+        this.shopId=this.$store.state.shopId;
         this.loadData();
       },
       methods:{
