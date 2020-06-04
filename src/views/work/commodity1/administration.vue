@@ -82,7 +82,10 @@
       @ok="addImgOk"
       @cancel="addImgCancel"
     >
-      <j-image-upload class="avatar-uploader" text="上传" v-model="fileList1" style="width: 104px;margin-right: 30px"></j-image-upload>
+      <div style="display: flex;justify-content: left;">
+      <img :src=fileList1ss alt=""  style="margin-right: 10px">
+      <j-image-upload  class="avatar-uploader" text="上传" v-model="fileList1" style="width: 104px;margin-right: 30px" ></j-image-upload>
+      </div>
     </a-modal>
 
   </div>
@@ -111,7 +114,9 @@
               adddjvisible: false, //控制添加弹出框
               modifyvisible: false, //控制添加弹出框
               confirmLoading: false,
+              isdataimg:false,
               fileList1:"",
+              fileList1ss:"",
               citem3:{},
               form:{
                 name:'',
@@ -305,6 +310,7 @@
 
 
           },
+
           // 点击添加子分类弹窗取消按钮
           handleCancel(){
             this.addvisible=false
@@ -313,31 +319,34 @@
             this.form.isParent=''
           },
           addImgOk(){
-            let category=this.citem3
-            category.image=this.fileList1
 
-            postAction('kunze/category/categoryUpdate',category).then((res)=>{
-              console.log(res)
-              if(res.success==true){
-                this.addvisibleImg=false
-                this.fileList1=""
-              }
-            })
+            if(this.fileList1==""){
+              this.addvisibleImg=false
+            }else {
+              let category=this.citem3
+              category.image=this.fileList1
+              postAction('kunze/category/categoryUpdate',category).then((res)=>{
+                // console.log(res)
+                if(res.success==true){
+                  this.$message.success('添加成功')
+                  this.addvisibleImg=false
+                }
+              })
+            }
+
+
           },
           addImgCancel(){
+
             this.addvisibleImg=false
-            this.fileList1=""
           },
           //点击三级分类添加图片
           addCategoriesImg(e){
-            console.log(e)
             if(e.image==null){
               this.fileList1=""
             }else {
-              this.fileList1= window._CONFIG['domianURL']+"/"+e.image
+              this.fileList1ss= window._CONFIG['staticDomainURL'] +"/"+e.image
             }
-            console.log(this.fileList1)
-
             this.citem3=e
             this.addvisibleImg=true
           },
