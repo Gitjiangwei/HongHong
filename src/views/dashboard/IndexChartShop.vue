@@ -1,44 +1,60 @@
 <template>
   <div>
     <a-row>
-      <a-col :span="18">
+      <a-col  :xl="18" :lg="18" :md="18" :sm="24" :xs="24">
         <span style="font-weight: bold; font-size: 16px;display: inline-block;margin: 0 0 0 10px">平台信息数据统计</span>
         <a-card style="width: 100%;" :loading="loading">
-          <div style="width: 100%;height: 100%">
-            <div class="card-item">
-              <div class="img">
-                <img src="../../assets/money.png" alt="">
+          <div style="width:100% ;height: 100%">
+            <a-row>
+              <a-col  style="border-right:2px solid  rgba(246, 246, 246, 1) " :xl="8" :lg="12" :md="12" :sm="24" :xs="24">
+              <div class="card-item" >
+                <a-col>
+                  <div class="img">
+                    <img src="../../assets/money.png" alt="" @click="mmm">
+                  </div>
+                  <div class="font">
+                    <div class="font-item" style="line-height: 68px;">月交易额</div>
+                    <div class="font-item" style="line-height: 40px; font-size: 26px">{{moneyMoney | NumberFormat}} &nbsp;<span style="color: #D5D6D9;font-size: 12px">元</span> </div>
+                  </div>
+                </a-col>
               </div>
-              <div class="font">
-                <div class="font-item" style="line-height: 86px;">月交易额</div>
-                <div class="font-item" style="line-height: 40px; font-size: 26px">{{moneyMoney | NumberFormat}} &nbsp;<span style="color: #D5D6D9;font-size: 12px">元</span> </div>
+              </a-col>
+
+
+              <a-col :xl="8" :lg="12" :md="12" :sm="24" :xs="24" style="border-right:2px solid  rgba(246, 246, 246, 1) ">
+              <div class="card-item" >
+                <div class="img">
+                  <img src="../../assets/commodity.png" alt="">
+                </div>
+                <div class="font">
+                  <div class="font-item" style="line-height: 86px;">商品数量</div>
+                  <div class="font-item" style="line-height: 40px;font-size: 26px">{{spuNum | NumberFormat}} &nbsp;<span style="color: #D5D6D9;font-size: 12px">件</span></div>
+                </div>
               </div>
-            </div>
-            <div class="card-item2"></div>
-            <div class="card-item">
-              <div class="img">
-                <img src="../../assets/commodity.png" alt="">
+              </a-col>
+              <a-col :xl="8" :lg="12" :md="12" :sm="24" :xs="24">
+              <div class="card-item">
+                <div class="img">
+                  <img src="../../assets/dd.png" alt="">
+                </div>
+                <div class="font">
+                  <div class="font-item" style="line-height: 86px;">订单数量</div>
+                  <div class="font-item" style="line-height: 40px;font-size: 26px">{{orderNum | NumberFormat}} &nbsp;<span style="color: #D5D6D9;font-size: 12px">单</span></div>
+                </div>
               </div>
-              <div class="font">
-                <div class="font-item" style="line-height: 86px;">商品数量</div>
-                <div class="font-item" style="line-height: 40px;font-size: 26px">{{spuNum | NumberFormat}} &nbsp;<span style="color: #D5D6D9;font-size: 12px">件</span></div>
-              </div>
-            </div>
-            <div class="card-item2"></div>
-            <div class="card-item">
-              <div class="img">
-                <img src="../../assets/dd.png" alt="">
-              </div>
-              <div class="font">
-                <div class="font-item" style="line-height: 86px;">订单数量</div>
-                <div class="font-item" style="line-height: 40px;font-size: 26px">{{orderNum | NumberFormat}} &nbsp;<span style="color: #D5D6D9;font-size: 12px">单</span></div>
-              </div>
-            </div>
+              </a-col>
+            </a-row>
+
           </div>
         </a-card>
+
+
+
+
+
         <span style="font-weight: bold; font-size: 16px;display: inline-block;margin: 20px 0 0 10px">订单统计与仓库统计</span>
         <a-row>
-          <a-col :span="11">
+          <a-col  :xl="11" :lg="11" :md="11" :sm="24" :xs="24">
         <a-card :loading="loading" >
           <div class="dd-box">
             <div style="width:100%;font-size:16px;font-weight:400;color:rgba(28,46,50,1);">订单统计</div>
@@ -68,7 +84,7 @@
         </a-card>
           </a-col>
           <a-col :span="2"></a-col>
-          <a-col :span="11">
+          <a-col :xl="11" :lg="11" :md="11" :sm="24" :xs="24">
         <a-card :loading="loading" >
           <div class="dd-box">
             <div style="width:100%;font-size:16px;font-weight:400;color:rgba(28,46,50,1);">仓库统计</div>
@@ -98,15 +114,17 @@
       </a-col>
         </a-row>
 
+
+
         <a-row>
-          <a-col :span="17">
+          <a-col :xl="17" :lg="17" :md="24" :sm="24" :xs="24">
             <span style="font-weight: bold; font-size: 16px;display: inline-block;margin: 20px 0 0 10px">最近7日</span>
             <a-card :loading="loading">
               <line-chart-multid :fields="visitFields" :dataSource="visitInfo"></line-chart-multid>
             </a-card>
           </a-col>
           <a-col :span="1"></a-col>
-          <a-col :span="6">
+          <a-col :xl="6" :lg="12" :md="12" :sm="24" :xs="24">
             <span style="font-weight: bold; font-size: 16px;display: inline-block;margin: 20px 0 0 10px">快捷功能入口</span>
             <a-card >
               <div style="height:78px;width:100%;margin: 19px 0 19px 40px">
@@ -128,8 +146,19 @@
           </a-col>
         </a-row>
       </a-col>
-      <a-col :span="4">
-
+      <a-col :span="1">
+      </a-col>
+      <a-col  :xl="4" :lg="12" :md="12" :sm="24" :xs="24">
+        <span style="font-weight: bold; font-size: 16px;display: inline-block;margin: 0 0 0 10px">设置配送费</span>
+        <a-card style="width: 100%;height: 184px" :loading="loading">
+          <div style="margin-bottom: 20px;font-size: 16px;font-weight: bold">当前配送费： {{deliveryFee}}￥</div>
+          <a-input-search
+            placeholder="请输入配送费"
+            enter-button="确认"
+            size="large"
+            @search="onSearch"
+          />
+        </a-card>
       </a-col>
     </a-row>
     <order-status-list ref="OrderStatusList"></order-status-list>
@@ -142,6 +171,8 @@
   import {getAction} from '@/api/manage'
   import LineChartMultid from '@/components/chart/LineChartMultid'
   import OrderStatusList from "../order/model/OrderStatusList"
+  import { postAction } from '../../api/manage'
+  import qs from 'qs'
 
 
   export default {
@@ -155,6 +186,7 @@
     },
     data(){
       return{
+        span:8,
         loading: true,
         moneyMoney:"0",
         orderNum:"0",
@@ -164,6 +196,7 @@
         stock:"0",
         notsheif:"0",
         shopId:"",
+        deliveryFee:"",
         visitFields:['成交量'],
         visitInfo:[
           {成交量: 2,
@@ -200,6 +233,41 @@
       this.loaderSevenDeal(shopId);
     },
     methods:{
+      //查询配送费
+      queryonSearch(){
+        let param = new URLSearchParams()
+        param.append('id',this.shopId)
+        param.append('pageNo' , 1)
+        param.append('pageSize' , 1)
+        postAction('/kunze/shop/queryShops',param).then((res)=>{
+          // console.log(res)
+          if(res.success==true){
+            this.deliveryFee=res.result.list[0].postFree
+          }
+        })
+      },
+      //点击设置配送费
+      onSearch(e){
+        let updateShop={
+          postFree:e,
+          id:this.shopId
+        }
+        postAction('/kunze/shop/updateShop',updateShop).then((res)=>{
+          // console.log(res)
+          if(res.success==true){
+            this.deliveryFee=e
+            this.$message.success('配送费修改成功');
+          }else {
+            this.$message.error('配送费修改失败');
+          }
+
+        })
+      },
+      mmm(){
+
+       let winWidth = window.innerWidth;
+        console.log(winWidth)
+      },
       loaders(shopId){
         let params = {
           shopId:shopId,
@@ -259,13 +327,36 @@
           }
         })
       }
+    },
+    mounted () {
+      this.queryonSearch()
     }
+    // mounted () {
+    //   let that = this
+    //   window.onresize = () => {
+    //     return (() => {
+    //       window.screenWidth = window.innerWidth
+    //       this.screenWidth = window.screenWidth
+    //     })()
+    //   }
+    // },
+    // watch: {
+    //   // 监听浏览器窗口宽度,当浏览器窗口小于1325时,隐藏系统时间
+    //   screenWidth(val) {
+    //     // console.log(val)
+    //     if (val < 500) {
+    //       this.span=24
+    //     } else {
+    //       this.span=8
+    //     }
+    //   }
+    // }
   }
 </script>
 
 <style lang="less" scoped>
   .card-item{
-    width: calc((100% - 4px)/3);
+    /*width: calc((100% - 4px)/3);*/
     height: 136px;
     float: left;
     .img{
@@ -286,13 +377,6 @@
         font-weight: bold;
       }
     }
-  }
-  .card-item2{
-    width: 2px;
-    height: 60px;
-    background: rgba(246, 246, 246, 1);
-    margin-top: 38px;
-    float: left;
   }
   .dd-box{
     width:538px;
