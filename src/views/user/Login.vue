@@ -49,7 +49,7 @@
 
 
         </a-tab-pane>
-        <!--<a-tab-pane key="tab2" tab="手机号登陆">
+        <a-tab-pane key="tab2" tab="手机号登陆">
           <a-form-item>
             <a-input
               v-decorator="['mobile',validatorRules.mobile]"
@@ -81,18 +81,18 @@
                 v-text="!state.smsSendBtn && '获取验证码' || (state.time+' s')"></a-button>
             </a-col>
           </a-row>
-        </a-tab-pane>-->
+        </a-tab-pane>
       </a-tabs>
 
       <a-form-item>
-      <a-checkbox v-decorator="['rememberMe', {initialValue: true, valuePropName: 'checked'}]" >自动登陆</a-checkbox>
-<!--      <router-link :to="{ name: 'alteration'}" class="forge-password" style="float: right;">
-        忘记密码
-      </router-link>
-      <router-link :to="{ name: 'register'}" class="forge-password" style="float: right;margin-right: 10px" >
-        注册账户
-      </router-link>-->
-    </a-form-item>
+        <a-checkbox v-decorator="['rememberMe', {initialValue: true, valuePropName: 'checked'}]" >自动登陆</a-checkbox>
+        <router-link :to="{ name: 'alteration'}" class="forge-password" style="float: right;">
+          忘记密码
+        </router-link>
+       <router-link :to="{ name: 'register'}" class="forge-password" style="float: right;margin-right: 10px" >
+          注册账户
+        </router-link>
+      </a-form-item>
 
       <a-form-item style="margin-top:24px">
         <a-button
@@ -267,9 +267,11 @@
               loginParams.checkKey = that.currdatetime
               console.log("登录参数",loginParams)
               that.Login(loginParams).then((res) => {
+                console.log(res)
                 res.result.userInfo.shopId = res.result.shopId;
-                debugger;
                 this.$store.commit('gaishopid',res.result.shopId);
+
+
                 this.departConfirm(res)
               }).catch((err) => {
                 that.requestFailed(err);

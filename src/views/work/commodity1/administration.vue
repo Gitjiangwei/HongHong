@@ -28,14 +28,14 @@
       @ok="adddjhandleOk"
       @cancel="adddjhandleCancel"
     >
-      <a-form-model :model="adddjform" :label-col="{ span: 6 }" :wrapper-col="{ span: 12 }">
-        <a-form-model-item label="分类名">
-          <a-input v-model="adddjform.name" />
-        </a-form-model-item>
-        <a-form-model-item label="排序">
-          <a-input v-model="adddjform.sort"  />
-        </a-form-model-item>
-      </a-form-model>
+      <a-form :form="formadddjform" :label-col="{ span: 6 }" :wrapper-col="{ span: 12 }">
+        <a-form-item label="分类名" hasFeedback>
+          <a-input  v-decorator="['name', {rules: [{ required: true, message: '请输入分类名', }]}]"  />
+        </a-form-item>
+        <a-form-item label="排序" hasFeedback>
+          <a-input  v-decorator="['sort', {rules: [{ required: true, message: '请输入排序', }]}]"  />
+        </a-form-item>
+      </a-form>
     </a-modal>
 
 <!--    添加子分类弹出框-->
@@ -119,6 +119,7 @@
               fileList1:"",
               fileList1ss:"",
               formTranslate: this.$form.createForm(this),
+              formadddjform:this.$form.createForm(this),
               citem3:{},
               form:{
                 name:'',
@@ -141,7 +142,8 @@
 
           edit(record) {
             this.$nextTick(() => {
-              this.formTranslate.setFieldsValue(pick(this.form, 'name', 'sort','price','stock'))
+              this.formTranslate.setFieldsValue(pick(this.form, 'name', 'sort'))
+              this.formadddjform.setFieldsValue(pick(this.adddjform, 'name', 'sort'))
             });
 
           },
@@ -245,35 +247,40 @@
             this.modifyvisible=true
           },
           adddjhandleOk(){
-            if(this.adddjform.name==''){
-              this.$message.error('分类名不能为空');
-            }else if(this.adddjform.sort==''){
-              this.$message.error('排序不能为空');
-            }else {
-              this.adddjvisible=false
-              let category={
-                isParent:'1',
-                name:this.adddjform.name,
-                parentId:'0',
-                image: "string",
-                index: "string",
-                isflag: "string",
-                sort:this.adddjform.sort
-              }
-              postAction('/kunze/category/categorySave',category).then((res)=>{
-                console.log(res)
-                if(res.success){
-                  this.$message.success(
-                    '添加成功'
-                  );
-                  this.getAllCategories()
-                }else {
-                  this.$message.error('添加失败');
+            let that = this
+            // 触发表单验证
+            this.formadddjform.validateFields((err, values) => {
+                if(values.name && values.sort) {
+                  that.adddjform.name = values.name
+                  that.adddjform.sort = values.sort
+
+
+                    let category={
+                      isParent:'1',
+                      name:values.name,
+                      parentId:'0',
+                      image: "string",
+                      index: "string",
+                      isflag: "string",
+                      sort:values.sort
+                    }
+                    postAction('/kunze/category/categorySave',category).then((res)=>{
+                      console.log(res)
+                      if(res.success){
+                        this.$message.success(
+                          '添加成功'
+                        );
+                        this.getAllCategories()
+                      }else {
+                        this.$message.error('添加失败');
+                      }
+                      this.adddjform.name=''
+                      this.adddjform.sort=''
+                    })
+
                 }
-                this.adddjform.name=''
-                this.adddjform.sort=''
-              })
-            }
+            })
+
           },
           adddjhandleCancel(){
             this.adddjvisible=false
@@ -298,12 +305,12 @@
                 this.addvisible=false
                     let category={
                       isParent: 1,
-                      name:that.form.name,
-                      parentId:this.pid,
+                      name:values.name,
+                      parentId:that.pid,
                       image: "string",
                       index: "string",
                       isflag: "string",
-                      sort:that.form.sort
+                      sort:values.sort
                     }
                     postAction('/kunze/category/categorySave',category).then((res)=>{
                       console.log(res)
@@ -321,38 +328,7 @@
 
               }
             })
-          //
-          //   if(this.form.name==''){
-          //     this.$message.error('分类名不能为空');
-          //   }else if(this.form.sort==''){
-          //     this.$message.error('排序不能为空');
-          //   }else if(this.form.isParent==''){
-          //     this.$message.error('请确定是否为父分类');
-          //   }else {
-          //     this.addvisible=false
-          //     let category={
-          //       isParent: this.form.isParent,
-          //       name:this.form.name,
-          //       parentId:this.pid,
-          //       image: "string",
-          //       index: "string",
-          //       isflag: "string",
-          //       sort:this.form.sort
-          //     }
-          //     postAction('/kunze/category/categorySave',category).then((res)=>{
-          //       if(res.success){
-          //         this.$message.success(
-          //           '添加成功'
-          //         );
-          //         this.getAllCategories()
-          //       }else {
-          //         this.$message.error('添加失败');
-          //       }
-          //       this.form.name=''
-          //       this.form.sort=''
-          //       this.form.isParent=''
-          //     })
-          //   }
+
 
 
           },
@@ -389,6 +365,7 @@
           },
           //点击三级分类添加图片
           addCategoriesImg(e){
+            console.log(e)
             if(e.image==null){
               this.fileList1=""
               this.fileList1ss=""
@@ -400,12 +377,14 @@
           },
           // 点击添加子集分类
           addCategories(e){
+            // console.log(e)
+            this.pid=e.id
             this.addvisible=true
 
           },
           // 获取全部分类
           getAllCategories(){
-            getAction('/kunze/category/qryList',{id:'',pid:''}).then((res)=>{
+            getAction('/kunze/category/qryList',{pid:'0'}).then((res)=>{
               this.data=res.result
               let key=0
               this.data.forEach(e=>{
@@ -421,7 +400,7 @@
                   })
                 })
               })
-              // console.log(this.data)
+              console.log(this.data)
             })
           }
         },

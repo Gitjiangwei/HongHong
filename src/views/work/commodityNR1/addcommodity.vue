@@ -37,7 +37,7 @@
           <a-input  v-decorator="['subTitle', {rules: [{ required: true, message: '请输入子标题', }]}]" />
         </a-form-item>
         <a-form-item label="品牌" hasFeedback>
-          <a-select v-model="form.brand" placeholder="选择品牌"  >
+          <a-select v-model="form.brand" placeholder="选择品牌" v-decorator="['brand', {rules: [{ required: true, message: '请选择商品品牌', }]}]" >
           <a-select-option  v-for="v in brand" :value=v.bid :key="v.keys">
             {{v.bname}}
           </a-select-option>
@@ -214,7 +214,7 @@
 
         edit(record) {
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','brand','price','stock'))
           });
 
         },
@@ -228,9 +228,10 @@
           let that = this
           // 触发表单验证
           this.formTranslate.validateFields((err, values) => {
-            if(values.title && values.subTitle){
+            if(values.title && values.subTitle &&values.brand){
               that.form.title=values.title
               that.form.subTitle=values.subTitle
+              that.form.brand=values.brand
               this.current=this.current-(-1)
             }
           })
@@ -239,6 +240,9 @@
         },
         nextStep1(){
           this.current=this.current-1
+          this.$nextTick(() => {
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','brand','price','stock'))
+          });
         },
         nextStep2(){
 
@@ -266,6 +270,9 @@
         },
         nextStep3(){
           this.current=this.current-1
+          this.$nextTick(() => {
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','brand','price','stock'))
+          });
         },
         nextStep4(){
           // this.current=this.current-(-1)

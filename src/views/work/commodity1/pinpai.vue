@@ -29,15 +29,21 @@
       :body-style="{ paddingBottom: '80px' }"
       @close="onBrandClose"
     >
-      <a-form :model="brandForm" :label-col="{ span: 6 }" :wrapper-col="{ span: 12 }" :rules="rules">
-        <a-form-item label="品牌名" prop="name">
-          <a-input v-model="brandForm.name"/>
+      <a-form :form="formTranslate" :label-col="{ span: 6 }" :wrapper-col="{ span: 12 }" >
+        <a-form-item label="品牌名" hasFeedback>
+          <a-input v-model="brandForm.name"  v-decorator="['name', {rules: [{ required: true, message: '请输入品牌名称', }]}]" />
         </a-form-item>
-          <a-form-item label="首字母" prop="letter">
-          <a-input v-model="brandForm.letter" />
+          <a-form-item label="首字母" hasFeedback>
+          <a-input v-model="brandForm.letter"  v-decorator="['letter', {rules: [{ required: true, message: '请输入品牌名称首字母', }]}]" maxLength="1" />
         </a-form-item>
-        <a-form-item label="所属商品ID" prop="kid">
-          <a-input v-model="brandForm.kid"  />
+        <a-form-item label="所属分类ID" hasFeedback>
+          <a-cascader
+            :field-names="{ label: 'name', value: 'id', children: 'childrenList'}"
+            :options="options"
+            placeholder="选择所属分类"
+            @change="onChangeShop"
+            v-decorator="['kid',{rules: [{ type: 'array', required: true, message: '请选择所属分类' },],},]"
+          />
         </a-form-item>
         <a-form-item label="品牌商标">
           <j-image-upload class="avatar-uploader" text="上传" v-model="fileList" ></j-image-upload>
@@ -73,16 +79,25 @@
       :body-style="{ paddingBottom: '80px' }"
       @close="xiuBrandClose"
     >
-      <a-form :model="xiubrandForm" :label-col="{ span: 6 }" :wrapper-col="{ span: 12 }" :rules="rules">
-        <a-form-item label="品牌名" prop="name">
-          <a-input v-model="xiubrandForm.name"/>
+      <a-form :form="formTranslate" :label-col="{ span: 6 }" :wrapper-col="{ span: 12 }" >
+        <a-form-item label="品牌名" hasFeedback>
+          <a-input   v-decorator="['name', {rules: [{ required: true, message: '请输入品牌名称', }]}]" />
         </a-form-item>
-        <a-form-item label="首字母" prop="letter">
-          <a-input v-model="xiubrandForm.letter" />
+        <a-form-item label="首字母" hasFeedback>
+          <a-input   v-decorator="['letter', {rules: [{ required: true, message: '请输入品牌名称首字母', }]}]" maxLength="1" />
         </a-form-item>
-        <a-form-item label="所属商品ID" prop="kid">
-          <a-input v-model="xiubrandForm.kid"  />
-        </a-form-item>
+        <a-form-item label="所属分类ID" hasFeedback>
+
+            <a-cascader
+              :field-names="{ label: 'name', value: 'id', children: 'childrenList'}"
+              :options="options"
+              placeholder="选择所属分类"
+              @change="onChangeShop"
+              v-decorator="['kid',{rules: [{ type: 'array', required: true, message: '请选择所属分类' },],},]"
+
+            />
+          </a-form-item>
+
         <a-form-item label="品牌商标">
           <j-image-upload class="avatar-uploader" text="上传" v-model="fileList" ></j-image-upload>
         </a-form-item>
@@ -115,6 +130,7 @@
 <script>
   import {getAction,postAction,deleteAction,getFileAccessHttpUrl} from '@/api/manage'
   import JImageUpload from '../../../components/jeecg/JImageUpload'
+  import pick from 'lodash.pick'
 
 
   export default {
@@ -123,6 +139,7 @@
     },
     data() {
       return {
+        formTranslate: this.$form.createForm(this),
         columns:[
           {
             title: '序号',
@@ -138,7 +155,7 @@
           { title: '商标', dataIndex: 'image', key: 'image',scopedSlots: { customRender: 'avatarslot' } },
           { title: '首字母', dataIndex: 'letter', key: 'letter' },
           { title: '更新人', dataIndex: 'updateName', key: 'updateName' },
-          { title: '所属商品', dataIndex: 'kname', key: 'kname' },
+          { title: '所属分类', dataIndex: 'kname', key: 'kname' },
           { title: '编辑', dataIndex: 'isflag', key: 'isflag', scopedSlots: { customRender: 'bianji' } },
         ],
         data:[],
@@ -151,28 +168,36 @@
           kid:'',
           image:''
         },
+        cids:[],
         xiubrandForm:{
           name:'',
           letter:'',
           kid:'',
           image:'',
-          id:''
         },
         bids:[],
-        rules: {
-          name: [
-            { required: true, message: '请填写商品名', trigger: 'blur' }
-          ],
-          kid: [{ required: true, message: '请填写kid', trigger: 'blur' }],
-          letter: [{ required: true, message: '请填写名称首字母', trigger: 'change' },
-            { min: 0, max: 1, message: '只能填写一位', trigger: 'blur' },],
-        },
+
         url:{
           imgerver:window._CONFIG['staticDomainURL'],
         }
       };
     },
     methods: {
+      //获取所有分类
+      getAllCid(){
+        getAction('/kunze/category/qryList',{id:'',pid:''}).then((res)=>{
+          this.options=res.result
+        })
+      },
+      onChangeShop(e){
+        console.log(e)
+      },
+      edit(record) {
+        this.$nextTick(() => {
+          this.formTranslate.setFieldsValue(pick(this.xiubrandForm, 'name', 'letter','kid'))
+        });
+
+      },
       getAvatarView: function (avatar) {
         return getFileAccessHttpUrl(avatar,this.url.imgerver,"http")
       },
@@ -237,64 +262,97 @@
         this.xiubrandForm.kid=e.kid
         this.fileList=e.image
         this.xiuBrandvisible=true
+        this.$nextTick(() => {
+          this.formTranslate.setFieldsValue(pick(this.xiubrandForm, 'name', 'letter','kid'))
+        });
 
       },
       // 点击修改确认按钮
       xiuBrandConfirm(){
-        let that=this
-        this.xiubrandForm.image=this.fileList
-        let brandVo=this.xiubrandForm
-        postAction('/kunze/brand/updateBrand',brandVo).then((res)=>{
-          console.log(res)
-          if(res.success){
-            this.$message.success(res.message);
-            this.getAllBrand()
-            that.xiuBrandvisible=false
-            that.xiubrandForm.name=''
-            that.xiubrandForm.letter=''
-            that.xiubrandForm.kid=''
-            that.xiubrandForm.image=''
-            that.xiubrandForm.id=''
-            that.fileList=[]
-          }else {
-            this.$message.warning(res.message);
-            that.xiuBrandvisible=false
-            that.xiubrandForm.name=''
-            that.xiubrandForm.letter=''
-            that.xiubrandForm.kid=''
-            that.xiubrandForm.image=''
-            that.xiubrandForm.id=''
-            that.fileList=[]
-          }
 
+
+        let that = this
+        // 触发表单验证
+        this.formTranslate.validateFields((err, values) => {
+          console.log(values.name, values.letter, values.kid)
+          if(values.name && values.letter && values.kid){
+
+              that.xiubrandForm.image=that.fileList
+              let brandVo={
+                'id':that.xiubrandForm.id,
+                "image":that.xiubrandForm.image ,
+                "kid": JSON.stringify(values.kid),
+                "letter": values.letter,
+                "name": values.name
+              }
+            console.log(brandVo)
+            postAction('/kunze/brand/updateBrand',brandVo).then((res)=>{
+                console.log(res)
+                if(res.success){
+                  this.$message.success(res.message);
+                  this.getAllBrand()
+                  that.xiuBrandvisible=false
+                  that.xiubrandForm.name=''
+                  that.xiubrandForm.letter=''
+                  that.xiubrandForm.kid=''
+                  that.xiubrandForm.image=''
+                  that.xiubrandForm.id=''
+                  that.fileList=[]
+                }else {
+                  this.$message.warning(res.message);
+                  that.xiuBrandvisible=false
+                  that.xiubrandForm.name=''
+                  that.xiubrandForm.letter=''
+                  that.xiubrandForm.kid=''
+                  that.xiubrandForm.image=''
+                  that.xiubrandForm.id=''
+                  that.fileList=[]
+                }
+
+              })
+
+
+          }
         })
+
+
+
+
+
+
       },
       // 点击添加确认按钮
       addBrandConfirm(){
-        let that=this
-        this.brandForm.image=this.fileList
-        let brandVo=this.brandForm
-        console.log(brandVo)
-        postAction('/kunze/brand/saveBrand',brandVo).then((res)=>{
-          if(res.success==true){
-            this.$message.success('品牌添加成功');
-            this.getAllBrand()
-            that.addBrandvisible=false
-            that.brandForm.name=''
-            that.brandForm.letter=''
-            that.brandForm.kid=''
-            that.brandForm.image=''
-            that.fileList=[]
-          }else {
-            this.$message.warning('品牌添加失败');
-            that.addBrandvisible=false
-            that.brandForm.name=''
-            that.brandForm.letter=''
-            that.brandForm.kid=''
-            that.brandForm.image=''
-            that.fileList=[]
+        this.formTranslate.validateFields((err, values) => {
+          if(values.name && values.letter && values.kid){
+
           }
         })
+      //   let that=this
+      //   this.brandForm.image=this.fileList
+      //   let brandVo=this.brandForm
+      //   console.log(brandVo)
+      //   postAction('/kunze/brand/saveBrand',brandVo).then((res)=>{
+      //     console.log(res)
+      //     if(res.success==true){
+      //       this.$message.success('品牌添加成功');
+      //       this.getAllBrand()
+      //       that.addBrandvisible=false
+      //       that.brandForm.name=''
+      //       that.brandForm.letter=''
+      //       that.brandForm.kid=''
+      //       that.brandForm.image=''
+      //       that.fileList=[]
+      //     }else {
+      //       this.$message.warning('品牌添加失败');
+      //       that.addBrandvisible=false
+      //       that.brandForm.name=''
+      //       that.brandForm.letter=''
+      //       that.brandForm.kid=''
+      //       that.brandForm.image=''
+      //       that.fileList=[]
+      //     }
+      //   })
       },
       // 点击添加按钮
       addBrandBtn(){
@@ -328,12 +386,15 @@
             that.data.forEach(e=>{
               e.key=key++
             })
+            console.log(that.data,111)
           })
         })
+
       }
     },
     mounted(){
       this.getAllBrand()
+      this.getAllCid()
     }
   };
 </script>

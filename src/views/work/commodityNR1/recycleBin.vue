@@ -17,6 +17,7 @@
         <a-col :span="6">
           <a-form-item label="是否上架">
             <a-select v-model="search.saleable"  >
+              <a-select-option value=''>全部</a-select-option>
               <a-select-option value='1'>已上架</a-select-option>
               <a-select-option value='0'>已下架</a-select-option>
             </a-select>
@@ -56,6 +57,8 @@
 
 
     <a-button type="primary" class="modifyBtn1" @click="deleteAllBrandBtn()">批量删除</a-button>
+    <a-button type="primary" class="modifyBtn1" @click="updataAllsable()">批量上架</a-button>
+    <a-button type="primary" class="modifyBtn1" @click="updataAllsablexia()">批量下架</a-button>
     <a-table
       :columns="columns"
       :data-source="data"
@@ -67,8 +70,8 @@
            <img :src=record.image alt="">
         </span>
       <span slot="saleable" slot-scope="text,record">
-          <a-button type="primary" class="modifyBtn"  @click="shangjia(record)" v-if="record.saleable==1">下架</a-button>
-          <a-button type="danger" class="modifyBtn" @click="shangjia(record)" v-if="record.saleable==0">上架</a-button>
+          <a-button type="primary" class="modifyBtn"  @click="shangjia(record)" v-if="record.saleable==1">已上架</a-button>
+          <a-button type="danger" class="modifyBtn" @click="shangjia(record)" v-if="record.saleable==0">已下架</a-button>
       </span>
       <span slot="bianji" slot-scope="text,record">
           <a-button type="primary" class="modifyBtn" @click="xiuBrandBtn(record)">查看</a-button>
@@ -121,7 +124,7 @@
             <a-input    v-decorator="['subTitle', {rules: [{ required: true, message: '请输入子标题', }]}]" />
           </a-form-item>
           <a-form-item label="品牌">
-            <a-select v-model="form.brand" placeholder="选择品牌" :default-value=form.brand >
+            <a-select  placeholder="选择品牌" :default-value=form.brand >
               <a-select-option  v-for="v in brand" :value=v.bid :key="v.keys" >
                 {{v.bname}}
               </a-select-option>
@@ -175,11 +178,11 @@
               </template>
             </a-form-item>
           </template>
-          <a-form-item label="销售价格" prop="price">
-            <a-input v-model="form.price" placeholder="单位为分" />
+          <a-form-item label="销售价格"  hasFeedback>
+            <a-input  placeholder="单位为元" v-decorator="['price', {rules: [{ required: true, message: '请输入销售价格', }]}]" />
           </a-form-item>
-          <a-form-item label="商品库存"  prop="stock">
-            <a-input v-model="form.stock" />
+          <a-form-item label="商品库存"   hasFeedback>
+            <a-input  v-decorator="['stock', {rules: [{ required: true, message: '请输入商品库存', }]}]" />
           </a-form-item>
 
         </a-form>
@@ -223,7 +226,7 @@
             上一步
           </a-button>
           <a-button type="primary" @click="onSubmit">
-            确定添加
+            确定修改
           </a-button>
         </div>
 
@@ -250,21 +253,35 @@
 
     </a-modal>
 
+<!--    删除商品提示框-->
+
+    <a-modal
+      title="删除"
+      :visible="delspuvisible"
+      @ok="delspuhandleOk"
+      @cancel="delspuhandleCancel"
+    >
+      <p>确定要删除该商品吗</p>
+    </a-modal>
+
   </div>
 </template>
 
 <script>
   import { getAction, httpAction, postAction } from '../../../api/manage'
   import JImageUpload from '../../../components/jeecg/JImageUpload'
+  import JEditor from '@/components/jeecg/JEditor'
   import Vue from 'vue'
   import pick from 'lodash.pick'
+  import qs from 'qs'
 
 
 
   export default {
 
     components: {
-      JImageUpload
+      JImageUpload,
+      JEditor
     },
     name: 'recycleBin',
       data(){
@@ -313,8 +330,10 @@
             subTitle:'',
             title:'',
           },
+          skuVos:[],
           formTranslate: this.$form.createForm(this),
           xiuBrandvisible:false,
+          delspuvisible:false,
           visible:false,
           id:'',
           xiushopForm:{},
@@ -324,6 +343,8 @@
           specifications:[],
           ownSpec:{},
           spu:{},
+          sku:{},
+          options:[],
           ipagination:{
             current: 1,
             pageSize: 30,
@@ -338,6 +359,56 @@
         }
       },
       methods:{
+        delspuhandleCancel(){
+          this.delspuvisible=false
+        },
+        delspuhandleOk(){
+          this.delspuvisible=false
+          postAction('/kunze/spu/deleteSpu',this.ids).then((res)=>{
+            console.log(res)
+            if(res.success==true){
+              this.getAllProducts(this.shopId)
+              this.$message.success('删除商品成功');
+            }
+          })
+        },
+      //批量上架
+        updataAllsable(){
+            let  data = {
+              saleable:'1',
+              shopId:this.shopId,
+              spuList:this.ids
+            }
+          console.log(data)
+          postAction('/kunze/spu/updateSpuSaleable',data).then((res)=>{
+              console.log(res)
+              if(res.success==true){
+                this.getAllProducts(this.shopId)
+                this.$message.success('上架成功');
+              }else {
+                this.$message.warning('上架失败 ');
+              }
+
+            })
+        },
+        //批量下架
+        updataAllsablexia(){
+            let  data = {
+              saleable:'0',
+              shopId:this.shopId,
+              spuList:this.ids
+            }
+            postAction('/kunze/spu/updateSpuSaleable',data).then((res)=>{
+              // console.log(res)
+              if(res.success==true){
+                this.getAllProducts(this.shopId)
+                this.$message.success('下架成功');
+              }else {
+                this.$message.warning('下架失败 ');
+              }
+
+            })
+        },
       //选择分类
         onChangeShop(e){
           console.log(e)
@@ -360,7 +431,6 @@
             saleable:that.search.saleable,
             id:that.search.shopId
           }).then((res)=>{
-            console.log(res)
             that.data=res.result.list
 
             let key=0
@@ -377,27 +447,41 @@
       //点击商品上架或下架
         shangjia(e){
           console.log(e)
+          let spuList=[]
+          spuList.push(e.id)
           if(e.saleable==0){
-            let saleable=1
-            let spuBo={
-              'saleable':saleable,
-              "shopId": this.shopId,
-              "id":  e.id,
+            let  data = {
+              saleable:'1',
+              shopId:this.shopId,
+              spuList:spuList
             }
-            console.log(spuBo)
-            postAction('/kunze/spu/updateSpu',spuBo).then((res)=>{
+
+
+            postAction('/kunze/spu/updateSpuSaleable',data).then((res)=>{
               console.log(res)
+              if(res.success==true){
+                this.getAllProducts(this.shopId)
+                this.$message.success('上架成功');
+              }else {
+                this.$message.warning('上架失败 ');
+              }
+
             })
           }else {
-            let saleable=0
-            let spuBo={
-              'saleable':saleable,
-              "shopId": this.shopId,
-              "id":e.id,
+            let  data = {
+              saleable:'0',
+              shopId:this.shopId,
+              spuList:spuList
             }
-            console.log(spuBo)
-            postAction('/kunze/spu/updateSpu',spuBo).then((res)=>{
-              console.log(res)
+            postAction('/kunze/spu/updateSpuSaleable',data).then((res)=>{
+
+              if(res.success==true){
+                this.getAllProducts(this.shopId)
+                this.$message.success('下架成功');
+              }else {
+                this.$message.warning('下架失败 ');
+              }
+
             })
           }
 
@@ -421,7 +505,8 @@
           this.getAllProducts(this.shopId);
         },
         xiuskuBrandBtn(e){
-          // console.log(e)
+          // console.log(e).
+          this.sku=e
           let that=this
           this.cids.push(e.cid1)
           this.cids.push(e.cid2)
@@ -483,7 +568,10 @@
           this.form.brand=this.spu.bname
           this.form.price=e.newPrice
           this.form.stock=e.stock
-
+          this.form.packingList= e.packingList
+            this.form.afterService=e.afterService
+          this.form.description=e.description
+          this.fileList=e.images
 
 
           this.$nextTick(() => {
@@ -512,7 +600,10 @@
           this.xiuBrandvisible=false
         },
         deleteBrandBtn(e){
-          console.log(e)
+          this.delspuvisible=true
+          this.ids=[]
+          this.ids.push(e.id)
+
         },
         //批量删除
         deleteAllBrandBtn(){
@@ -520,6 +611,7 @@
         },
         //点击查看按钮
         xiuBrandBtn(e){
+          console.log(e)
           this.spu=[]
           this.skudata=[]
           let that=this
@@ -552,7 +644,7 @@
             pageSize : that.ipagination.pageSize,
             shopId : e
           }).then((res)=>{
-            console.log(res)
+            // console.log(res)
             that.data=res.result.list
 
             let key=0
@@ -561,7 +653,7 @@
               e.key=key++
             })
             that.ipagination.total = res.result.total;
-            console.log(that.data)
+            // console.log(that.data)
           })
 
 
@@ -578,6 +670,7 @@
         // 点击下一步
         nextStep(){
           let that = this
+          that.onChange(that.cids)
           // 触发表单验证
           this.formTranslate.validateFields((err, values) => {
             console.log(values)
@@ -585,6 +678,9 @@
               that.form.title=values.title
               that.form.subTitle=values.subTitle
               this.current=this.current-(-1)
+              this.$nextTick(() => {
+                this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock'))
+              });
             }
           })
         },
@@ -595,57 +691,70 @@
           });
         },
         nextStep2(){
-          // this.current=this.current-(-1)
-          this.$refs.ruleForm.validate(valid => {
-            if (valid) {
+
+          let that = this
+          // 触发表单验证
+          this.formTranslate.validateFields((err, values) => {
+
+            if(values.price && values.stock){
+              that.form.stock=values.stock
+              that.form.price=values.price
+
               // alert('submit!');
               if(this.indexes.length!=0){
                 this.skuVos.push({
+                  id: that.sku.id,
                   indexes: this.indexes,
                   ownSpec:  this.ownSpec,
-                  price: this.form.price,
-                  stock: this.form.stock
+                  price: values.price,
+                  stock: values.stock
                 })
                 this.current=this.current-(-1)
               }else {
                 this.$message.warning('请选择所属分类');
               }
 
-
-            } else {
-
-              return false;
             }
+            // this.current=this.current-(-1)
           })
+
+
+
+
+
         },
         nextStep3(){
           this.current=this.current-1
+          this.$nextTick(() => {
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock'))
+          });
         },
-        nextStep4(){
-          // this.current=this.current-(-1)
-        },
+
         determine(){
-          this.$refs.ruleForm.validate(valid => {
-            if (valid) {
-              if(this.indexes.length!=0){
-                this.skuVos.push({
-                  indexes: this.indexes,
-                  ownSpec:  this.ownSpec,
-                  price: this.form.price,
-                  stock: this.form.stock
-                })
-                this.form.stock=''
-                this.form.price=''
-                this.dxuandatas=[]
-              }else {
-                this.$message.warning('请选择所属分类');
+          this.formTranslate.validateFields((err, values) => {
+            let that = this
+            if(values.price && values.stock){
+              that.form.title=values.stock
+              that.form.subTitle=values.price
+
+                if (this.indexes.length != 0) {
+                  console.log(1)
+                  that.skuVos.push({
+                    id: that.sku.id,
+                    indexes: that.indexes,
+                    ownSpec: that.ownSpec,
+                    price: values.price,
+                    stock: values.stock
+                  })
+                  this.form.stock = ''
+                  this.form.price = ''
+                  this.dxuandatas = []
+
+                } else {
+                  this.$message.warning('请选择所属分类');
+                }
               }
-
-            } else {
-
-              return false;
-            }
-          })
+              })
 
         },
         //点击参数单选框
@@ -738,8 +847,7 @@
         onSubmit(){
           let that=this
 
-          this.$refs.ruleForm.validate(valid => {
-            if (valid) {
+
               this.skuVos.forEach(e=>{
                 e.indexes=JSON.stringify(e.indexes)
                 e.ownSpec=JSON.stringify(e.ownSpec)
@@ -753,6 +861,7 @@
                 'cid3': this.cids[2],
                 'image': this.fileList,
                 'shopId':this.shopId,
+                "id": this.spu.id,
                 'skuVos':this.skuVos,
                 'spuDetail': {
                   'afterService': this.form.afterService,
@@ -764,9 +873,10 @@
                 'subTitle': this.form.subTitle,
                 'title':this.form.title
               }
+          console.log(spuBo)
 
-
-              httpAction('/kunze/spu/saveGood', spuBo,'post').then((res)=>{
+          httpAction('/kunze/spu/updateSpu', spuBo,'post').then((res)=>{
+                console.log(res)
                 if(res.success==true){
                   that.current=0
                   that.form.brand=[]
@@ -783,15 +893,11 @@
                   that.indexes=[]
                   that.form.subTitle=''
                   that.form.title=''
-                  that.$message.success('添加成功');
+                  that.$message.success('修改成功');
                 }
 
               })
-            } else {
 
-              return false;
-            }
-          })
 
 
 

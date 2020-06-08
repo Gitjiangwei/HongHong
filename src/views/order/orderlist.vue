@@ -71,6 +71,24 @@
             </a-menu>
           </a-dropdown>
           </span>
+          <span v-if="record.status==5">
+            <a-divider type="vertical" />
+          <a-dropdown>
+            <a class="ant-dropdown-link">是否退款<a-icon type="down" /></a>
+            <a-menu slot="overlay">
+              <a-menu-item>
+                <a-popconfirm title="确定退款吗?" @confirm="() => refund(record.orderId)">
+                     <a >退款</a>
+                </a-popconfirm>
+              </a-menu-item>
+              <a-menu-item>
+
+                    <a>拒绝</a>
+
+              </a-menu-item>
+            </a-menu>
+          </a-dropdown>
+          </span>
         </span>
 
       </a-table>
@@ -214,13 +232,30 @@
             dayin:"/kunze/imidate/dayin",
             jiedan:"/kunze/order/selectStatus",
           },
+          userId:""
         }
       },
       created(){
+
         this.shopId=this.$store.state.shopId;
+
         this.loadData();
       },
       methods:{
+        //确定退款
+        refund(e){
+          console.log(e)
+
+
+          let param = new URLSearchParams()
+          param.append('shopID',this.shopId)
+          param.append('orderId' , e)
+          param.append('userID' , this.userId)
+          postAction('/kunze/order/selectOrderById',param).then((res)=>{
+            console.log(res)
+          })
+
+        },
         preview(orderId){
           for(let i=0;i<2;i++){
             console.log(1)
