@@ -31,10 +31,10 @@
     >
       <a-form :form="formTranslate" :label-col="{ span: 6 }" :wrapper-col="{ span: 12 }" >
         <a-form-item label="品牌名" hasFeedback>
-          <a-input v-model="brandForm.name"  v-decorator="['name', {rules: [{ required: true, message: '请输入品牌名称', }]}]" />
+          <a-input  v-decorator="['name', {rules: [{ required: true, message: '请输入品牌名称', }]}]" />
         </a-form-item>
           <a-form-item label="首字母" hasFeedback>
-          <a-input v-model="brandForm.letter"  v-decorator="['letter', {rules: [{ required: true, message: '请输入品牌名称首字母', }]}]" maxLength="1" />
+          <a-input  v-decorator="['letter', {rules: [{ required: true, message: '请输入品牌名称首字母', }]}]" maxLength="1" />
         </a-form-item>
         <a-form-item label="所属分类ID" hasFeedback>
           <a-cascader
@@ -42,11 +42,11 @@
             :options="options"
             placeholder="选择所属分类"
             @change="onChangeShop"
-            v-decorator="['kid',{rules: [{ type: 'array', required: true, message: '请选择所属分类' },],},]"
+            v-decorator="['kid',{rules: [{ type: 'array', required: true, message: '请选择所属分类' }]}]"
           />
         </a-form-item>
-        <a-form-item label="品牌商标">
-          <j-image-upload class="avatar-uploader" text="上传" v-model="fileList" ></j-image-upload>
+        <a-form-item label="品牌商标" hasFeedback>
+          <j-image-upload class="avatar-uploader" text="上传"   v-decorator="['fileList',{rules: [{ type: 'array', required: true, message: '请上传商标' }]}]"></j-image-upload>
         </a-form-item>
       </a-form>
       <div
@@ -98,8 +98,8 @@
             />
           </a-form-item>
 
-        <a-form-item label="品牌商标">
-          <j-image-upload class="avatar-uploader" text="上传" v-model="fileList" ></j-image-upload>
+        <a-form-item label="品牌商标" hasFeedback>
+          <j-image-upload class="avatar-uploader" text="上传"  v-decorator="['fileList',{rules: [{ type: 'array', required: true, message: '请上传商标' }]}]"></j-image-upload>
         </a-form-item>
       </a-form>
       <div
@@ -194,7 +194,7 @@
       },
       edit(record) {
         this.$nextTick(() => {
-          this.formTranslate.setFieldsValue(pick(this.xiubrandForm, 'name', 'letter','kid'))
+          this.formTranslate.setFieldsValue(pick(this.xiubrandForm, 'name', 'letter','kid',"fileList"))
         });
 
       },
@@ -260,10 +260,10 @@
         this.xiubrandForm.name=e.bname
         this.xiubrandForm.letter=e.letter
         this.xiubrandForm.kid=e.kid
-        this.fileList=e.image
+        this.xiubrandForm.fileList=e.image
         this.xiuBrandvisible=true
         this.$nextTick(() => {
-          this.formTranslate.setFieldsValue(pick(this.xiubrandForm, 'name', 'letter','kid'))
+          this.formTranslate.setFieldsValue(pick(this.xiubrandForm, 'name', 'letter','kid','fileList'))
         });
 
       },
@@ -323,36 +323,42 @@
       },
       // 点击添加确认按钮
       addBrandConfirm(){
+          let that=this
         this.formTranslate.validateFields((err, values) => {
-          if(values.name && values.letter && values.kid){
-
+          if(values.name && values.letter && values.kid && values.fileList){
+            that.brandForm.image=that.fileList
+              let brandVo={
+                name:values.name,
+                letter:values.letter,
+                kid:JSON.stringify(values.kid),
+                image:values.fileList
+              }
+              console.log(brandVo)
+              postAction('/kunze/brand/saveBrand',brandVo).then((res)=>{
+                console.log(res)
+                if(res.success==true){
+                  this.$message.success('品牌添加成功');
+                  this.getAllBrand()
+                  that.addBrandvisible=false
+                  that.brandForm.name=''
+                  that.brandForm.letter=''
+                  that.brandForm.kid=''
+                  that.brandForm.image=''
+                  that.fileList=[]
+                }else {
+                  this.$message.warning('品牌添加失败');
+                  that.addBrandvisible=false
+                  that.brandForm.name=''
+                  that.brandForm.letter=''
+                  that.brandForm.kid=''
+                  that.brandForm.image=''
+                  that.fileList=[]
+                }
+              })
           }
         })
-      //   let that=this
-      //   this.brandForm.image=this.fileList
-      //   let brandVo=this.brandForm
-      //   console.log(brandVo)
-      //   postAction('/kunze/brand/saveBrand',brandVo).then((res)=>{
-      //     console.log(res)
-      //     if(res.success==true){
-      //       this.$message.success('品牌添加成功');
-      //       this.getAllBrand()
-      //       that.addBrandvisible=false
-      //       that.brandForm.name=''
-      //       that.brandForm.letter=''
-      //       that.brandForm.kid=''
-      //       that.brandForm.image=''
-      //       that.fileList=[]
-      //     }else {
-      //       this.$message.warning('品牌添加失败');
-      //       that.addBrandvisible=false
-      //       that.brandForm.name=''
-      //       that.brandForm.letter=''
-      //       that.brandForm.kid=''
-      //       that.brandForm.image=''
-      //       that.fileList=[]
-      //     }
-      //   })
+
+
       },
       // 点击添加按钮
       addBrandBtn(){

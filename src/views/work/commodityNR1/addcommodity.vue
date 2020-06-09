@@ -36,8 +36,8 @@
         <a-form-item label="子标题" hasFeedback>
           <a-input  v-decorator="['subTitle', {rules: [{ required: true, message: '请输入子标题', }]}]" />
         </a-form-item>
-        <a-form-item label="品牌" hasFeedback>
-          <a-select v-model="form.brand" placeholder="选择品牌" v-decorator="['brand', {rules: [{ required: true, message: '请选择商品品牌', }]}]" >
+        <a-form-item label="品牌" >
+          <a-select v-model="form.brand" placeholder="选择品牌"  >
           <a-select-option  v-for="v in brand" :value=v.bid :key="v.keys">
             {{v.bname}}
           </a-select-option>
