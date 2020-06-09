@@ -120,6 +120,7 @@
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import ACol from "ant-design-vue/es/grid/Col";
   import {getFileAccessHttpUrl,getAction,postAction} from '@/api/manage';
+  import $ from 'jquery';
 
   export default {
     name:"Order1",
@@ -291,12 +292,12 @@
       nextStep () {
         let params = {
           orderId:this.orderId,
-          status:this.status,
+          // status:this.status,
         }
         postAction(this.url.dayin,params).then((res)=>{
           if(res.success){
-            this.$message.success("接单成功！");
-            this.$emit('nextStep');
+            // this.$message.success("接单成功！");
+            // this.$emit('nextStep');
             let Data = [];
             for(let i = 0;i<res.result.commodityList.length;i++){
               let spuList = {
