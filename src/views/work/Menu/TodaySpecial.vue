@@ -95,6 +95,7 @@
 
       </a-table>
     </div>
+    <today-special-model ref="TodaySpecialModel" @ok="modalFormOk"></today-special-model>
   </a-card>
 </template>
 <script>
@@ -103,12 +104,14 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin';
   import {deleteAction, getAction, postAction,getFileAccessHttpUrl} from '@/api/manage';
   import {filterObj,timeFix} from '@/utils/util';
+  import TodaySpecialModel from './model/TodaySpecialModel'
 
   export default {
     name:"TodaySpecial",
     mixins: [JeecgListMixin],
     components: {
       ARow,
+      TodaySpecialModel
     },
     data(){
       return{
@@ -244,6 +247,10 @@
             this.ipagination.total = res.result.total;
           }
         })
+      },
+      handleAdd(){
+        this.$refs.TodaySpecialModel.add();
+        this.$refs.TodaySpecialModel.title="添加特卖商品";
       },
       modalFormOk() {
         // 新增/修改 成功时，重载列表
