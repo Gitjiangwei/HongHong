@@ -263,6 +263,7 @@
             params.append('orderNo',res.result.orderId)
             params.append('amount' , amount)
             postAction('/kunze/wechatpay/doRefund',params).then((res)=>{
+              console.log(res)
               if(res.success==true){
                 this.$message.success('退款成功');
                 this.loadData();
@@ -273,6 +274,17 @@
             })
           })
 
+        },
+        //拒绝退款
+        norefund(e){
+          console.log(e)
+          let orderStatus={
+            status:5,
+            orderId:e
+          }
+          postAction("kunze/order/updateStatus", orderStatus).then((res)=>{
+            console.log(res)
+          })
         },
         preview(orderId){
           for(let i=0;i<2;i++){

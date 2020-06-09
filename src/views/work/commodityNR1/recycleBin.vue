@@ -417,7 +417,7 @@
         },
       //点击搜索商品
         searchShop(){
-
+          // console.log(this.search.cid3)
 
           let that=this
           // console.log(that.shopId)
@@ -431,6 +431,7 @@
             saleable:that.search.saleable,
             id:that.search.shopId
           }).then((res)=>{
+
             that.data=res.result.list
 
             let key=0
@@ -918,6 +919,7 @@
           getAction('/kunze/category/qryList',{id:'',pid:''}).then((res)=>{
             console.log(res,321321321)
             that.options=res.result
+            console.log(that.options)
 
           })
         },

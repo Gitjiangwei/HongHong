@@ -287,6 +287,9 @@
         return getFileAccessHttpUrl(avatar,this.url.imgerver,"http")
       },
       nextStops (){
+        if(this.status==1){
+          console.log(1)
+        }
         this.$emit('nextStep');
       },
       nextStep () {
