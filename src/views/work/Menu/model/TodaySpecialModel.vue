@@ -58,16 +58,16 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="特卖开始时间"
+          label="特卖日期"
           hasFeedback
         >
           <a-date-picker
-            v-decorator="['specialstartTime', {rules: [{ required: true, message: '请选择特卖开始时间', }]}]"
+            v-decorator="['specialstartTime', validatorRules.specialstartTime]"
             show-time
-            format="YYYY-MM-DD HH:mm:ss"
+            format="YYYY-MM-DD"
           />
         </a-form-item>
-        <a-form-item
+<!--        <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="特卖结束时间"
@@ -78,7 +78,7 @@
             show-time
             format="YYYY-MM-DD HH:mm:ss"
           />
-        </a-form-item>
+        </a-form-item>-->
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
@@ -134,7 +134,11 @@
         spuId:"",
         confirmLoading: false,
         form: this.$form.createForm(this),
-        validatorRules: {},
+        validatorRules:{
+          specialstartTime: {
+            rules: [{required: true,validator: this.specialstartTime}]
+          }
+        },
         url: {
           add:"/kunze/features/saveSpuFeatures"
         },
@@ -170,6 +174,9 @@
           this.form.setFieldsValue({specialstartTime: this.model.specialstartTime ? moment(this.model.specialstartTime, 'YYYY-MM-DD HH:mm:ss') : null});
           this.form.setFieldsValue({specialendTime: this.model.specialendTime ? moment(this.model.specialendTime, 'YYYY-MM-DD HH:mm:ss') : null});
         });
+
+      },
+      handleTime(){
 
       },
       handleSpu(){
@@ -227,8 +234,14 @@
             formData.shopId = this.$store.state.shopId;
             formData.featuresFlag = "1";
             //时间格式化
-            formData.specialstartTime = formData.specialstartTime ? formData.specialstartTime.format('YYYY-MM-DD HH:mm:ss') : null;
-            formData.specialendTime = formData.specialendTime ? formData.specialendTime.format('YYYY-MM-DD HH:mm:ss') : null;
+            debugger;
+
+            formData.specialstartTime = formData.specialstartTime ? formData.specialstartTime.format('YYYY-MM-DD') : null;
+            formData.specialendTime = formData.specialstartTime;
+            var specialstartTime = formData.specialstartTime + " 00:00:00";
+            var specialendTime = formData.specialstartTime + " 23:59:59";
+            formData.specialstartTime = specialstartTime
+            formData.specialendTime = specialendTime
             httpAction(httpurl, formData, method).then((res) => {
               if (res.success) {
                 that.$message.success(res.message);
@@ -257,6 +270,23 @@
       handleCancel() {
         this.close()
       },
+      specialstartTime(rule, value, callback){
+        debugger;
+        if(!value){
+          callback("特卖日期不能为空！")
+        }else{
+          var myDate = new Date();
+          var mytime = myDate.toLocaleDateString();
+          var valtime = value ? value.format('YYYY/MM/DD') : null;
+          valtime = new Date(Date.parse(valtime));
+          mytime = new Date(Date.parse(mytime));
+          if(mytime >= valtime){
+            callback("特卖日期只能大于当天日期！")
+          }else {
+            callback()
+          }
+        }
+      }
     },
   }
 </script>
