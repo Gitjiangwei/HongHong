@@ -159,6 +159,8 @@
                 return "交易成功";
               }else if(text==6){
                 return "交易关闭";
+              }else if(text==7){
+                return "已退款";
               }else {
                 return text;
               }

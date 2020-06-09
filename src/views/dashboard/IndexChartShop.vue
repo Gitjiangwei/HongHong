@@ -242,7 +242,8 @@
         postAction('/kunze/shop/queryShops',param).then((res)=>{
           // console.log(res)
           if(res.success==true){
-            this.deliveryFee=res.result.list[0].postFree
+            this.deliveryFee=((res.result.list[0].postFree)/100).toFixed(2)
+            // this.deliveryFee=res.result.list[0].postFree
           }
         })
       },
@@ -252,10 +253,12 @@
           postFree:e,
           id:this.shopId
         }
+
+
         postAction('/kunze/shop/updateShop',updateShop).then((res)=>{
-          // console.log(res)
+          console.log(res)
           if(res.success==true){
-            this.deliveryFee=e
+            this.queryonSearch()
             this.$message.success('配送费修改成功');
           }else {
             this.$message.error('配送费修改失败');

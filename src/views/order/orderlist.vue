@@ -19,6 +19,7 @@
                 <a-select-option value="4">已发货</a-select-option>
                 <a-select-option value="5">交易成功</a-select-option>
                 <a-select-option value="6">交易关闭</a-select-option>
+                <a-select-option value="7">已退款</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -170,6 +171,8 @@
                   return "交易成功";
                 }else if(text==6){
                   return "交易关闭";
+                }else if(text==7){
+                  return "已退款";
                 }else {
                   return text;
                 }
@@ -250,9 +253,24 @@
           let param = new URLSearchParams()
           param.append('shopID',this.shopId)
           param.append('orderId' , e)
-          param.append('userID' , this.userId)
+          param.append('userID' , "")
           postAction('/kunze/order/selectOrderById',param).then((res)=>{
-            console.log(res)
+            // console.log(res.result.amountPayment)
+            // console.log(res.result.postFree)
+            // console.log(res.result.orderId)
+            let amount=res.result.amountPayment - (- res.result.postFree)
+            let params = new URLSearchParams()
+            params.append('orderNo',res.result.orderId)
+            params.append('amount' , amount)
+            postAction('/kunze/wechatpay/doRefund',params).then((res)=>{
+              if(res.success==true){
+                this.$message.success('退款成功');
+                this.loadData();
+              }else {
+                this.$message.warning('退款失败');
+                this.loadData();
+              }
+            })
           })
 
         },
