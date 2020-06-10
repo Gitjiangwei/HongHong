@@ -10,7 +10,9 @@
 <!--        </span>-->
         <span slot="category" slot-scope="text,record">
           <a @click="addCategories(record)" v-if="record.isParent==1">添加子分类</a>
-          <a @click="addCategoriesImg(record)" v-if="record.isParent==0">添加图片</a>
+          <img @click="addCategoriesImg(record)" v-if="record.parentId!=0 && record.children && record.image!=null" :src=record.image style="width: 40px;height: 40px;margin-left: 20px" />
+          <a @click="addCategoriesImg(record)" v-if="record.parentId!=0 && record.children && record.image==null" style="margin-left: 20px">添加图片</a>
+          <a @click="addCategoriesImg('no')" v-if="!record.children" style="margin-left: 20px" >添加子分类</a>
         </span>
         <span slot="bianji" slot-scope="text,record">
           <a-button type="primary" class="modifyBtn" @click="modifyCategories(record)">修改</a-button>
@@ -67,11 +69,14 @@
       @ok="modifyhandleOk"
       @cancel="modifyhandleCancel"
     >
-      <a-form-model :model="form" :label-col="{ span: 6 }" :wrapper-col="{ span: 12 }">
-        <a-form-model-item label="分类名">
-          <a-input v-model="modifyform.name" />
-        </a-form-model-item>
-      </a-form-model>
+      <a-form :form="formmodifyform" :label-col="{ span: 6 }" :wrapper-col="{ span: 12 }">
+        <a-form-item label="分类名" hasFeedback>
+          <a-input  v-decorator="['name', {rules: [{ required: true, message: '请输入分类名', }]}]" />
+        </a-form-item>
+        <a-form-item label="排序" hasFeedback>
+          <a-input  v-decorator="['sort', {rules: [{ required: true, message: '请输入排序', }]}]" />
+        </a-form-item>
+      </a-form>
     </a-modal>
 
     <!--    三级分类添加图片弹出窗-->
@@ -82,10 +87,13 @@
       @ok="addImgOk"
       @cancel="addImgCancel"
     >
-      <div style="display: flex;justify-content: left;">
-      <img :src=fileList1ss alt=""  style="margin-right: 10px">
-      <j-image-upload  class="avatar-uploader" text="上传" v-model="fileList1" style="width: 104px;margin-right: 30px" ></j-image-upload>
-      </div>
+
+      <a-form :form="formfileList1" :label-col="{ span: 6 }" :wrapper-col="{ span: 12 }">
+        <a-form-item label="分类图片" hasFeedback>
+          <j-image-upload  class="avatar-uploader" text="上传" v-decorator="['fileList1', {rules: [{ required: true, message: '请选择所要上传的图片', }]}]" ></j-image-upload>
+        </a-form-item>
+      </a-form>
+
     </a-modal>
 
   </div>
@@ -116,10 +124,14 @@
               modifyvisible: false, //控制添加弹出框
               confirmLoading: false,
               isdataimg:false,
-              fileList1:"",
+              fileList1:{
+                fileList1:""
+              },
               fileList1ss:"",
               formTranslate: this.$form.createForm(this),
               formadddjform:this.$form.createForm(this),
+              formfileList1:this.$form.createForm(this),
+              formmodifyform:this.$form.createForm(this),
               citem3:{},
               form:{
                 name:'',
@@ -144,6 +156,8 @@
             this.$nextTick(() => {
               this.formTranslate.setFieldsValue(pick(this.form, 'name', 'sort'))
               this.formadddjform.setFieldsValue(pick(this.adddjform, 'name', 'sort'))
+              this.formfileList1.setFieldsValue(pick(this.fileList1, 'fileList1',))
+              this.formmodifyform.setFieldsValue(pick(this.modifyform, 'name','sort'))
             });
 
           },
@@ -216,35 +230,48 @@
           //点击修改确认按钮
           modifyhandleOk(){
 
-            if(this.modifyform.name==''){
-              this.$message.error('分类名不能为空');
-            }else {
-              this.modifyvisible=false
-              let category={
-                id: this.pid,
-                name: this.modifyform.name
-              }
-              postAction('/kunze/category/categoryUpdate',category).then((res)=>{
-                if(res.success){
-                  this.$message.success(
-                    '修改成功'
-                  );
-                  this.getAllCategories()
-                }else {
-                  this.$message.error('修改失败');
-                  this.modifyform.name=''
+
+            let that = this
+            // 触发表单验证
+            this.formmodifyform.validateFields((err, values) => {
+                if(values.name && values.sort) {
+                  // that.adddjform.name = values.name
+                  // that.adddjform.sort = values.sort
+
+                  this.modifyvisible=false
+                  let category={
+                    id: this.pid,
+                    name: values.name,
+                    sort: values.sort,
+                  }
+                  postAction('/kunze/category/categoryUpdate',category).then((res)=>{
+                    if(res.success){
+                      this.$message.success(
+                        '修改成功'
+                      );
+                      this.getAllCategories()
+                    }else {
+                      this.$message.error('修改失败');
+                      this.modifyform.name=''
+                    }
+
+                  })
+
                 }
-                this.modifyform.name=''
-              })
-            }
+            })
+
 
           },
           // 点击修改按钮
           modifyCategories(e){
-            console.log(e)
             this.pid=e.id
             this.modifyform.name=e.name
+            this.modifyform.sort=e.sort
             this.modifyvisible=true
+
+              this.$nextTick(() => {
+                this.formmodifyform.setFieldsValue(pick(this.modifyform, 'name','sort'))
+              });
           },
           adddjhandleOk(){
             let that = this
@@ -341,21 +368,28 @@
             this.form.isParent=''
           },
           addImgOk(){
-
-            if(this.fileList1==""){
-              this.addvisibleImg=false
-            }else {
-              let category=this.citem3
-              category.image=this.fileList1
-              postAction('kunze/category/categoryUpdate',category).then((res)=>{
-                // console.log(res)
-                if(res.success==true){
-                  this.$message.success('添加成功')
-                  this.fileList1=""
-                  this.addvisibleImg=false
+            let that=this
+            this.formfileList1.validateFields((err, values) => {
+                if(values.fileList1){
+                  let children=JSON.stringify(this.citem3.children)
+                  delete this.citem3.children
+                  delete this.citem3.image
+                  delete this.citem3.childrenList
+                  let category=this.citem3
+                    category.image=values.fileList1
+                    category.children=children
+                  // console.log(category)
+                  postAction('kunze/category/categoryUpdate',category ).then((res)=>{
+                      // console.log(res)
+                      if(res.success==true){
+                        that.$message.success('添加成功')
+                        that.addvisibleImg=false
+                        this.getAllCategories()
+                      }
+                    })
                 }
-              })
-            }
+            })
+
 
 
           },
@@ -366,14 +400,25 @@
           //点击三级分类添加图片
           addCategoriesImg(e){
             console.log(e)
-            if(e.image==null){
-              this.fileList1=""
-              this.fileList1ss=""
+            if(e=='no'){
+              this.$message.error('三级分类，不可以添加子分类')
             }else {
-              this.fileList1ss= window._CONFIG['staticDomainURL'] +"/"+e.image
+              if(e.image==null){
+                this.fileList1.fileList1=''
+                this.$nextTick(() => {
+                  this.formfileList1.setFieldsValue(pick(this.fileList1, 'fileList1',))
+                });
+              }else {
+                this.fileList1.fileList1= window._CONFIG['staticDomainURL'] +"/"+e.image
+                this.$nextTick(() => {
+                  this.formfileList1.setFieldsValue(pick(this.fileList1, 'fileList1',))
+                });
+              }
+              this.citem3=e
+              this.addvisibleImg=true
             }
-            this.citem3=e
-            this.addvisibleImg=true
+
+
           },
           // 点击添加子集分类
           addCategories(e){
@@ -390,11 +435,15 @@
               this.data.forEach(e=>{
                 e.key=key++
                 e.children=JSON.parse(JSON.stringify(e.childrenList))
-                e.childrenList=''
+                e.childrenList=[]
                 e.children.forEach(e=>{
                   e.key=key++
+                  if(e.image!=null){
+                    e.image= window._CONFIG['staticDomainURL']+'/'+ e.image
+                  }
+
                   e.children=JSON.parse(JSON.stringify(e.childrenList))
-                  e.childrenList=''
+                  e.childrenList=[]
                   e.children.forEach(e=>{
                     e.key=key++
                   })
