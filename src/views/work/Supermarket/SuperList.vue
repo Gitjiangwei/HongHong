@@ -230,6 +230,18 @@
         this.$refs.SuperModules.edit(record);
         this.$refs.SuperModules.title = "修改超市信息";
       },
+      handleDelete:function(ids){
+        let that = this;
+         deleteAction(this.url.delete,{ids:ids}).then((res) =>{
+           if(res.success){
+             that.$message.success(res.message);
+             that.loadData();
+             that.onClearSelected();
+           }else {
+             that.$message.warning(res.message);
+           }
+         })
+      },
       //批量删除
       batchDel:function(){
         if (this.selectedRowKeys.length <= 0) {
@@ -240,12 +252,13 @@
           for (var a = 0; a < this.selectedRowKeys.length; a++) {
             ids += this.selectionRows[a].id + ",";
           }
+          let that = this;
           // debugger;
           this.$confirm({
             title:"确认删除",
             content:"是否确认删除选中数据！",
             onOk:function () {
-              deleteAction(this.url.delete,{ids:ids}).then((res) =>{
+              deleteAction(that.url.delete,{ids:ids}).then((res) =>{
                   if(res.success){
                     that.$message.success(res.message);
                     that.loadData();
