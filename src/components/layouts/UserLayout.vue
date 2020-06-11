@@ -22,7 +22,7 @@
           <a href="https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE" target="_blank">条款</a>
         </div>-->
         <div class="copyright">
-          Copyright &copy; 2020 乾森网络科技 出品
+          Copyright &copy; 2020 山西乾森网络科技 出品
         </div>
       </div>
     </div>

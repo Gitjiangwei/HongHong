@@ -227,10 +227,15 @@
       }, 1000);
       let shopId=this.$store.state.shopId;
       this.shopId = shopId;
-      this.loaders(shopId);
-      this.loaderOrder(shopId);
-      this.loaderStock(shopId);
-      this.loaderSevenDeal(shopId);
+      setTimeout(() => {
+        this.loaders(shopId);
+        this.loaderOrder(shopId);
+      }, 500);
+      setTimeout(() => {
+        this.loaderStock(shopId);
+        this.loaderSevenDeal(shopId);
+      }, 500);
+
     },
     methods:{
       //查询配送费

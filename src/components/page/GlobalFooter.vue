@@ -11,7 +11,7 @@
     <div class="copyright">
       Copyright
       <a-icon type="copyright"/>
-      2020 <span>乾森网络科技 出品</span>
+      2020 <span>山西乾森网络科技 出品</span>
     </div>
   </div>
 </template>
