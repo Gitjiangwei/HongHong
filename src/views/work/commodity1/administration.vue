@@ -9,6 +9,7 @@
 <!--            <a @click="addCategories(record)">排序</a>-->
 <!--        </span>-->
         <span slot="category" slot-scope="text,record">
+
           <a @click="addCategories(record)" v-if="record.isParent==1">添加子分类</a>
           <img @click="addCategoriesImg(record)" v-if="record.parentId!=0 && record.children && record.image!=null" :src=record.image style="width: 40px;height: 40px;margin-left: 20px" />
           <a @click="addCategoriesImg(record)" v-if="record.parentId!=0 && record.children && record.image==null" style="margin-left: 20px">添加图片</a>
