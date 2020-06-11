@@ -268,7 +268,7 @@
 </template>
 
 <script>
-  import { getAction, httpAction, postAction } from '../../../api/manage'
+  import {getAction, httpAction, postAction} from '@/api/manage'
   import JImageUpload from '../../../components/jeecg/JImageUpload'
   import JEditor from '@/components/jeecg/JEditor'
   import Vue from 'vue'
@@ -429,7 +429,7 @@
             shopId : that.shopId,
             brandId:that.search.brandId,
             cid3:that.search.cid3,
-            subTitle:that.search.subTitle,
+            title:that.search.title,
             saleable:that.search.saleable,
             id:that.search.shopId
           }).then((res)=>{

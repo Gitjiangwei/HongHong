@@ -34,7 +34,7 @@
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
+          <a-menu-item key="1" @click="handleBulkDel"><a-icon type="delete"/>删除</a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
       </a-dropdown>
@@ -75,19 +75,10 @@
           <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
-              <a-menu-item  v-if="record.isFlag==0">
-                  <a @click="handleDelete(record)">删除</a>
-              </a-menu-item>
-              <a-menu-item v-if="record.isFlag==1">
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+              <a-menu-item>
+                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record)">
                    <a>删除</a>
                 </a-popconfirm>
-              </a-menu-item>
-              <a-menu-item v-if="record.isFlag==1">
-                  <a @click="handleIsFlagEnable(record)">启用</a>
-              </a-menu-item>
-              <a-menu-item v-if="record.isFlag==0">
-                  <a @click="handleIsFlagClose(record)">关闭</a>
               </a-menu-item>
             </a-menu>
           </a-dropdown>
@@ -224,6 +215,7 @@
         url: {
           list:"/kunze/features/selectFeatList",
           imgerver: window._CONFIG['staticDomainURL'],
+          delete:"/kunze/features/delFeatures",
         },
       }
     },
@@ -251,6 +243,56 @@
       handleAdd(){
         this.$refs.TodaySpecialModel.add();
         this.$refs.TodaySpecialModel.title="添加特卖商品";
+      },
+      handleDelete:function(record){
+        let that = this;
+        let status = record.status;
+        if(status!=2){
+          this.$message.warning("只能删除已结束的特卖商品");
+          return;
+        }else {
+          deleteAction(that.url.delete,{ids:record.featuresId}).then((res)=>{
+            if(res.success){
+              that.$message.success(res.message);
+              that.loadData();
+              that.onClearSelected();
+            }else {
+              that.$message.warning(res.message);
+            }
+          })
+        }
+      },
+      handleBulkDel:function(){
+        if (this.selectedRowKeys.length <= 0) {
+          this.$message.warning('请选择一条记录！');
+          return;
+        }else {
+          var ids = "";
+          var content = "是否确认删除选中数据！";
+          for (var a = 0; a < this.selectedRowKeys.length; a++) {
+            ids += this.selectionRows[a].featuresId + ",";
+            if (this.selectionRows[a].status == 2) {
+              this.$message.warning('包含正在售卖的商品，只能删除已经结束的特卖商品！');
+              return;
+            }
+          }
+          let that = this;
+          this.$confirm({
+            title: "确认删除",
+            content: content,
+            onOk: function () {
+              deleteAction(that.url.deletes, {ids: ids}).then((res) => {
+                if (res.success) {
+                  that.$message.success(res.message);
+                  that.loadData();
+                  that.onClearSelected();
+                } else {
+                  that.$message.warning(res.message);
+                }
+              })
+            }
+          })
+        }
       },
       modalFormOk() {
         // 新增/修改 成功时，重载列表
