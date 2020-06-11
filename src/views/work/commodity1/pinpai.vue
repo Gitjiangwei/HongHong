@@ -46,7 +46,7 @@
           />
         </a-form-item>
         <a-form-item label="品牌商标" hasFeedback>
-          <j-image-upload class="avatar-uploader" text="上传"   v-decorator="['fileList',{rules: [{ type: 'array', required: true, message: '请上传商标' }]}]"></j-image-upload>
+          <j-image-upload class="avatar-uploader" text="上传"   v-decorator="['fileList',{rules: [{  required: true, message: '请上传商标' }]}]"></j-image-upload>
         </a-form-item>
       </a-form>
       <div
@@ -99,7 +99,7 @@
           </a-form-item>
 
         <a-form-item label="品牌商标" hasFeedback>
-          <j-image-upload class="avatar-uploader" text="上传"  v-decorator="['fileList',{rules: [{ type: 'array', required: true, message: '请上传商标' }]}]"></j-image-upload>
+          <j-image-upload class="avatar-uploader" text="上传"  v-decorator="['fileList',{rules: [{  required: true, message: '请上传商标' }]}]"></j-image-upload>
         </a-form-item>
       </a-form>
       <div
@@ -372,6 +372,9 @@
         this.brandForm.kid=''
         this.brandForm.image=''
         this.fileList=[]
+        this.$nextTick(() => {
+          this.formTranslate.setFieldsValue(pick(this.xiubrandForm, 'name', 'letter','kid','fileList'))
+        });
       },
       // 点击关闭修改弹窗
       xiuBrandClose(){
@@ -381,6 +384,9 @@
         this.xiubrandForm.kid=''
         this.xiubrandForm.image=''
         this.fileList=[]
+        this.$nextTick(() => {
+          this.formTranslate.setFieldsValue(pick(this.xiubrandForm, 'name', 'letter','kid','fileList'))
+        });
       },
       // 获取全部分类
       getAllBrand(){
