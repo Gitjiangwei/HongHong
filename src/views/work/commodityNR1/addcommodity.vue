@@ -228,7 +228,7 @@
           let that = this
           // 触发表单验证
           this.formTranslate.validateFields((err, values) => {
-            if(values.title && values.subTitle &&values.brand){
+            if(values.title && values.subTitle ){
               that.form.title=values.title
               that.form.subTitle=values.subTitle
               that.form.brand=values.brand

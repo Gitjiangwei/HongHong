@@ -369,6 +369,11 @@
             if(res.success==true){
               this.getAllProducts(this.shopId)
               this.$message.success('删除商品成功');
+              this.ids=[]
+            }else {
+              this.getAllProducts(this.shopId)
+              this.$message.error('删除商品失败');
+              this.ids=[]
             }
           })
         },
@@ -417,10 +422,7 @@
         },
       //点击搜索商品
         searchShop(){
-          // console.log(this.search.cid3)
-
           let that=this
-          // console.log(that.shopId)
           getAction('/kunze/spu/spuList',{
             pageNo :that.ipagination.current,
             pageSize : that.ipagination.pageSize,
@@ -608,7 +610,8 @@
         },
         //批量删除
         deleteAllBrandBtn(){
-
+          this.delspuvisible=true
+          // console.log(this.ids)
         },
         //点击查看按钮
         xiuBrandBtn(e){
