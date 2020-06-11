@@ -36,8 +36,8 @@
         <a-form-item label="子标题" hasFeedback>
           <a-input  v-decorator="['subTitle', {rules: [{ required: true, message: '请输入子标题', }]}]" />
         </a-form-item>
-        <a-form-item label="品牌" >
-          <a-select v-model="form.brand" placeholder="选择品牌"  >
+        <a-form-item label="品牌" hasFeedback>
+          <a-select  placeholder="选择品牌"  v-decorator="['brand', {rules: [{ required: true, message: '请选择选择品牌', }]}]"  >
           <a-select-option  v-for="v in brand" :value=v.bid :key="v.keys">
             {{v.bname}}
           </a-select-option>
@@ -228,7 +228,7 @@
           let that = this
           // 触发表单验证
           this.formTranslate.validateFields((err, values) => {
-            if(values.title && values.subTitle ){
+            if(values.title && values.subTitle &&values.brand){
               that.form.title=values.title
 
               that.form.subTitle=values.subTitle
@@ -424,7 +424,7 @@
                 'title':this.form.title
               }
 
-              // console.log(spuBo)
+              console.log(spuBo)
               httpAction('/kunze/spu/saveGood', spuBo,'post').then((res)=>{
                 console.log(res)
                 if(res.success==true){
