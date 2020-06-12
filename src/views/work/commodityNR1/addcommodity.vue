@@ -75,7 +75,7 @@
                   <a-form-item label="选择参数" >
                     <template v-for="v in dxuandatas">
                       <template v-for="x in v.params">
-                        <template v-if="x.options!=''">
+                        <template v-if="x.options!='' && x.global=='false'">
                           <a-row>
                             <a-col :span="4">
                               <span class="fenzu">{{x.k}}:</span>
@@ -252,9 +252,9 @@
         nextStep2(){
 
 
-          this.formTranslate.validateFields((err, values) => {
+          this.formTranslate.validateFields((err, values) =>{
 
-            if (values.price && values.stock && values.image) {
+            if (values.price && values.stock && values.image){
 
               if (this.indexes.length != 0) {
                 this.skuVos.push({
@@ -262,7 +262,7 @@
                   ownSpec: this.ownSpec,
                   price: values.price,
                   stock: values.stock,
-                  images:values.images
+                  images:values.image
                 })
                 this.current = this.current - (-1)
               } else {
@@ -277,7 +277,7 @@
         nextStep3(){
           this.current=this.current-1
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','brand','price','stock'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','brand','price','stock','image'))
           });
         },
         nextStep4(){
@@ -287,7 +287,7 @@
 
           this.formTranslate.validateFields((err, values) => {
 
-            if(values.price && values.stock){
+            if(values.price && values.stock &&values.image){
 
               if(this.indexes.length!=0){
                 console.log(1)
@@ -295,7 +295,8 @@
                   indexes: this.indexes,
                   ownSpec:  this.ownSpec,
                   price: values.price,
-                  stock: values.stock
+                  stock: values.stock,
+                  images: values.image
                 })
                 this.form.stock=''
                 this.form.price=''
@@ -330,13 +331,7 @@
                   })
                 }
               }
-              that.specifications.forEach(e=>{
-                e.params.forEach(e=>{
-                  if(e.k==key){
-                    e.v=val
-                  }
-                })
-              })
+
             }
           })
 
@@ -366,8 +361,13 @@
 
                     }else {
                       // console.log(y.k,y.options[0])
-                      Vue.set(that.ownSpec,y.k,y.options[0])
-                      Vue.set(that.specTemplate,y.k,y.options)
+                      if(y.global=='false') {
+                        Vue.set(that.ownSpec, y.k, y.options[0])
+                      }
+                      if(y.global=='false'){
+                        Vue.set(that.specTemplate,y.k,y.options)
+                      }
+
                       that.indexes.push(0)
                       that.index.push(y.k)
                       let nn= {
@@ -378,10 +378,13 @@
                         }
                         let nm=[]
                       nm.push(nn)
-                      that.specifications.push({
-                        group:e.group,
-                        params:nm
-                      })
+                      if(y.global=='true'){
+                        that.specifications.push({
+                          group:e.group,
+                          params:nm
+                        })
+                      }
+
 
                     }
 
@@ -398,14 +401,12 @@
 
         onSubmit(){
           let that=this
-
+          console.log(this.skuVos)
               this.skuVos.forEach(e=>{
                 e.indexes=JSON.stringify(e.indexes)
                 e.ownSpec=JSON.stringify(e.ownSpec)
               })
-              // fileList1:[],
-              //   fileList2:[],
-              //   fileList3:[],
+
 
 
               console.log(this.skuVos)
@@ -429,7 +430,8 @@
                 'title':this.form.title
               }
 
-              console.log(spuBo)
+              console.log(this.skuVos)
+
               httpAction('/kunze/spu/saveGood', spuBo,'post').then((res)=>{
                 console.log(res)
                 if(res.success==true){
@@ -448,9 +450,26 @@
                   that.indexes=[]
                   that.form.subTitle=''
                   that.form.title=''
+                  that.fileList1=[], that.fileList2=[], that.fileList3=[]
                   that.$message.success('添加成功');
                 }else {
                   that.$message.warning('添加失败');
+                  that.current=0
+                  that.form.brand=''
+                  that.cids=[]
+                  that.fileList=[]
+                  that.skuVos=[]
+                  that.form.afterService=''
+                  that.form.description=''
+                  that.form.price=''
+                  that.form.stock=''
+                  that.form.packingList=''
+                  that.specTemplate=[]
+                  that.specifications=[]
+                  that.indexes=[]
+                  that.form.subTitle=''
+                  that.form.title=''
+                  that.fileList1=[], that.fileList2=[], that.fileList3=[]
                   // console.log(res)
                 }
               })

@@ -82,6 +82,26 @@
 
 
 
+    <!--    sku弹出窗-->
+    <a-modal
+      v-model="visible"
+      title="商品"
+      @ok="handleOk"
+      @cancel="handleCancel"
+      width="60%">
+      <a-table :columns="skucolumns" :data-source="skudata"  >
+         <span slot="images" slot-scope="text,record">
+           <img :src=record.images alt="">
+        </span>
+        <span slot="bianji" slot-scope="text,record">
+          <a-button type="primary" class="modifyBtn" @click="xiuskuBrandBtn(record)">修改</a-button>
+          <a-button type="primary" @click="deleteskuBrandBtn(record)">删除</a-button>
+        </span>
+      </a-table>
+
+    </a-modal>
+
+
 <!--        修改商品弹出框-->
     <a-drawer
       title="修改商品"
@@ -123,8 +143,8 @@
           <a-form-item label="子标题" hasFeedback>
             <a-input    v-decorator="['subTitle', {rules: [{ required: true, message: '请输入子标题', }]}]" />
           </a-form-item>
-          <a-form-item label="品牌">
-            <a-select  placeholder="选择品牌" :default-value=form.brand >
+          <a-form-item label="品牌" hasFeedback>
+            <a-select  placeholder="选择品牌"   v-decorator="['brand', {rules: [{ required: true, message: '请选择品牌', }]}]">
               <a-select-option  v-for="v in brand" :value=v.bid :key="v.keys" >
                 {{v.bname}}
               </a-select-option>
@@ -163,7 +183,7 @@
             <a-form-item label="选择参数" >
               <template v-for="v in dxuandatas">
                 <template v-for="x in v.params">
-                  <template v-if="x.options!=''">
+                  <template v-if="x.options!='' && x.global=='false'">
                     <a-row>
                       <a-col :span="4">
                         <span class="fenzu">{{x.k}}:</span>
@@ -184,7 +204,9 @@
           <a-form-item label="商品库存"   hasFeedback>
             <a-input  v-decorator="['stock', {rules: [{ required: true, message: '请输入商品库存', }]}]" />
           </a-form-item>
-
+          <a-form-item label="商品图片" hasFeedback>
+            <j-image-upload class="avatar-uploader" text="上传"  v-decorator="['image', {rules: [{ required: true, message: '请输入商品库存', }]}]" ></j-image-upload>
+          </a-form-item>
         </a-form>
         <div style="margin-left: 35%">
           <a-button type="primary"  style="margin-right: 20px" @click="nextStep1">
@@ -234,24 +256,7 @@
     </a-drawer>
 
 
-<!--    sku弹出窗-->
-    <a-modal
-      v-model="visible"
-      title="商品"
-      @ok="handleOk"
-      @cancel="handleCancel"
-      width="60%">
-        <a-table :columns="skucolumns" :data-source="skudata"  >
-         <span slot="images" slot-scope="text,record">
-           <img :src=record.images alt="">
-        </span>
-          <span slot="bianji" slot-scope="text,record">
-          <a-button type="primary" class="modifyBtn" @click="xiuskuBrandBtn(record)">修改</a-button>
-          <a-button type="primary" @click="deleteskuBrandBtn(record)">删除</a-button>
-        </span>
-        </a-table>
 
-    </a-modal>
 
 <!--    删除商品提示框-->
 
@@ -508,7 +513,7 @@
           this.getAllProducts(this.shopId);
         },
         xiuskuBrandBtn(e){
-          // console.log(e).
+          // console.log(e)
           this.sku=e
           let that=this
           this.cids.push(e.cid1)
@@ -516,6 +521,7 @@
           this.cids.push(e.cid3)
           // console.log(e.cid3)
           getAction('/kunze/spec/specList',{categoryId:e.cid3}).then((res)=>{
+            console.log(res,'sku')
             if(res.result==null){
               that.dxuandatas=[]
             }else {
@@ -563,7 +569,7 @@
 
 
           this.xiuBrandvisible=true
-          console.log(e)
+          // console.log(this.spu)
 
           this.indexes=e.indexes.split(',')
           this.form.title=this.spu.title
@@ -578,7 +584,7 @@
 
 
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title','brand', 'subTitle','price','stock','brand','image'))
           });
 
 
@@ -622,6 +628,7 @@
           let param = new URLSearchParams()
           param.append('spuId',e.id)
           postAction('/kunze/sku/qrySkuBySpuId',param).then((res)=>{
+            console.log(res)
             that.skudata=res.result
             that.skudata.forEach(e=>{
               e.images=window._CONFIG['domianURL']+'/'+e.images
@@ -630,6 +637,8 @@
           })
           this.visible=true
           that.spu=e
+
+
         },
         onSelectChange(selectedRowKeys, selectedRows){
           let that=this
@@ -666,7 +675,7 @@
 
         edit(record) {
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','image'))
           });
 
         },
@@ -678,12 +687,13 @@
           // 触发表单验证
           this.formTranslate.validateFields((err, values) => {
             console.log(values)
-            if(values.title && values.subTitle){
+            if(values.title && values.subTitle && values.brand){
               that.form.title=values.title
               that.form.subTitle=values.subTitle
+              that.form.brand=values.brand
               this.current=this.current-(-1)
               this.$nextTick(() => {
-                this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock'))
+                this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','brand','image'))
               });
             }
           })
@@ -691,7 +701,7 @@
         nextStep1(){
           this.current=this.current-1
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','brand','image'))
           });
         },
         nextStep2(){
@@ -730,7 +740,7 @@
         nextStep3(){
           this.current=this.current-1
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','image'))
           });
         },
 

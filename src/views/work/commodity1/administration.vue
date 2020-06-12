@@ -327,8 +327,7 @@
               if(values.name && values.sort){
                 that.form.name=values.name
                 that.form.sort=values.sort
-
-
+                // if(record.parentId!=0 && record.children && record.image==null)
 
                 this.addvisible=false
                     let category={
