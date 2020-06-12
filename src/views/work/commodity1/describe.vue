@@ -27,7 +27,8 @@
 
           <h4 class="nnn" style="float: left">{{v.group}}</h4>
           <div>
-            <a-button class="modifyBtn" @click="addxinsx(v.group)" >添加新属性</a-button>
+            <a-button class="modifyBtn" @click="addxinsx(v)" >添加新属性</a-button>
+            <a-button class="modifyBtn" @click="xiuxinsx(v)" >修改分组</a-button>
             <a-button  icon="delete"  style="margin-bottom: 5px" @click="deleteFenzu(v.group)"  ></a-button>
           </div>
         </div>
@@ -42,6 +43,37 @@
       <a-button  type="primary" @click="addxiFenzhu" style="margin-left: 80%" >添加分組</a-button>
     </a-modal>
 
+
+<!--    修改分组-->
+    <a-modal
+      title="修改分组"
+      :visible="xiufenzuvisible"
+      :confirm-loading="fenzuconfirmLoading"
+      @ok="xiufenzuhandleOk"
+      @cancel="xiufenzuhandleCancel"
+    >
+      <a-form
+        :form="xiufenzudatasform"
+        :label-col="labelCol"
+        :wrapper-col="wrapperCol"
+      >
+        <a-form-item label="分组名" hasFeedback>
+          <a-input   v-decorator="['group', {rules: [{ required: true, message: '请输入分组名称', }]}]" />
+        </a-form-item>
+        <a-form-item label="品牌" hasFeedback>
+          <a-select  placeholder="选择权限"  v-decorator="['global', {rules: [{ required: true, message: '请选择选择权限', }]}]"  >
+            <a-select-option value='true'>全局</a-select-option>
+            <a-select-option value='false'>专属</a-select-option>
+          </a-select>
+        </a-form-item>
+      </a-form>
+
+    </a-modal>
+
+
+
+
+
 <!--    添加新的分组弹出框-->
     <a-modal
       title="添加新的分组"
@@ -51,13 +83,24 @@
       @cancel="fenzuhandleCancel"
     >
       <a-form
-        ref="ruleForm"
-        :model="fenzudatas"
+        :form="fenzudatasform"
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
-        <a-form-item label="分组名" prop="brand">
-          <a-input v-model="fenzudatas.group"/>
+        <a-form-item label="分组名" hasFeedback>
+          <a-input   v-decorator="['group', {rules: [{ required: true, message: '请输入分组名称', }]}]" />
+        </a-form-item>
+        <a-form-item label="品牌" hasFeedback>
+          <a-select  placeholder="选择权限"  v-decorator="['global', {rules: [{ required: true, message: '请选择选择权限', }]}]"  >
+            <a-select-option value='true'>全局</a-select-option>
+            <a-select-option value='false'>专属</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item label="属性名" hasFeedback>
+          <a-input   v-decorator="['k', {rules: [{ required: true, message: '请填写属性名', }]}]" />
+        </a-form-item>
+        <a-form-item label="属性值" hasFeedback>
+          <a-input   v-decorator="['options', {rules: [{ required: true, message: '请填写属性值', }]}]" />
         </a-form-item>
       </a-form>
 
@@ -72,16 +115,15 @@
       @cancel="shuxinhandleCancel"
     >
       <a-form
-        ref="ruleForm"
-        :model="shuxindatas"
+        :form="shuxindatasform"
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
-        <a-form-item label="属性名" prop="brand">
-          <a-input v-model="shuxindatas.k"/>
+        <a-form-item label="属性名" hasFeedback>
+          <a-input  v-decorator="['k', {rules: [{ required: true, message: '请填写属性名', }]}]"/>
         </a-form-item>
-        <a-form-item label="属性值" prop="brand">
-          <a-input v-model="shuxindatas.options"/>
+        <a-form-item label="属性值" hasFeedback>
+          <a-input  v-decorator="['options', {rules: [{ required: true, message: '请填写属性值', }]}]"/>
         </a-form-item>
       </a-form>
 
@@ -96,16 +138,15 @@
       @cancel="xiugaihandleCancel"
     >
       <a-form
-        ref="ruleForm"
-        :model="xiugaidatas"
+        :form="xiugaidatasform"
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
-        <a-form-item label="属性名" prop="brand">
-          <a-input v-model="xiugaidatas.k"/>
+        <a-form-item label="属性名" hasFeedback>
+          <a-input  v-decorator="['k', {rules: [{ required: true, message: '请填写属性名', }]}]"/>
         </a-form-item>
-        <a-form-item label="属性值" prop="brand">
-          <a-input v-model="xiugaidatas.options"/>
+        <a-form-item label="属性值" hasFeedback>
+          <a-input  v-decorator="['options', {rules: [{ required: true, message: '请填写属性值', }]}]"/>
         </a-form-item>
       </a-form>
 
@@ -131,19 +172,24 @@
       @cancel="tianjiahandleCancel"
     >
       <a-form
-        ref="ruleForm"
-        :model="tianjiadatas"
+        :form="tianjiadatasform"
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
-        <a-form-item label="分组名" prop="brand">
-          <a-input v-model="tianjiadatas.group"/>
+        <a-form-item label="分组名" hasFeedback>
+          <a-input  v-decorator="['group', {rules: [{ required: true, message: '请填写分组名称', }]}]"/>
         </a-form-item>
-        <a-form-item label="属性名" prop="brand">
-          <a-input v-model="tianjiadatas.params[0].k"/>
+        <a-form-item label="属性名" hasFeedback>
+          <a-input  v-decorator="['k', {rules: [{ required: true, message: '请添加属性名', }]}]"/>
         </a-form-item>
-        <a-form-item label="属性值" prop="brand">
-          <a-input v-model="tianjiadatas.params[0].options"/>
+        <a-form-item label="品牌" hasFeedback>
+          <a-select  placeholder="选择权限"  v-decorator="['global', {rules: [{ required: true, message: '请选择选择权限', }]}]"  >
+            <a-select-option value='true'>全局</a-select-option>
+            <a-select-option value='false'>专属</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item label="属性值" hasFeedback>
+          <a-input  v-decorator="['options', {rules: [{ required: true, message: '请添加属性值', }]}]"/>
         </a-form-item>
       </a-form>
 
@@ -154,6 +200,7 @@
 
 <script>
   import {getAction,postAction,deleteAction} from '../../../api/manage'
+  import pick from 'lodash.pick'
   const columns = [
     {
       title: '参数名',
@@ -175,6 +222,7 @@
         width:'60%',
         visible: false,
         fenzuvisible: false,
+        xiufenzuvisible: false,
         tianjiavisible: false,
         shuxinvisible: false,
         xiugaivisible: false,
@@ -185,6 +233,7 @@
         shanchuconfirmLoading: false,
         shuxinconfirmLoading: false,
         xiugaiconfirmLoading: false,
+
         replaceFields:{
           children:'childrenList',
           title:'name',
@@ -197,10 +246,6 @@
         csdatas:[],  //所有参数
         fenzudatas:{
           group:'',
-          params:[]
-        },
-        tianjiadatas:{
-          group:'',
           params:[
             {
               global: true,
@@ -209,13 +254,29 @@
             }
           ]
         },
+        xiufenzudatas:{},
+        fenzudatasform:this.$form.createForm(this),
+        shuxindatasform:this.$form.createForm(this),
+        xiugaidatasform:this.$form.createForm(this),
+        tianjiadatasform:this.$form.createForm(this),
+        xiufenzudatasform:this.$form.createForm(this),
+        tianjiadatas:{
+          group:'',
+          params:[
+            {
+              global: '',
+              k: '',
+              options: ""
+            }
+          ]
+        },
         shuxindatas:{
-          global: true,
+          global: '',
           k: '',
           options: ""
         },
         xiugaidatas:{
-          global: true,
+          global: '',
           k: '',
           options: ""
         },
@@ -227,39 +288,121 @@
     },
 
     methods: {
+      //点击修改分组确定按钮
+      xiufenzuhandleOk(){
+
+
+        let that=this
+
+        this.xiufenzudatasform.validateFields((err, values) =>{
+          if (values.group && values.global){
+            this.csdatas.forEach((e,i) => {
+              if(e.group==that.xiufenzudatas.group){
+                e.group=values.group
+                this.csdatas[i].params.forEach(e=>{
+                  e.global=values.global
+                })
+              }
+            })
+
+
+
+
+
+            let params={
+              categoryId: that.selectedKeys[0],
+              specifications:that.csdatas
+            }
+
+            postAction('/kunze/spec/updateSpec',params).then((res)=>{
+
+              if(res.success==true){
+                that.hqcsmb()
+                that.$message.success('修改加分组成功');
+                this.xiufenzuvisible=false
+
+              }else {
+                that.$message.warning('修改分组失败');
+                this.xiufenzuvisible=false
+
+              }
+            })
+
+          }
+        })
+      },
+      //点击修改分组取消按钮
+      xiufenzuhandleCancel(){
+        this.xiufenzuvisible=false
+      },
+
+      //点击修改分组按钮
+      xiuxinsx(e){
+        this.xiufenzuvisible=true
+        // console.log(e)
+        this.xiufenzudatas=e
+        this.$nextTick(() => {
+          this.fenzudatasform.setFieldsValue(pick(this.fenzudatas, 'group', 'global', 'k', 'options'))
+          this.shuxindatasform.setFieldsValue(pick(this.shuxindatas, 'k', 'options'))
+          this.xiugaidatasform.setFieldsValue(pick(this.xiugaidatas, 'k', 'options'))
+          this.tianjiadatasform.setFieldsValue(pick(this.tianjiadatas, 'k', 'options','global','group'))
+          this.xiufenzudatasform.setFieldsValue(pick(this.xiufenzudatas,'global','group'))
+
+        });
+      },
+
+      edit(record) {
+        this.$nextTick(() => {
+          this.fenzudatasform.setFieldsValue(pick(this.fenzudatas, 'group', 'global', 'k', 'options'))
+          this.shuxindatasform.setFieldsValue(pick(this.shuxindatas, 'k', 'options'))
+          this.xiugaidatasform.setFieldsValue(pick(this.xiugaidatas, 'k', 'options'))
+          this.tianjiadatasform.setFieldsValue(pick(this.tianjiadatas, 'k', 'options','global','group'))
+          this.xiufenzudatasform.setFieldsValue(pick(this.xiufenzudatas,'global','group'))
+
+        });
+
+      },
+
+
       tianjiahandleOk(){
         let that=this
-        if(that.tianjiadatas.group==''){
-          that.$message.warning('分组名称不能为空');
-        }else if (that.tianjiadatas.params[0].k==''){
-          that.$message.warning('属性名称不能为空');
-        }else if(that.tianjiadatas.params[0].options==''){
-          that.$message.warning('属性值不能为空');
-        }else {
-          that.csdatas=[]
-         JSON.parse(JSON.stringify(that.csdatas.push(that.tianjiadatas)))
-          let param = new URLSearchParams()
-          param.append('categoryId',that.selectedKeys[0])
-          param.append('specifications' ,JSON.stringify(that.csdatas) )
-          postAction('/kunze/spec/saveSpec',param).then((res)=>{
+        this.tianjiadatasform.validateFields((err, values) =>{
 
-            if(res.success==true){
-              that.hqcsmb()
-              that.$message.success('添加分组成功');
-              that.tianjiavisible=false
-              that.tianjiadatas.group=''
-              that.tianjiadatas.params[0].k=''
-              that.tianjiadatas.params[0].options=''
-            }else {
-              that.$message.warning('添加分组失败');
-              that.tianjiavisible=false
-              that.tianjiadatas.group=''
-              that.tianjiadatas.params[0].k=''
-              that.tianjiadatas.params[0].options=''
-            }
-          })
-        }
+            if (values.k && values.options && values.global && values.group) {
+              that.csdatas = []
+              that.tianjiadatas={
+                group:values.group,
+                params:[
+                  {
+                    global: values.global,
+                    k:values.k,
+                    options: values.options
+                  }
+                ]
+              }
+              JSON.parse(JSON.stringify(that.csdatas.push(that.tianjiadatas)))
+              let param = new URLSearchParams()
+              param.append('categoryId', that.selectedKeys[0])
+              param.append('specifications', JSON.stringify(that.csdatas))
+              postAction('/kunze/spec/saveSpec', param).then((res) => {
 
+                if (res.success == true) {
+                  that.hqcsmb()
+                  that.$message.success('添加分组成功');
+                  that.tianjiavisible = false
+                  that.tianjiadatas.group = ''
+                  that.tianjiadatas.params[0].k = ''
+                  that.tianjiadatas.params[0].options = ''
+                } else {
+                  that.$message.warning('添加分组失败');
+                  that.tianjiavisible = false
+                  that.tianjiadatas.group = ''
+                  that.tianjiadatas.params[0].k = ''
+                  that.tianjiadatas.params[0].options = ''
+                }
+              })
+
+            }})
 
 
       },
@@ -268,6 +411,13 @@
         this.tianjiadatas.group=''
         this.tianjiadatas.params[0].k=''
         this.tianjiadatas.params[0].options=''
+        this.$nextTick(() => {
+          this.fenzudatasform.setFieldsValue(pick(this.fenzudatas, 'group', 'global', 'k', 'options'))
+          this.shuxindatasform.setFieldsValue(pick(this.shuxindatas, 'k', 'options'))
+          this.xiugaidatasform.setFieldsValue(pick(this.xiugaidatas, 'k', 'options'))
+          this.tianjiadatasform.setFieldsValue(pick(this.tianjiadatas, 'k', 'options','global','group'))
+
+        });
       },
       shanchuhandleOk(){
         let that=this
@@ -304,39 +454,38 @@
       },
       xiugaihandleOk(){
         let that=this
-        if(that.xiugaidatas.k==''){
-          that.$message.warning('属性名不能为空');
-        }else if(that.xiugaidatas.options==''){
-          that.$message.warning('属性值不能为空');
-        }else {
-          this.csdatas.forEach(e=>{
-            e.params.forEach((e,i)=>{
-              if(e.k==that.k){
-                e.k=that.xiugaidatas.k
-                e.options=that.xiugaidatas.options
-              }
-            })
-          })
+        this.xiugaidatasform.validateFields((err, values) =>{
 
-          let params={
-            categoryId: that.selectedKeys[0],
-            specifications:that.csdatas
-          }
-          postAction('/kunze/spec/updateSpec',params).then((res)=>{
-            if(res.success==true){
-              that.hqcsmb()
-              that.$message.success('修改属性成功');
-              that.xiugaivisible=false
-              that.xiugaidatas.k=''
-              that.xiugaidatas.options=''
-            }else {
-              that.$message.warning('修改属性失败');
-              that.xiugaivisible=false
-              that.xiugaidatas.k=''
-              that.xiugaidatas.options=''
-            }
-          })
-        }
+            if (values.k && values.options) {
+              this.csdatas.forEach(e => {
+                e.params.forEach((e, i) => {
+                  if (e.k == values.k) {
+                    e.k = values.k
+                    e.options = values.options
+                    e.global=that.grop.global
+                  }
+                })
+              })
+
+              let params = {
+                categoryId: that.selectedKeys[0],
+                specifications: that.csdatas
+              }
+              postAction('/kunze/spec/updateSpec', params).then((res) => {
+                if (res.success == true) {
+                  that.hqcsmb()
+                  that.$message.success('修改属性成功');
+                  that.xiugaivisible = false
+                  that.xiugaidatas.k = ''
+                  that.xiugaidatas.options = ''
+                } else {
+                  that.$message.warning('修改属性失败');
+                  that.xiugaivisible = false
+                  that.xiugaidatas.k = ''
+                  that.xiugaidatas.options = ''
+                }
+              })
+            }})
 
       },
       xiugaihandleCancel(){
@@ -347,6 +496,8 @@
       //点击修稿按钮
       xiugaishuxin(w){
         let that=this
+        this.grop=w
+
         this.k=w.k
         this.xiugaivisible=true
         this.csdatas.forEach(e=>{
@@ -357,41 +508,52 @@
             }
           })
         })
+        this.$nextTick(() => {
+          this.fenzudatasform.setFieldsValue(pick(this.fenzudatas, 'group', 'global', 'k', 'options'))
+          this.shuxindatasform.setFieldsValue(pick(this.shuxindatas, 'k', 'options'))
+          this.xiugaidatasform.setFieldsValue(pick(this.xiugaidatas, 'k', 'options'))
 
+        });
       },
       shuxinhandleOk(){
         let that=this
-        if( this.shuxindatas.k==''){
-          that.$message.warning('属性名称不能为空')
-        }else if(this.shuxindatas.options==''){
-          that.$message.warning('属性值不能为空')
-        }else {
-          this.csdatas.forEach(e=>{
-            if(e.group==that.grop){
-              e.params[e.params.length]=JSON.parse(JSON.stringify(that.shuxindatas))
-            }
-          })
-          let params={
-            categoryId: that.selectedKeys[0],
-            specifications:that.csdatas
-          }
-          postAction('/kunze/spec/updateSpec',params).then((res)=>{
+        this.shuxindatasform.validateFields((err, values) =>{
 
-            if(res.success==true){
-              this.hqcsmb()
-              this.$message.success('添加属性成功');
-              this.shuxinvisible=false
-              this.shuxindatas.k=''
-              this.shuxindatas.options=''
-            }else {
-              this.$message.warning('添加属性失败');
-              this.shuxinvisible=false
-              this.shuxindatas.k=''
-              this.shuxindatas.options=''
-            }
-          })
-        }
+            if (values.k && values.options) {
+              that.shuxindatas={
+                k: values.k,
+                options: values.options,
+                global:that.grop.params[0].global
+              }
 
+              this.csdatas.forEach(e => {
+                if (e.group == that.grop.group) {
+                  e.params[e.params.length] = JSON.parse(JSON.stringify(that.shuxindatas))
+                }
+              })
+              let params = {
+                categoryId: that.selectedKeys[0],
+                specifications: that.csdatas,
+                global:this.grop.params[0].global
+              }
+              postAction('/kunze/spec/updateSpec', params).then((res) => {
+
+                if (res.success == true) {
+                  this.hqcsmb()
+                  this.$message.success('添加属性成功');
+                  this.shuxinvisible = false
+                  this.shuxindatas.k = ''
+                  this.shuxindatas.options = ''
+                } else {
+                  this.$message.warning('添加属性失败');
+                  this.shuxinvisible = false
+                  this.shuxindatas.k = ''
+                  this.shuxindatas.options = ''
+                }
+              })
+
+            }}
+        )
 
 
       },
@@ -403,7 +565,16 @@
       //添加新的属性
       addxinsx(w){
         this.shuxinvisible=true
+        console.log(w)
+        this.$nextTick(() => {
+          this.fenzudatasform.setFieldsValue(pick(this.fenzudatas, 'group', 'global'))
+          this.shuxindatasform.setFieldsValue(pick(this.shuxindatas, 'k', 'options'))
+
+        });
+
+
         this.grop=w
+
       },
       // 添加分组取消按钮
       fenzuhandleCancel(){
@@ -413,22 +584,26 @@
       // 添加新分组确认按钮
       fenzuhandleOk(){
         let that=this
-        if(that.fenzudatas.group==''){
-          that.$message.warning('分组名称不能为空');
-        }else {
 
-
-
-
+        this.fenzudatasform.validateFields((err, values) =>{
+            if (values.group && values.global && values.k && values.options){
+              that.fenzudatas={
+                group:values.group,
+                params:[
+                  {
+                    global: values.global,
+                    k:values.k,
+                    options:values.options
+                  }
+                ]
+              }
             that.csdatas[that.csdatas.length]=JSON.parse(JSON.stringify(that.fenzudatas))
             let params={
               categoryId: that.selectedKeys[0],
               specifications:that.csdatas
-
             }
 
-
-            postAction('/kunze/spec/updateSpec',params).then((res)=>{
+              postAction('/kunze/spec/updateSpec',params).then((res)=>{
 
               if(res.success==true){
                 that.hqcsmb()
@@ -442,14 +617,19 @@
               }
             })
 
-
-        }
+            }
+        })
 
 
       },
       //添加新的分组
       addxiFenzhu(){
         this.fenzuvisible=true
+        this.$nextTick(() => {
+          this.fenzudatasform.setFieldsValue(pick(this.fenzudatas, 'group', 'global'))
+          this.shuxindatasform.setFieldsValue(pick(this.shuxindatas, 'k', 'options'))
+
+        });
       },
       //删除分组
       deleteFenzu(v){
