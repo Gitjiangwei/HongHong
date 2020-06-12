@@ -124,7 +124,7 @@
             <a-input    v-decorator="['subTitle', {rules: [{ required: true, message: '请输入子标题', }]}]" />
           </a-form-item>
           <a-form-item label="品牌">
-            <a-select  placeholder="选择品牌" :default-value=form.brand >
+            <a-select  placeholder="选择品牌" :default-value=form.brand v-decorator="['brand', {rules: [{ required: true, message: '请选择选择品牌', }]}]" >
               <a-select-option  v-for="v in brand" :value=v.bid :key="v.keys" >
                 {{v.bname}}
               </a-select-option>
@@ -178,6 +178,9 @@
               </template>
             </a-form-item>
           </template>
+          <a-form-item label="优惠价格"  hasFeedback>
+            <a-input  placeholder="单位为元" v-decorator="['newPrice', {rules: [{ required: false, message: '请输入销售价格', }]}]" />
+          </a-form-item>
           <a-form-item label="销售价格"  hasFeedback>
             <a-input  placeholder="单位为元" v-decorator="['price', {rules: [{ required: true, message: '请输入销售价格', }]}]" />
           </a-form-item>
@@ -299,6 +302,7 @@
             { title: '商品名称', dataIndex: 'title', key: 'title' },
             { title: '规格', dataIndex: 'ownSpec', key: 'ownSpec' },
             { title: '图片', dataIndex: 'images', key: 'images',scopedSlots: { customRender: 'images' } },
+            { title: '优惠价格', dataIndex: 'newPrice', key: 'newPrice' },
             { title: '价格', dataIndex: 'price', key: 'price' },
             { title: '编辑', dataIndex: 'isflag', key: 'isflag', scopedSlots: { customRender: 'bianji' } },
           ],
@@ -509,8 +513,9 @@
         },
         xiuskuBrandBtn(e){
           // console.log(e).
-          this.sku=e
-          let that=this
+          debugger;
+          this.sku=e;
+          let that=this;
           this.cids.push(e.cid1)
           this.cids.push(e.cid2)
           this.cids.push(e.cid3)
@@ -615,7 +620,8 @@
         },
         //点击查看按钮
         xiuBrandBtn(e){
-          console.log(e)
+          debugger;
+          console.log(e);
           this.spu=[]
           this.skudata=[]
           let that=this
@@ -673,7 +679,7 @@
 
         // 点击下一步
         nextStep(){
-          let that = this
+          let that = this;
           that.onChange(that.cids)
           // 触发表单验证
           this.formTranslate.validateFields((err, values) => {
@@ -701,21 +707,26 @@
           this.formTranslate.validateFields((err, values) => {
 
             if(values.price && values.stock){
-              that.form.stock=values.stock
-              that.form.price=values.price
-
+              that.form.stock=values.stock;
+              that.form.price=values.price;
+             if(values.newPrice == null || values.newPrice == undefined || values.newPrice == ""){
+                  values.newPrice = "0";
+              }
+             that.form.newPrice = values.newPrice;
+             debugger;
               // alert('submit!');
-              if(this.indexes.length!=0){
-                this.skuVos.push({
+              if(that.indexes.length!=0){
+                that.skuVos.push({
                   id: that.sku.id,
                   indexes: this.indexes,
                   ownSpec:  this.ownSpec,
                   price: values.price,
-                  stock: values.stock
+                  stock: values.stock,
+                  newPrice: values.newPrice,
                 })
-                this.current=this.current-(-1)
+                that.current=that.current-(-1)
               }else {
-                this.$message.warning('请选择所属分类');
+                that.$message.warning('请选择所属分类');
               }
 
             }

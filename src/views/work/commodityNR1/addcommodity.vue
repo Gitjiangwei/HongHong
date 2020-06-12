@@ -90,6 +90,9 @@
                     </template>
                   </a-form-item>
                 </template>
+                <a-form-item label="优惠价格" hasFeedback>
+                  <a-input  placeholder="单位为元" v-decorator="['newPrice', {rules: [{ required: false, message: '请输入销售价格', }]}]" />
+                </a-form-item>
                 <a-form-item label="销售价格" hasFeedback>
                   <a-input  placeholder="单位为元" v-decorator="['price', {rules: [{ required: true, message: '请输入销售价格', }]}]" />
                 </a-form-item>
@@ -97,7 +100,7 @@
                   <a-input   v-decorator="['stock', {rules: [{ required: true, message: '请输入商品库存', }]}]"  />
                 </a-form-item>
                 <a-form-item label="商品图片" hasFeedback>
-                  <j-image-upload class="avatar-uploader" text="上传"  v-decorator="['image', {rules: [{ required: true, message: '请输入商品库存', }]}]" ></j-image-upload>
+                  <j-image-upload class="avatar-uploader" text="上传"  v-decorator="['images', {rules: [{ required: true, message: '请输入商品库存', }]}]" ></j-image-upload>
                 </a-form-item>
 
         </a-form>
@@ -251,15 +254,14 @@
         },
         nextStep2(){
 
-
           this.formTranslate.validateFields((err, values) => {
 
-            if (values.price && values.stock && values.image) {
-
+            if (values.price && values.stock && values.images) {
               if (this.indexes.length != 0) {
                 this.skuVos.push({
                   indexes: this.indexes,
                   ownSpec: this.ownSpec,
+                  newPrice: values.newPrice,
                   price: values.price,
                   stock: values.stock,
                   images:values.images
@@ -294,8 +296,10 @@
                 this.skuVos.push({
                   indexes: this.indexes,
                   ownSpec:  this.ownSpec,
+                  newPrice: values.newPrice,
                   price: values.price,
-                  stock: values.stock
+                  stock: values.stock,
+                  images: values.images
                 })
                 this.form.stock=''
                 this.form.price=''

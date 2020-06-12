@@ -56,6 +56,7 @@
             style="width: 100%"
             placeholder="请选择超市"
             optionFilterProp = "children"
+            :default-value=form.id
             v-decorator="['shopId', {rules: [{ required: true, message: '请选择超市', }]}]"
             v-model="selectedRole">
             <a-select-option  v-for="(role,roleindex) in shopList" :key="roleindex.toString()" :value="role.id"  >
