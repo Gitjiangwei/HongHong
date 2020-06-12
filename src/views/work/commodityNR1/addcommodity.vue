@@ -96,6 +96,9 @@
                 <a-form-item label="商品库存"  hasFeedback>
                   <a-input   v-decorator="['stock', {rules: [{ required: true, message: '请输入商品库存', }]}]"  />
                 </a-form-item>
+                <a-form-item label="商品图片" hasFeedback>
+                  <j-image-upload class="avatar-uploader" text="上传"  v-decorator="['image', {rules: [{ required: true, message: '请输入商品库存', }]}]" ></j-image-upload>
+                </a-form-item>
 
         </a-form>
         <div style="margin-left: 35%">
@@ -190,6 +193,7 @@
             packingList:'',
             subTitle:'',
             title:'',
+            image:''
           },
 
           brand:[],  //品牌的集合
@@ -214,7 +218,7 @@
 
         edit(record) {
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','brand','price','stock'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','brand','price','stock','image'))
           });
 
         },
@@ -242,7 +246,7 @@
         nextStep1(){
           this.current=this.current-1
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','brand','price','stock'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','brand','price','stock','image'))
           });
         },
         nextStep2(){
@@ -250,14 +254,15 @@
 
           this.formTranslate.validateFields((err, values) => {
 
-            if (values.price && values.stock) {
+            if (values.price && values.stock && values.image) {
 
               if (this.indexes.length != 0) {
                 this.skuVos.push({
                   indexes: this.indexes,
                   ownSpec: this.ownSpec,
                   price: values.price,
-                  stock: values.stock
+                  stock: values.stock,
+                  images:values.images
                 })
                 this.current = this.current - (-1)
               } else {
