@@ -89,7 +89,7 @@
           <div class="dd-box">
             <div style="width:100%;font-size:16px;font-weight:400;color:rgba(28,46,50,1);">仓库统计</div>
             <div class="dd-box-item">
-              <div class="dd-box-item2">
+              <div class="dd-box-item2" style="cursor: pointer" @click="handleStock">
                 <div class="dd-box-item2-font">
                   <span style="color: red;font-weight: bold">{{stock}}</span>
                 </div>
@@ -158,7 +158,8 @@
         </a-card>
       </a-col>
     </a-row>
-    <order-status-list ref="OrderStatusList"></order-status-list>
+    <order-status-list ref="OrderStatusList" @ok="modalFormOkOrder"></order-status-list>
+    <spu-stock-model ref="SpuStockModel" @ok="modalFormOkStock"></spu-stock-model>
   </div>
 </template>
 <script>
@@ -168,6 +169,7 @@
   import {getAction,postAction} from '@/api/manage'
   import LineChartMultid from '@/components/chart/LineChartMultid'
   import OrderStatusList from "../order/model/OrderStatusList"
+  import SpuStockModel from "../work/commodity1/model/SpuStockModel"
   import qs from 'qs'
 
 
@@ -178,7 +180,8 @@
       ACol,
       ATooltip,
       LineChartMultid,
-      OrderStatusList
+      OrderStatusList,
+      SpuStockModel
     },
     data(){
       return{
@@ -266,6 +269,12 @@
        let winWidth = window.innerWidth;
         console.log(winWidth)
       },
+      modalFormOkOrder(){
+        this.loaders(this.shopId);
+      },
+      modalFormOkStock(){
+        this.loaderStock(this.shopId);
+      },
       loaders(shopId){
         let params = {
           shopId:shopId,
@@ -285,6 +294,10 @@
       handListEnd(){
         this.$refs.OrderStatusList.handList("5",this.shopId);
         this.$refs.OrderStatusList.title = "已完成订单";
+      },
+      handleStock(){
+        this.$refs.SpuStockModel.hearderList(this.shopId);
+        this.$refs.SpuStockModel.title = "库存不足商品";
       },
       handleSaveSpu(){
         this.$router.push({name:'work-commodityNR1-addcommodity',params:{}})
