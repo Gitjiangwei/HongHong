@@ -290,7 +290,7 @@
             if(values.price && values.stock &&values.image){
 
               if(this.indexes.length!=0){
-                console.log(1)
+                // console.log(1)
                 this.skuVos.push({
                   indexes: this.indexes,
                   ownSpec:  this.ownSpec,
