@@ -59,9 +59,9 @@
           <div class="dd-box">
             <div style="width:100%;font-size:16px;font-weight:400;color:rgba(28,46,50,1);">订单统计</div>
             <div class="dd-box-item">
-              <div class="dd-box-item2">
+              <div class="dd-box-item2" style="cursor: pointer" @click="handList">
                 <div class="dd-box-item2-font">
-                  <span @click="handList">{{pending}}</span>
+                  <span>{{pending}}</span>
                 </div>
                 <div class="dd-box-item2-font">
                   <span class="dian"></span><span class="font">待处理订单</span>
@@ -69,9 +69,9 @@
               </div>
             </div>
             <div class="dd-box-item">
-              <div class="dd-box-item2" style="border-right: 0">
+              <div class="dd-box-item2" style="border-right: 0;cursor: pointer" @click="handListEnd">
                 <div class="dd-box-item2-font">
-                  <span @click="handListEnd">{{completed}}</span>
+                  <span >{{completed}}</span>
                 </div>
                 <div class="dd-box-item2-font">
                   <span class="dianOk"></span><span class="font">已完成的订单</span>
@@ -113,9 +113,6 @@
 
       </a-col>
         </a-row>
-
-
-
         <a-row>
           <a-col :xl="17" :lg="17" :md="24" :sm="24" :xs="24">
             <span style="font-weight: bold; font-size: 16px;display: inline-block;margin: 20px 0 0 10px">最近7日</span>
@@ -126,8 +123,8 @@
           <a-col :span="1"></a-col>
           <a-col :xl="6" :lg="12" :md="12" :sm="24" :xs="24">
             <span style="font-weight: bold; font-size: 16px;display: inline-block;margin: 20px 0 0 10px">快捷功能入口</span>
-            <a-card >
-              <div style="height:78px;width:100%;margin: 19px 0 19px 40px">
+            <a-card :loading="loading" >
+              <div style="height:78px;width:100%;margin: 19px 0 19px 40px;cursor: pointer" @click="handleSaveSpu">
                 <img src="../../assets/sp.png" alt="" style="width:78px;height: 78px">
                 &nbsp;
                 <span>添加商品</span>
@@ -137,7 +134,7 @@
                 &nbsp;
                 <span>快速接单</span>
               </div>
-              <div style="height:78px;width:100%;margin: 19px 0 19px 40px">
+              <div style="height:78px;width:100%;margin: 19px 0 19px 40px;cursor: pointer" @click="handleOrder">
                 <img src="../../assets/order.png" alt="" style="width:78px;height: 78px">
                 &nbsp;
                 <span>订单列表</span>
@@ -168,10 +165,9 @@
   import ChartCard from '@/components/ChartCard'
   import ACol from "ant-design-vue/es/grid/Col"
   import ATooltip from "ant-design-vue/es/tooltip/Tooltip"
-  import {getAction} from '@/api/manage'
+  import {getAction,postAction} from '@/api/manage'
   import LineChartMultid from '@/components/chart/LineChartMultid'
   import OrderStatusList from "../order/model/OrderStatusList"
-  import { postAction } from '../../api/manage'
   import qs from 'qs'
 
 
@@ -245,10 +241,8 @@
         param.append('pageNo' , 1)
         param.append('pageSize' , 1)
         postAction('/kunze/shop/queryShops',param).then((res)=>{
-          // console.log(res)
-          if(res.success==true){
+          if(res.success){
             this.deliveryFee=((res.result.list[0].postFree)/100).toFixed(2)
-            // this.deliveryFee=res.result.list[0].postFree
           }
         })
       },
@@ -258,11 +252,8 @@
           postFree:e,
           id:this.shopId
         }
-
-
         postAction('/kunze/shop/updateShop',updateShop).then((res)=>{
-          console.log(res)
-          if(res.success==true){
+          if(res.success){
             this.queryonSearch()
             this.$message.success('配送费修改成功');
           }else {
@@ -272,7 +263,6 @@
         })
       },
       mmm(){
-
        let winWidth = window.innerWidth;
         console.log(winWidth)
       },
@@ -295,6 +285,12 @@
       handListEnd(){
         this.$refs.OrderStatusList.handList("5",this.shopId);
         this.$refs.OrderStatusList.title = "已完成订单";
+      },
+      handleSaveSpu(){
+        this.$router.push({name:'work-commodityNR1-addcommodity',params:{}})
+      },
+      handleOrder(){
+        this.$router.push({name:'order-orderlist',params:{}})
       },
       loaderOrder(shopId){
         let params = {

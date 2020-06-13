@@ -162,10 +162,9 @@
 </template>
 
 <script>
-  import { getAction, httpAction, postAction } from '../../../api/manage'
+  import { getAction, httpAction, postAction } from '@/api/manage'
   import JImageUpload from '../../../components/jeecg/JImageUpload'
   import JEditor from '@/components/jeecg/JEditor'
-
   import Vue from 'vue'
   import pick from 'lodash.pick'
   import moment from 'moment'
@@ -195,7 +194,6 @@
             title:'',
             image:''
           },
-
           brand:[],  //品牌的集合
           options:[],  //分类级联下拉
           dxuandatas:[],  //参数集合
@@ -210,25 +208,16 @@
           fileList3:[],
           cids:[],
           formTranslate: this.$form.createForm(this),
-
         }
       },
       methods:{
-
-
         edit(record) {
           this.$nextTick(() => {
             this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','brand','price','stock','image'))
           });
-
         },
-
-
       // 点击下一步
         nextStep(){
-
-
-
           let that = this
           // 触发表单验证
           this.formTranslate.validateFields((err, values) => {
@@ -240,8 +229,6 @@
               this.current=this.current-(-1)
             }
           })
-
-
         },
         nextStep1(){
           this.current=this.current-1
@@ -250,12 +237,8 @@
           });
         },
         nextStep2(){
-
-
           this.formTranslate.validateFields((err, values) =>{
-
             if (values.price && values.stock && values.image){
-
               if (this.indexes.length != 0) {
                 this.skuVos.push({
                   indexes: this.indexes,
@@ -270,9 +253,6 @@
               }
             }
           })
-
-
-
         },
         nextStep3(){
           this.current=this.current-1
@@ -280,15 +260,9 @@
             this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','brand','price','stock','image'))
           });
         },
-        nextStep4(){
-          // this.current=this.current-(-1)
-        },
         determine(){
-
           this.formTranslate.validateFields((err, values) => {
-
             if(values.price && values.stock &&values.image){
-
               if(this.indexes.length!=0){
                 // console.log(1)
                 this.skuVos.push({
@@ -305,10 +279,8 @@
               }else {
                 this.$message.warning('请选择所属分类');
               }
-
             }
           })
-
         },
         //点击参数单选框
         onChange2(e){
@@ -331,10 +303,8 @@
                   })
                 }
               }
-
             }
           })
-
         },
         onChange(value){
           this.fenl=1
@@ -351,14 +321,11 @@
             }else {
               that.dxuandatas=JSON.parse(res.result.specifications)
               that.dxuandatas.forEach(e=>{
-
                 e.params.forEach((y,i)=>{
                   y.value=''
-
                   if(typeof y.options=='string'){
                     y.options=y.options.split(',');
                     if(y.options[0]==''){
-
                     }else {
                       // console.log(y.k,y.options[0])
                       if(y.global=='false') {
@@ -367,7 +334,6 @@
                       if(y.global=='false'){
                         Vue.set(that.specTemplate,y.k,y.options)
                       }
-
                       that.indexes.push(0)
                       that.index.push(y.k)
                       let nn= {
@@ -384,21 +350,13 @@
                           params:nm
                         })
                       }
-
-
                     }
-
                   }
                 })
-
               })
-
             }
-
           })
-
         },
-
         onSubmit(){
           let that=this
           console.log(this.skuVos)
@@ -406,10 +364,6 @@
                 e.indexes=JSON.stringify(e.indexes)
                 e.ownSpec=JSON.stringify(e.ownSpec)
               })
-
-
-
-              console.log(this.skuVos)
               let spuBo={
                 'brandId': this.form.brand,
                 'cid1': this.cids[0],
@@ -429,11 +383,7 @@
                 'subTitle': this.form.subTitle,
                 'title':this.form.title
               }
-
-              console.log(this.skuVos)
-
               httpAction('/kunze/spu/saveGood', spuBo,'post').then((res)=>{
-                console.log(res)
                 if(res.success==true){
                   that.current=0
                   that.form.brand=''
@@ -470,13 +420,8 @@
                   that.form.subTitle=''
                   that.form.title=''
                   that.fileList1=[], that.fileList2=[], that.fileList3=[]
-                  // console.log(res)
                 }
               })
-
-
-
-
         },
         resetForm(){},
         getBrand(){
@@ -488,7 +433,6 @@
                 e. keys=key++
               })
               that.brand=res.result.list
-
             })
           })
           getAction('/kunze/category/qryList',{id:'',pid:''}).then((res)=>{
@@ -497,20 +441,11 @@
         },
       },
       mounted() {
-      // if(this.$store.state.shopId!=null){
-      //
-      // }else if(JSON.parse(sessionStorage.getItem("store")).shopId!=nill){
-      //
-      // }
-      //   this.shopId=this.$store.state.shopId
         this.shopId=JSON.parse(sessionStorage.getItem("store")).shopId
-        // this.$message.success(this.shopId);
-        // console.log(this.shopId)
-      this.getBrand()
+        this.getBrand()
       }
   }
 </script>
-
 <style scoped>
   .fenzu{
     display: -webkit-box;
