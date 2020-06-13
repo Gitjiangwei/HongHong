@@ -60,7 +60,7 @@
         <a-form-item label="分组名" hasFeedback>
           <a-input   v-decorator="['group', {rules: [{ required: true, message: '请输入分组名称', }]}]" />
         </a-form-item>
-        <a-form-item label="品牌" hasFeedback>
+        <a-form-item label="权限" hasFeedback>
           <a-select  placeholder="选择权限"  v-decorator="['global', {rules: [{ required: true, message: '请选择选择权限', }]}]"  >
             <a-select-option value='true'>全局</a-select-option>
             <a-select-option value='false'>专属</a-select-option>
@@ -90,7 +90,7 @@
         <a-form-item label="分组名" hasFeedback>
           <a-input   v-decorator="['group', {rules: [{ required: true, message: '请输入分组名称', }]}]" />
         </a-form-item>
-        <a-form-item label="品牌" hasFeedback>
+        <a-form-item label="权限" hasFeedback>
           <a-select  placeholder="选择权限"  v-decorator="['global', {rules: [{ required: true, message: '请选择选择权限', }]}]"  >
             <a-select-option value='true'>全局</a-select-option>
             <a-select-option value='false'>专属</a-select-option>
@@ -182,7 +182,7 @@
         <a-form-item label="属性名" hasFeedback>
           <a-input  v-decorator="['k', {rules: [{ required: true, message: '请添加属性名', }]}]"/>
         </a-form-item>
-        <a-form-item label="品牌" hasFeedback>
+        <a-form-item label="权限" hasFeedback>
           <a-select  placeholder="选择权限"  v-decorator="['global', {rules: [{ required: true, message: '请选择选择权限', }]}]"  >
             <a-select-option value='true'>全局</a-select-option>
             <a-select-option value='false'>专属</a-select-option>
@@ -339,8 +339,8 @@
       //点击修改分组按钮
       xiuxinsx(e){
         this.xiufenzuvisible=true
-        // console.log(e)
         this.xiufenzudatas=e
+        this.xiufenzudatas.global=e.params[0].global
         this.$nextTick(() => {
           this.fenzudatasform.setFieldsValue(pick(this.fenzudatas, 'group', 'global', 'k', 'options'))
           this.shuxindatasform.setFieldsValue(pick(this.shuxindatas, 'k', 'options'))
@@ -499,6 +499,7 @@
         this.grop=w
 
         this.k=w.k
+        // this.xiufenzudatas.global=
         this.xiugaivisible=true
         this.csdatas.forEach(e=>{
           e.params.forEach((e,i)=>{

@@ -205,7 +205,7 @@
             <a-input  v-decorator="['stock', {rules: [{ required: true, message: '请输入商品库存', }]}]" />
           </a-form-item>
           <a-form-item label="商品图片" hasFeedback>
-            <j-image-upload class="avatar-uploader" text="上传"  v-decorator="['image', {rules: [{ required: true, message: '请输入商品库存', }]}]" ></j-image-upload>
+            <j-image-upload class="avatar-uploader" text="上传"  v-decorator="['skuimage', {rules: [{ required: true, message: '请输入商品库存', }]}]" ></j-image-upload>
           </a-form-item>
         </a-form>
         <div style="margin-left: 35%">
@@ -229,8 +229,8 @@
           :label-col="labelCol"
           :wrapper-col="wrapperCol"
         >
-          <a-form-item label="商品图片" >
-            <j-image-upload class="avatar-uploader" text="上传" v-model="fileList" ></j-image-upload>
+          <a-form-item label="商品图片" hasFeedback>
+            <j-image-upload class="avatar-uploader" text="上传"  v-decorator="['spuimage', {rules: [{ required: true, message: '请输入商品库存', }]}]"></j-image-upload>
           </a-form-item>
           <a-form-item label="包装清单" prop="packingList" >
             <a-input v-model="form.packingList" />
@@ -334,6 +334,8 @@
             packingList:'',
             subTitle:'',
             title:'',
+            skuimage:"",
+            spuimage:''
           },
           skuVos:[],
           formTranslate: this.$form.createForm(this),
@@ -513,13 +515,15 @@
           this.getAllProducts(this.shopId);
         },
         xiuskuBrandBtn(e){
-          // console.log(e)
+          console.log(e)
           this.sku=e
           let that=this
           this.cids.push(e.cid1)
           this.cids.push(e.cid2)
           this.cids.push(e.cid3)
-          // console.log(e.cid3)
+          this.form.skuimage=e.images
+
+          console.log(this.spu)
           getAction('/kunze/spec/specList',{categoryId:e.cid3}).then((res)=>{
             console.log(res,'sku')
             if(res.result==null){
@@ -569,22 +573,22 @@
 
 
           this.xiuBrandvisible=true
-          // console.log(this.spu)
+          console.log(this.spu.image)
 
           this.indexes=e.indexes.split(',')
           this.form.title=this.spu.title
           this.form.subTitle=this.spu.subTitle
           this.form.brand=this.spu.bname
-          this.form.price=e.newPrice
+          this.form.price=e.price
           this.form.stock=e.stock
           this.form.packingList= e.packingList
             this.form.afterService=e.afterService
           this.form.description=e.description
-          this.fileList=e.images
+          this.form.spuimage=this.spu.image
 
 
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title','brand', 'subTitle','price','stock','brand','image'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title','brand', 'subTitle','price','stock','brand','skuimage','spuimage'))
           });
 
 
@@ -622,6 +626,8 @@
         //点击查看按钮
         xiuBrandBtn(e){
           console.log(e)
+
+          // this.form.banimage1=e.images
           this.spu=[]
           this.skudata=[]
           let that=this
@@ -635,8 +641,19 @@
               e.ownSpec=e.ownSpec.slice(1,e.ownSpec.length-1)
             })
           })
+
           this.visible=true
           that.spu=e
+
+          console.log(e.id, this.shopId)
+          getAction('/kunze/spu/spuList',{
+            id:e.id,
+            pageSize:1,
+            shopId:this.shopId
+          }).then((res)=>{
+            console.log(res)
+          })
+
 
 
         },
@@ -675,7 +692,7 @@
 
         edit(record) {
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','image'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','skuimage','spuimage'))
           });
 
         },
@@ -693,7 +710,7 @@
               that.form.brand=values.brand
               this.current=this.current-(-1)
               this.$nextTick(() => {
-                this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','brand','image'))
+                this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','brand','skuimage','spuimage'))
               });
             }
           })
@@ -701,7 +718,7 @@
         nextStep1(){
           this.current=this.current-1
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','brand','image'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','brand','skuimage','spuimage'))
           });
         },
         nextStep2(){
@@ -710,9 +727,10 @@
           // 触发表单验证
           this.formTranslate.validateFields((err, values) => {
 
-            if(values.price && values.stock){
+            if(values.price && values.stock && values.skuimage){
               that.form.stock=values.stock
               that.form.price=values.price
+              that.form.skuimage=values.skuimage
 
               // alert('submit!');
               if(this.indexes.length!=0){
@@ -740,16 +758,17 @@
         nextStep3(){
           this.current=this.current-1
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','image'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','skuimage','spuimage'))
           });
         },
 
         determine(){
           this.formTranslate.validateFields((err, values) => {
             let that = this
-            if(values.price && values.stock){
+            if(values.price && values.stock && values.skuimage){
               that.form.title=values.stock
               that.form.subTitle=values.price
+              that.form.skuimage=values.skuimage
 
                 if (this.indexes.length != 0) {
                   console.log(1)
