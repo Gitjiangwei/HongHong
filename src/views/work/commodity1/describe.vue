@@ -459,7 +459,7 @@
             if (values.k && values.options) {
               this.csdatas.forEach(e => {
                 e.params.forEach((e, i) => {
-                  if (e.k == values.k) {
+                  if (e.k == this.grop.k) {
                     e.k = values.k
                     e.options = values.options
                     e.global=that.grop.global
