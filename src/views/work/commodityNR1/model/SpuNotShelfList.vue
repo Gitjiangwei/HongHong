@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="title"
-    :width="1600"
+    :width="1200"
     :visible="visible"
     :confirmLoading="confirmLoading"
     @cancel="handleCancel"
@@ -15,14 +15,6 @@
           <a-col :md="6" :sm="24">
             <a-form-item label="商品名称">
               <a-input placeholder="请输入商品名称" v-model="queryParam.title"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :md="6" :sm="24">
-            <a-form-item label="是否上架">
-              <a-select placeholder="请输入订单状态"  v-model="queryParam.enable">
-                <a-select-option value="1">上架</a-select-option>
-                <a-select-option value="0">下架</a-select-option>
-              </a-select>
             </a-form-item>
           </a-col>
 
@@ -62,11 +54,10 @@
           </div>
         </template>
         <span slot="action" slot-scope="text, record">
-          <a @click="handleReplen(record)">补货</a>
+          <a @click="handleReplen(record)">上架</a>
         </span>
 
       </a-table>
-      <replenish-ment-model ref="ReplenishMentModel" @ok = 'modalFormOk'></replenish-ment-model>
     </div>
   </a-modal>
 </template>
@@ -76,23 +67,20 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin';
   import {deleteAction, getAction, getFileAccessHttpUrl} from '@/api/manage';
   import {filterObj,timeFix} from '@/utils/util';
-  import ReplenishMentModel from './ReplenishMentModel';
-
 
   export default {
-    name:"SpuStockModel",
+    name:"SpuNotShelfList",
     mixins:[JeecgListMixin],
     components:{
       ARow,
-      ReplenishMentModel,
     },
     data(){
       return{
-        description: '库存不足商品',
+        description:"未上架商品列表页",
         shopId:"",
-        title:"查看",
         visible: false,
         confirmLoading: false,
+        title:"查看",
         // 表头
         columns: [
           {
@@ -108,7 +96,7 @@
           {
             title: '图片',
             align: "center",
-            dataIndex: 'images',
+            dataIndex: 'image',
             scopedSlots: {customRender: "avatarslot"}
           },
           {
@@ -119,36 +107,7 @@
           {
             title: '规格',
             align: "center",
-            dataIndex: 'ownSpec',
-          },
-          {
-            title: '优惠价格',
-            align: "center",
-            dataIndex: 'newPrice'
-          },
-          {
-            title: '价格',
-            align: "center",
-            dataIndex: 'price'
-          },
-          {
-            title: '是否上架',
-            align: "center",
-            dataIndex: 'saleable',
-            customRender: (text) => {
-              if(text==0){
-                return <span style='color: red; font-weight:bold'>未上架</span>;
-              }else if(text==1){
-                return <span style='color: green; font-weight:bold'>已上架</span>;
-              }else {
-                return text;
-              }
-            }
-          },
-          {
-            title: '库存',
-            align: "center",
-            dataIndex: 'stock'
+            dataIndex: 'cname',
           },
           {
             title: '操作',
@@ -175,28 +134,33 @@
           column: 'createTime',
           order: 'desc',
         },
+        shopId:"",
         selectedRowKeys: [],
         selectedRows: [],
         url: {
-          list: "/kunze/menu/selectStock",
+          list: "/kunze/spu/spuList",
           imgerver:window._CONFIG['staticDomainURL'],
         },
       }
     },
-    created(){
+    created() {
       this.shopId=this.$store.state.shopId
     },
     methods:{
       getAvatarView: function (avatar) {
         return getFileAccessHttpUrl(avatar,this.url.imgerver,"http")
       },
-      loadData(arg) {
+      hearderList(shopId){
+        this.visible=true;
+        this.shopId = shopId;
+        this.loadData("1");
+      },
+      loadData(arg){
         //加载数据 若传入参数1则加载第一页的内容
         if (arg === 1) {
           this.ipagination.current = 1;
         }
         var params = this.getQueryParams();//查询条件
-
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
             debugger;
@@ -204,24 +168,6 @@
             this.ipagination.total = res.result.total;
           }
         })
-      },
-      handleReplen(record){
-        this.$refs.ReplenishMentModel.ReplenishMent(record);
-        this.$refs.ReplenishMentModel.title="补货";
-      },
-      modalFormOk() {
-        // 新增/修改 成功时，重载列表
-        this.loadData();
-      },
-      hearderList(shopId){
-        this.visible=true;
-        this.shopId = shopId;
-        this.loadData("1");
-      },
-      searchReset() {
-        var that = this;
-        that.queryParam = {}
-        that.loadData(1);
       },
       getQueryParams() {
         var param = Object.assign({}, this.queryParam, this.isorter);
@@ -250,7 +196,6 @@
       },
       handleTableChange(pagination, filters, sorter) {
         //分页、排序、筛选变化时触发
-        console.log(sorter);
         //TODO 筛选
         if (Object.keys(sorter).length > 0) {
           this.isorter.column = sorter.field;
@@ -259,6 +204,6 @@
         this.ipagination = pagination;
         this.loadData();
       },
-    }
+    },
   }
 </script>

@@ -19,6 +19,8 @@
       </a-col>
       <a-col :span="8">
         <a-button style="margin-left: 8px" @click="prevStep">上一步</a-button>
+        &nbsp;
+        <a-button  v-show="status==4"  @click="handleComplete" >配送完成</a-button>
       </a-col>
     </a-row>
     </a-card>
@@ -29,19 +31,21 @@
 
   import ARow from "ant-design-vue/es/grid/Row";
   import ACol from "ant-design-vue/es/grid/Col";
-  import {getAction} from '@/api/manage';
+  import {getAction,postAction} from '@/api/manage';
 
 
   export default {
     name:"Order3",
     components: {ACol, ARow},
-    props:["orderId"],
+    props:["orderId","status"],
     data(){
       return{
         orderId:this.orderId,
+        status:this.status,
         dataSource:[],
         url:{
-          list:"kunze/order/queryOrderRecord"
+          list:"kunze/order/queryOrderRecord",
+          edit:"kunze/order/updateStatus",
         }
       }
     },
@@ -58,6 +62,21 @@
     methods:{
       prevStep() {
         this.$emit('prevStep', this.userList);
+      },
+      handleComplete(){
+        let orderStatus={
+          status:5,
+          orderId:this.orderId
+        }
+        if(this.status==4) {
+          postAction(this.url.edit, orderStatus).then((res) => {
+            if(res.success){
+              this.dataSource=[];
+              this.status=5;
+              this.loader();
+            }
+          })
+        }
       },
       loader(){
         let params = {

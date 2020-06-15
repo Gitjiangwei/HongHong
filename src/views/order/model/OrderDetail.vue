@@ -32,6 +32,7 @@
           :salesNum="salesNum"
           :address="address"
           :salesSum="salesSum"
+          :payAmout="payAmout"
           :buyerMessage="buyerMessage"
           :orderId="orderId"
           :status="status"
@@ -46,6 +47,7 @@
 <!--        <step2 v-if="currentTab === 1" @nextStep="nextStep" @prevStep="prevStep"/>-->
         <order3
           :orderId = "orderId"
+          :status="status"
           v-if="currentTab === 2"
           @prevStep="prevStep" @finish="finish"/>
 <!--        <step3 v-if="currentTab === 2" @prevStep="prevStep" @finish="finish"/>-->

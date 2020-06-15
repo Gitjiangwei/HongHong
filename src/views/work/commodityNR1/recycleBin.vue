@@ -98,10 +98,7 @@
           <a-button type="primary" @click="deleteskuBrandBtn(record)">删除</a-button>
         </span>
       </a-table>
-
     </a-modal>
-
-
 <!--        修改商品弹出框-->
     <a-drawer
       title="修改商品"
@@ -159,9 +156,7 @@
             下一步
           </a-button>
         </div>
-
       </template>
-
       <!--第二步-->
       <template v-if="current==1">
         <a-form
@@ -219,9 +214,7 @@
             下一步
           </a-button>
         </div>
-
       </template>
-
       <!--第三步-->
       <template v-if="current==2">
         <a-form
@@ -256,15 +249,9 @@
             确定修改
           </a-button>
         </div>
-
       </template>
     </a-drawer>
-
-
-
-
 <!--    删除商品提示框-->
-
     <a-modal
       title="删除"
       :visible="delspuvisible"
@@ -273,10 +260,8 @@
     >
       <p>确定要删除该商品吗</p>
     </a-modal>
-
   </div>
 </template>
-
 <script>
   import {getAction, httpAction, postAction} from '@/api/manage'
   import JImageUpload from '../../../components/jeecg/JImageUpload'
@@ -285,10 +270,7 @@
   import pick from 'lodash.pick'
   import qs from 'qs'
 
-
-
   export default {
-
     components: {
       JImageUpload,
       JEditor
@@ -380,7 +362,6 @@
         delspuhandleOk(){
           this.delspuvisible=false
           postAction('/kunze/spu/deleteSpu',this.ids).then((res)=>{
-            // console.log(res)
             if(res.success==true){
               this.getAllProducts(this.shopId)
               this.$message.success('删除商品成功');
@@ -399,16 +380,13 @@
               shopId:this.shopId,
               spuList:this.ids
             }
-          console.log(data)
           postAction('/kunze/spu/updateSpuSaleable',data).then((res)=>{
-              console.log(res)
               if(res.success==true){
                 this.getAllProducts(this.shopId)
                 this.$message.success('上架成功');
               }else {
                 this.$message.warning('上架失败 ');
               }
-
             })
         },
         //批量下架
@@ -426,12 +404,10 @@
               }else {
                 this.$message.warning('下架失败 ');
               }
-
             })
         },
       //选择分类
         onChangeShop(e){
-          console.log(e)
           this.cids=e
           this.search.cid3=e[2]
         },
@@ -448,9 +424,7 @@
             saleable:that.search.saleable,
             id:that.search.shopId
           }).then((res)=>{
-
             that.data=res.result.list
-
             let key=0
             that.data.forEach(e=>{
               e.image=window._CONFIG['domianURL']+'/'+e.image
@@ -458,13 +432,9 @@
             })
             that.ipagination.total = res.result.total;
           })
-
-
-
         },
       //点击商品上架或下架
         shangjia(e){
-          console.log(e)
           let spuList=[]
           spuList.push(e.id)
           if(e.saleable==0){
@@ -473,17 +443,13 @@
               shopId:this.shopId,
               spuList:spuList
             }
-
-
             postAction('/kunze/spu/updateSpuSaleable',data).then((res)=>{
-              console.log(res)
               if(res.success==true){
                 this.getAllProducts(this.shopId)
                 this.$message.success('上架成功');
               }else {
                 this.$message.warning('上架失败 ');
               }
-
             })
           }else {
             let  data = {
@@ -492,28 +458,18 @@
               spuList:spuList
             }
             postAction('/kunze/spu/updateSpuSaleable',data).then((res)=>{
-
               if(res.success==true){
                 this.getAllProducts(this.shopId)
                 this.$message.success('下架成功');
               }else {
                 this.$message.warning('下架失败 ');
               }
-
             })
           }
-
-
-
         },
-
-
-
-
         //分页
         handleTableChange(pagination, filters, sorter) {
           //分页、排序、筛选变化时触发
-          console.log(sorter);
           //TODO 筛选
           if (Object.keys(sorter).length > 0) {
             this.isorter.column = sorter.field;
@@ -523,7 +479,6 @@
           this.getAllProducts(this.shopId);
         },
         xiuskuBrandBtn(e){
-          console.log(e)
           this.sku=e
           let that=this
           this.cids.push(e.cid1)
@@ -533,14 +488,10 @@
           this.form.spuimage1=this.spu.images[0]
           this.form.spuimage2=this.spu.images[1]
           this.form.spuimage3=this.spu.images[2]
-
-          console.log(this.spu)
           getAction('/kunze/spec/specList',{categoryId:e.cid3}).then((res)=>{
-            console.log(res,'sku')
             if(res.result==null){
               that.dxuandatas=[]
             }else {
-
               that.dxuandatas=JSON.parse(res.result.specifications)
               that.dxuandatas.forEach(e=>{
                 e.params.forEach((y,i)=>{
@@ -569,29 +520,18 @@
                         group:e.group,
                         params:nm
                       })
-
                     }
-
                   }
                 })
-
               })
-
             }
-            console.log(this.dxuandatas)
-
           })
-
-
           this.xiuBrandvisible=true
-
           this.brand.forEach(e=>{
             if(e.bname==this.spu.bname){
               this.form.brand=e.bid
             }
-
           })
-
           this.indexes=e.indexes.split(',')
           this.form.title=this.spu.title
           this.form.subTitle=this.spu.subTitle
@@ -601,16 +541,9 @@
           this.form.afterService=e.afterService
           this.form.description=e.description
           this.form.spuimage= this.spu.image.substr(38)
-          console.log( this.form)
-
           this.$nextTick(() => {
             this.formTranslate.setFieldsValue(pick(this.form, 'title','brand', 'subTitle','price','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3'))
           });
-
-
-
-
-
         },
         deleteskuBrandBtn(e){},
         handleCancel(){
@@ -641,8 +574,6 @@
         },
         //点击查看按钮
         xiuBrandBtn(e){
-
-
           // this.form.banimage1=e.images
           this.spu=[]
           this.skudata=[]
@@ -657,7 +588,6 @@
               e.ownSpec=e.ownSpec.slice(1,e.ownSpec.length-1)
             })
           })
-
           this.visible=true
           that.spu=e
           that.spu.images=that.spu.images.split(",")
@@ -670,9 +600,6 @@
           }).then((res)=>{
             console.log(res)
           })
-
-
-
         },
         onSelectChange(selectedRowKeys, selectedRows){
           let that=this
@@ -680,10 +607,8 @@
             that.ids.push(e.id)
           })
         },
-
         //获取所有商品
         getAllProducts(e){
-
           let that=this
           // console.log(that.shopId)
           getAction('/kunze/spu/spuList',{
@@ -702,18 +627,12 @@
             that.ipagination.total = res.result.total;
             // console.log(that.data)
           })
-
-
-
         },
-
         edit(record) {
           this.$nextTick(() => {
             this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','skuimage','spuimage','spuimage1','spuimage2','spuimage3'))
           });
-
         },
-
         // 点击下一步
         nextStep(){
           let that = this
@@ -724,10 +643,6 @@
             if(values.title && values.subTitle && values.brand){
               that.form.title=values.title
               that.form.subTitle=values.subTitle
-              // that.brand.forEach(e=>{
-              //   console.log(e)
-              // })
-
               that.form.brand=values.brand
               this.current=this.current-(-1)
               this.$nextTick(() => {
@@ -743,18 +658,13 @@
           });
         },
         nextStep2(){
-
           let that = this
           // 触发表单验证
           this.formTranslate.validateFields((err, values) => {
-
             if(values.price && values.stock && values.skuimage){
               that.form.stock=values.stock
               that.form.price=values.price
               that.form.skuimage=values.skuimage
-
-              // console.log(values.skuimage)
-              // alert('submit!');
               if(this.indexes.length!=0){
                 this.skuVos.push({
                   id: that.sku.id,
@@ -763,22 +673,15 @@
                   price: values.price,
                   stock: values.stock,
                   images:values.skuimage
-                  
+
                 })
                 console.log(this.skuVos)
                 this.current=this.current-(-1)
               }else {
                 this.$message.warning('请选择所属分类');
               }
-
             }
-            // this.current=this.current-(-1)
           })
-
-
-
-
-
         },
         nextStep3(){
           this.current=this.current-1
@@ -786,7 +689,6 @@
             this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','skuimage','spuimage','spuimage1','spuimage2','spuimage3'))
           });
         },
-
         determine(){
           this.formTranslate.validateFields((err, values) => {
             let that = this
@@ -794,9 +696,7 @@
               that.form.title=values.stock
               that.form.subTitle=values.price
               that.form.skuimage=values.skuimage
-
                 if (this.indexes.length != 0) {
-                  console.log(1)
                   that.skuVos.push({
                     id: that.sku.id,
                     indexes: that.indexes,
@@ -808,13 +708,11 @@
                   this.form.stock = ''
                   this.form.price = ''
                   this.dxuandatas = []
-
                 } else {
                   this.$message.warning('请选择所属分类');
                 }
               }
               })
-
         },
         //点击参数单选框
         onChange2(e){
@@ -894,41 +792,26 @@
                           params:nm
                         })
                       }
-
                     }
-
                   }
                 })
-
               })
-
             }
-
           })
-
-
         },
-
         onSubmit(){
           let that=this
-
-          // console.log(this.form.spuimage)
-
           this.formTranslate.validateFields((err, values) => {
-
-
                 that.form.spuimage=values.spuimage
                 that.form.spuimage1=values.spuimage1
                 that.form.spuimage2=values.spuimage2
                 that.form.spuimage3=values.spuimage3
 
               })
-
                 this.skuVos.forEach(e => {
                   e.indexes = JSON.stringify(e.indexes)
                   e.ownSpec = JSON.stringify(e.ownSpec)
                 })
-
                 let spuBo = {
                   'brandId': this.form.brand,
                   'cid1': this.cids[0],
@@ -949,10 +832,7 @@
                   'subTitle': this.form.subTitle,
                   'title': this.form.title
                 }
-                console.log(spuBo)
-
                 httpAction('/kunze/spu/updateSpu', spuBo, 'post').then((res) => {
-                  console.log(res)
                   if (res.success == true) {
                     that.current = 0
                     that.form.brand = []
@@ -973,16 +853,9 @@
                     that.visible = false
                     that.$message.success('修改成功');
                     this.getAllProducts(this.shopId)
-
                   }
-
                 })
-
-
-
               },
-
-
         resetForm(){},
         getBrand(){
           let that=this
@@ -993,32 +866,24 @@
                 e. keys=key++
               })
               that.brand=res.result.list
-
             })
           })
           getAction('/kunze/category/qryList',{id:'',pid:''}).then((res)=>{
-            console.log(res,321321321)
             that.options=res.result
-            console.log(that.options)
-
           })
         },
       },
       mounted() {
-        // this.shopId=JSON.parse(sessionStorage.getItem("store")).shopId
-        // this.shopId=sessionStorage.getItem('shopId')
         if(JSON.parse(sessionStorage.getItem("store")).shopId){
           this.shopId=JSON.parse(sessionStorage.getItem("store")).shopId
         }else {
           this.shopId=sessionStorage.getItem('shopId')
         }
       this.getAllProducts(this.shopId)
-
         this.getBrand()
       }
   }
 </script>
-
 <style scoped>
   .modifyBtn{
     margin-right: 10px;

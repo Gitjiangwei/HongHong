@@ -99,7 +99,7 @@
               </div>
             </div>
             <div class="dd-box-item">
-              <div class="dd-box-item2" style="border-right: 0">
+              <div class="dd-box-item2" style="cursor: pointer;border-right: 0" @click="handleSpuNotShelf">
                 <div class="dd-box-item2-font">
                   <span>{{notsheif}}</span>
                 </div>
@@ -160,6 +160,7 @@
     </a-row>
     <order-status-list ref="OrderStatusList" @ok="modalFormOkOrder"></order-status-list>
     <spu-stock-model ref="SpuStockModel" @ok="modalFormOkStock"></spu-stock-model>
+    <spu-not-shelf-list ref="SpuNotShelfList" @ok="modalFormOkStock"></spu-not-shelf-list>
   </div>
 </template>
 <script>
@@ -170,6 +171,7 @@
   import LineChartMultid from '@/components/chart/LineChartMultid'
   import OrderStatusList from "../order/model/OrderStatusList"
   import SpuStockModel from "../work/commodity1/model/SpuStockModel"
+  import SpuNotShelfList from "../work/commodityNR1/model/SpuNotShelfList"
   import qs from 'qs'
 
 
@@ -181,7 +183,8 @@
       ATooltip,
       LineChartMultid,
       OrderStatusList,
-      SpuStockModel
+      SpuStockModel,
+      SpuNotShelfList
     },
     data(){
       return{
@@ -298,6 +301,10 @@
       handleStock(){
         this.$refs.SpuStockModel.hearderList(this.shopId);
         this.$refs.SpuStockModel.title = "库存不足商品";
+      },
+      handleSpuNotShelf(){
+        this.$refs.SpuNotShelfList.hearderList(this,shopId);
+        this.$refs.SpuNotShelfList.title = "未上架商品";
       },
       handleSaveSpu(){
         this.$router.push({name:'work-commodityNR1-addcommodity',params:{}})

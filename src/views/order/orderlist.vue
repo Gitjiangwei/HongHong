@@ -65,7 +65,7 @@
                      <a @click="preview(record.orderId)">接单</a>
               </a-menu-item>
               <a-menu-item>
-                  <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.orderId)">
+                  <a-popconfirm title="确定拒绝吗?" @confirm="() => handleDelete(record.orderId)">
                     <a>拒绝</a>
                   </a-popconfirm>
               </a-menu-item>
@@ -79,7 +79,7 @@
             <a-menu slot="overlay">
               <a-menu-item>
                 <a-popconfirm title="确定退款吗?" @confirm="() => refund(record.orderId)">
-                     <a >退款</a>
+                     <a>退款</a>
                 </a-popconfirm>
               </a-menu-item>
               <a-menu-item>
@@ -252,9 +252,6 @@
           param.append('orderId' , e)
           param.append('userID' , "")
           postAction('/kunze/order/selectOrderById',param).then((res)=>{
-            // console.log(res.result.amountPayment)
-            // console.log(res.result.postFree)
-            // console.log(res.result.orderId)
             let amount=res.result.amountPayment - (- res.result.postFree)
             let params = new URLSearchParams()
             params.append('orderNo',res.result.orderId)
@@ -284,14 +281,11 @@
           })
         },
         preview(orderId){
-          for(let i=0;i<2;i++){
-            console.log(1)
             let params = {
               orderId:orderId,
               status:"2",
             }
             postAction(this.url.dayin,params).then((res)=>{
-
               if(res.success){
                 this.$message.success("接单成功！");
                 this.loadData();
@@ -306,7 +300,6 @@
                   }
                   Data.push(spuList);
                 }
-
                 let ss ={
                   "ReportType": "gridreport",     /*报表类型 gridreport fastreport 为空 将默认为gridreport  */
                   "ReportName": "PosTicket.grf",     /*报表文件名 POS小票 */
@@ -343,39 +336,23 @@
                     +'{"type": "ftString", "name": "je","size": 255,"required": false},'
                     +'{"type": "ftString", "name": "unitPriceTotle","size": 255,"required": false},'
                     +']',
-
                   "Data":JSON.stringify(Data),
-
                 }
-                console.log(ss);
                 var ip = "127.0.0.1";
                 var port = "12345";
-                $.post("http://"+ip+":"+port+"/printreport", ss,
-                  function(data){
-                    data = decodeURIComponent(data);
-                    //alert(data);
-
-
-                    if(data==""){
-                      alert("连接HttpPrinter失败");
-                    }else{
-                      //alert(data);
-                      var obj = JSON.parse(data);
-                      //alert(obj.status);
-                      /*
-                                            if(obj.status=="ok"){
-                                            }else{
-                                              alert("打印失败:"+obj.data);
-                                            }*/
-                      //console.log(data);
-
-                    }
-                  });
-
+                for(let i=0;i<2;i++) {
+                  $.post("http://" + ip + ":" + port + "/printreport", ss,
+                    function (data) {
+                      data = decodeURIComponent(data);
+                      if (data == "") {
+                        alert("连接HttpPrinter失败");
+                      } else {
+                        var obj = JSON.parse(data);
+                      }
+                    });
+                }
               }
             });
-          }
-
 
         },
         handleDetail(record) {

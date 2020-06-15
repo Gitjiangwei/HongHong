@@ -355,15 +355,17 @@
             console.log(ss);
             var ip = "127.0.0.1";
             var port = "12345";
-            $.post("http://"+ip+":"+port+"/printreport", ss,
-              function(data){
-                data = decodeURIComponent(data);
-                if(data==""){
-                  alert("连接HttpPrinter失败");
-                }else{
-                  var obj = JSON.parse(data);
-                }
-              });
+            for(let i=0;i<2;i++) {
+              $.post("http://" + ip + ":" + port + "/printreport", ss,
+                function (data) {
+                  data = decodeURIComponent(data);
+                  if (data == "") {
+                    alert("连接HttpPrinter失败");
+                  } else {
+                    var obj = JSON.parse(data);
+                  }
+                });
+            }
           }
         });
       },
