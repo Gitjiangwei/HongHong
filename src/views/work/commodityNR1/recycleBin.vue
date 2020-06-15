@@ -484,7 +484,7 @@
           this.cids.push(e.cid1)
           this.cids.push(e.cid2)
           this.cids.push(e.cid3)
-          this.form.skuimage=e.images.substr(38)
+          this.form.skuimage=e.skuimage
           this.form.spuimage1=this.spu.images[0]
           this.form.spuimage2=this.spu.images[1]
           this.form.spuimage3=this.spu.images[2]
@@ -540,7 +540,7 @@
           this.form.packingList= e.packingList
           this.form.afterService=e.afterService
           this.form.description=e.description
-          this.form.spuimage= this.spu.image.substr(38)
+          this.form.spuimage= this.spu.spuimage
           this.$nextTick(() => {
             this.formTranslate.setFieldsValue(pick(this.form, 'title','brand', 'subTitle','price','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3'))
           });
@@ -584,6 +584,7 @@
             console.log(res)
             that.skudata=res.result
             that.skudata.forEach(e=>{
+              e.skuimage=e.images
               e.images=window._CONFIG['domianURL']+'/'+e.images
               e.ownSpec=e.ownSpec.slice(1,e.ownSpec.length-1)
             })
@@ -591,15 +592,8 @@
           this.visible=true
           that.spu=e
           that.spu.images=that.spu.images.split(",")
-          console.log(that.spu)
-          console.log(e.id, this.shopId)
-          getAction('/kunze/spu/spuList',{
-            id:e.id,
-            pageSize:1,
-            shopId:this.shopId
-          }).then((res)=>{
-            console.log(res)
-          })
+
+
         },
         onSelectChange(selectedRowKeys, selectedRows){
           let that=this
@@ -621,7 +615,9 @@
 
             let key=0
             that.data.forEach(e=>{
+              e.spuimage=e.image
               e.image=window._CONFIG['domianURL']+'/'+e.image
+
               e.key=key++
             })
             that.ipagination.total = res.result.total;
