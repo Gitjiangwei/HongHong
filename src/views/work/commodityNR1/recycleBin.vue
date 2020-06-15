@@ -230,7 +230,12 @@
           :wrapper-col="wrapperCol"
         >
           <a-form-item label="商品图片" hasFeedback>
-            <j-image-upload class="avatar-uploader" text="上传"  v-decorator="['spuimage', {rules: [{ required: true, message: '请输入商品库存', }]}]"></j-image-upload>
+            <j-image-upload class="avatar-uploader" text="上传"   v-decorator="['spuimage', {rules: [{ required: false, message: '请输入商品库存', }]}]"></j-image-upload>
+          </a-form-item>
+          <a-form-item label="商品详情轮播图" hasFeedback>
+            <j-image-upload class="avatar-uploader" text="上传" style="float: left"  v-decorator="['spuimage1', {rules: [{ required: false, message: '请输入商品库存', }]}]" ></j-image-upload>
+            <j-image-upload class="avatar-uploader" text="上传" style="float: left"  v-decorator="['spuimage2', {rules: [{ required: false, message: '请输入商品库存', }]}]" ></j-image-upload>
+            <j-image-upload class="avatar-uploader" text="上传" style="float: left"  v-decorator="['spuimage3', {rules: [{ required: false, message: '请输入商品库存', }]}]" ></j-image-upload>
           </a-form-item>
           <a-form-item label="包装清单" prop="packingList" >
             <a-input v-model="form.packingList" />
@@ -335,7 +340,10 @@
             subTitle:'',
             title:'',
             skuimage:"",
-            spuimage:''
+            spuimage:'',
+            spuimage1:"",
+            spuimage2:"",
+            spuimage3:""
           },
           skuVos:[],
           formTranslate: this.$form.createForm(this),
@@ -344,7 +352,7 @@
           visible:false,
           id:'',
           xiushopForm:{},
-          fileList:[],
+          // fileList:[],
           indexes:[],
           index:[],
           specifications:[],
@@ -372,7 +380,7 @@
         delspuhandleOk(){
           this.delspuvisible=false
           postAction('/kunze/spu/deleteSpu',this.ids).then((res)=>{
-            console.log(res)
+            // console.log(res)
             if(res.success==true){
               this.getAllProducts(this.shopId)
               this.$message.success('删除商品成功');
@@ -521,7 +529,10 @@
           this.cids.push(e.cid1)
           this.cids.push(e.cid2)
           this.cids.push(e.cid3)
-          this.form.skuimage=e.images
+          this.form.skuimage=e.images.substr(38)
+          this.form.spuimage1=this.spu.images[0]
+          this.form.spuimage2=this.spu.images[1]
+          this.form.spuimage3=this.spu.images[2]
 
           console.log(this.spu)
           getAction('/kunze/spec/specList',{categoryId:e.cid3}).then((res)=>{
@@ -573,22 +584,27 @@
 
 
           this.xiuBrandvisible=true
-          console.log(this.spu.image)
+
+          this.brand.forEach(e=>{
+            if(e.bname==this.spu.bname){
+              this.form.brand=e.bid
+            }
+
+          })
 
           this.indexes=e.indexes.split(',')
           this.form.title=this.spu.title
           this.form.subTitle=this.spu.subTitle
-          this.form.brand=this.spu.bname
           this.form.price=e.price
           this.form.stock=e.stock
           this.form.packingList= e.packingList
-            this.form.afterService=e.afterService
+          this.form.afterService=e.afterService
           this.form.description=e.description
-          this.form.spuimage=this.spu.image
-
+          this.form.spuimage= this.spu.image.substr(38)
+          console.log( this.form)
 
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title','brand', 'subTitle','price','stock','brand','skuimage','spuimage'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title','brand', 'subTitle','price','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3'))
           });
 
 
@@ -625,7 +641,7 @@
         },
         //点击查看按钮
         xiuBrandBtn(e){
-          console.log(e)
+
 
           // this.form.banimage1=e.images
           this.spu=[]
@@ -644,7 +660,8 @@
 
           this.visible=true
           that.spu=e
-
+          that.spu.images=that.spu.images.split(",")
+          console.log(that.spu)
           console.log(e.id, this.shopId)
           getAction('/kunze/spu/spuList',{
             id:e.id,
@@ -692,7 +709,7 @@
 
         edit(record) {
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','skuimage','spuimage'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','skuimage','spuimage','spuimage1','spuimage2','spuimage3'))
           });
 
         },
@@ -707,10 +724,14 @@
             if(values.title && values.subTitle && values.brand){
               that.form.title=values.title
               that.form.subTitle=values.subTitle
+              // that.brand.forEach(e=>{
+              //   console.log(e)
+              // })
+
               that.form.brand=values.brand
               this.current=this.current-(-1)
               this.$nextTick(() => {
-                this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','brand','skuimage','spuimage'))
+                this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3'))
               });
             }
           })
@@ -718,7 +739,7 @@
         nextStep1(){
           this.current=this.current-1
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','brand','skuimage','spuimage'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3'))
           });
         },
         nextStep2(){
@@ -732,6 +753,7 @@
               that.form.price=values.price
               that.form.skuimage=values.skuimage
 
+              // console.log(values.skuimage)
               // alert('submit!');
               if(this.indexes.length!=0){
                 this.skuVos.push({
@@ -739,8 +761,11 @@
                   indexes: this.indexes,
                   ownSpec:  this.ownSpec,
                   price: values.price,
-                  stock: values.stock
+                  stock: values.stock,
+                  images:values.skuimage
+                  
                 })
+                console.log(this.skuVos)
                 this.current=this.current-(-1)
               }else {
                 this.$message.warning('请选择所属分类');
@@ -758,7 +783,7 @@
         nextStep3(){
           this.current=this.current-1
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','skuimage','spuimage'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','skuimage','spuimage','spuimage1','spuimage2','spuimage3'))
           });
         },
 
@@ -777,7 +802,8 @@
                     indexes: that.indexes,
                     ownSpec: that.ownSpec,
                     price: values.price,
-                    stock: values.stock
+                    stock: values.stock,
+                    images:values.skuimage.substr(38)
                   })
                   this.form.stock = ''
                   this.form.price = ''
@@ -846,8 +872,12 @@
                     if(y.options[0]==''){
 
                     }else {
-                      Vue.set(that.ownSpec,y.k,y.options[0])
-                      Vue.set(that.specTemplate,y.k,y.options)
+                      if(y.global=='false') {
+                        Vue.set(that.ownSpec, y.k, y.options[0])
+                      }
+                      if(y.global=='false'){
+                        Vue.set(that.specTemplate,y.k,y.options)
+                      }
                       that.indexes.push(0)
                       that.index.push(y.k)
                       let nn= {
@@ -858,10 +888,12 @@
                       }
                       let nm=[]
                       nm.push(nn)
-                      that.specifications.push({
-                        group:e.group,
-                        params:nm
-                      })
+                      if(y.global=='true'){
+                        that.specifications.push({
+                          group:e.group,
+                          params:nm
+                        })
+                      }
 
                     }
 
@@ -880,61 +912,77 @@
         onSubmit(){
           let that=this
 
+          // console.log(this.form.spuimage)
 
-              this.skuVos.forEach(e=>{
-                e.indexes=JSON.stringify(e.indexes)
-                e.ownSpec=JSON.stringify(e.ownSpec)
+          this.formTranslate.validateFields((err, values) => {
+
+
+                that.form.spuimage=values.spuimage
+                that.form.spuimage1=values.spuimage1
+                that.form.spuimage2=values.spuimage2
+                that.form.spuimage3=values.spuimage3
+
               })
 
+                this.skuVos.forEach(e => {
+                  e.indexes = JSON.stringify(e.indexes)
+                  e.ownSpec = JSON.stringify(e.ownSpec)
+                })
 
-              let spuBo={
-                'brandId': this.form.brand,
-                'cid1': this.cids[0],
-                'cid2': this.cids[1],
-                'cid3': this.cids[2],
-                'image': this.fileList,
-                'shopId':this.shopId,
-                "id": this.spu.id,
-                'skuVos':this.skuVos,
-                'spuDetail': {
-                  'afterService': this.form.afterService,
-                  'description': this.form.description,
-                  'packingList': this.form.packingList,
-                  'specTemplate': JSON.stringify(this.specTemplate),
-                  'specifications':JSON.stringify(this.specifications),
-                },
-                'subTitle': this.form.subTitle,
-                'title':this.form.title
-              }
-          console.log(spuBo)
-
-          httpAction('/kunze/spu/updateSpu', spuBo,'post').then((res)=>{
-                console.log(res)
-                if(res.success==true){
-                  that.current=0
-                  that.form.brand=[]
-                  that.cids=[]
-                  that.fileList=[]
-                  that.skuVos=[]
-                  that.form.afterService=''
-                  that.form.description=''
-                  that.form.price=''
-                  that.form.stock=''
-                  that.form.packingList=''
-                  that.specTemplate=[]
-                  that.specifications=[]
-                  that.indexes=[]
-                  that.form.subTitle=''
-                  that.form.title=''
-                  that.$message.success('修改成功');
+                let spuBo = {
+                  'brandId': this.form.brand,
+                  'cid1': this.cids[0],
+                  'cid2': this.cids[1],
+                  'cid3': this.cids[2],
+                  'image': this.form.spuimage,
+                  "images": that.form.spuimage1 + ',' + that.form.spuimage2 + ',' + that.form.spuimage3,
+                  'shopId': this.shopId,
+                  "id": this.spu.id,
+                  'skuVos': this.skuVos,
+                  'spuDetail': {
+                    'afterService': this.form.afterService,
+                    'description': this.form.description,
+                    'packingList': this.form.packingList,
+                    'specTemplate': JSON.stringify(this.specTemplate),
+                    'specifications': JSON.stringify(this.specifications),
+                  },
+                  'subTitle': this.form.subTitle,
+                  'title': this.form.title
                 }
+                console.log(spuBo)
 
-              })
+                httpAction('/kunze/spu/updateSpu', spuBo, 'post').then((res) => {
+                  console.log(res)
+                  if (res.success == true) {
+                    that.current = 0
+                    that.form.brand = []
+                    that.cids = []
+                    this.form.spuimage = ""
+                    that.skuVos = []
+                    that.form.afterService = ''
+                    that.form.description = ''
+                    that.form.price = ''
+                    that.form.stock = ''
+                    that.form.packingList = ''
+                    that.specTemplate = []
+                    that.specifications = []
+                    that.indexes = []
+                    that.form.subTitle = ''
+                    that.form.title = ''
+                    that.xiuBrandvisible = false
+                    that.visible = false
+                    that.$message.success('修改成功');
+                    this.getAllProducts(this.shopId)
+
+                  }
+
+                })
 
 
 
+              },
 
-        },
+
         resetForm(){},
         getBrand(){
           let that=this

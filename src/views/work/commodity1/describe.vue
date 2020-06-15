@@ -538,7 +538,7 @@
                 global:this.grop.params[0].global
               }
               postAction('/kunze/spec/updateSpec', params).then((res) => {
-
+                console.log(res)
                 if (res.success == true) {
                   this.hqcsmb()
                   this.$message.success('添加属性成功');

@@ -226,7 +226,7 @@
           this.formTranslate.validateFields((err, values) => {
             if(values.title && values.subTitle &&values.brand){
               that.form.title=values.title
-
+              console.log(values.brand)
               that.form.subTitle=values.subTitle
               that.form.brand=values.brand
               this.current=this.current-(-1)
