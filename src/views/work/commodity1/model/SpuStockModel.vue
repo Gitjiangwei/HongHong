@@ -12,22 +12,16 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline">
         <a-row :gutter="24">
-
           <a-col :md="6" :sm="24">
-            <a-form-item label="订单编号">
-              <a-input placeholder="请输入订单编号" v-model="queryParam.orderId"></a-input>
+            <a-form-item label="商品名称">
+              <a-input placeholder="请输入商品名称" v-model="queryParam.title"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="24">
-            <a-form-item label="订单状态">
-              <a-select placeholder="请输入订单状态"  v-model="queryParam.status">
-                <a-select-option value="1">未付款</a-select-option>
-                <a-select-option value="2">已付款</a-select-option>
-                <a-select-option value="3">未发货</a-select-option>
-                <a-select-option value="4">已发货</a-select-option>
-                <a-select-option value="7">已退款</a-select-option>
-                <a-select-option value="5">交易成功</a-select-option>
-                <a-select-option value="6">交易关闭</a-select-option>
+            <a-form-item label="是否上架">
+              <a-select placeholder="请输入订单状态"  v-model="queryParam.enable">
+                <a-select-option value="1">上架</a-select-option>
+                <a-select-option value="0">下架</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -62,47 +56,39 @@
         :loading="loading"
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
+        <template slot="avatarslot" slot-scope="text, record, index">
+          <div class="anty-img-wrap">
+            <a-avatar shape="square" :src="getAvatarView(record.image)" icon="user"/>
+          </div>
+        </template>
         <span slot="action" slot-scope="text, record">
-          <a @click="handleDetail(record)">查看</a>
-          <span v-if="record.status==2">
-            <a-divider type="vertical" />
-          <a-dropdown>
-            <a class="ant-dropdown-link">是否接单 <a-icon type="down" /></a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                     <a @click="preview(record.orderId)">接单</a>
-              </a-menu-item>
-              <a-menu-item>
-                  <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.orderId)">
-                    <a>拒绝</a>
-                  </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
-          </span>
+          <a @click="handleReplen(record)">补货</a>
         </span>
 
       </a-table>
+      <replenish-ment-model ref="ReplenishMentModel" @ok = 'modalFormOk'></replenish-ment-model>
     </div>
   </a-modal>
 </template>
 <script>
+
   import ARow from "ant-design-vue/es/grid/Row";
   import { JeecgListMixin } from '@/mixins/JeecgListMixin';
-  import {deleteAction, getAction, postAction} from '@/api/manage';
+  import {deleteAction, getAction, getFileAccessHttpUrl} from '@/api/manage';
   import {filterObj,timeFix} from '@/utils/util';
-  import $ from 'jquery';
+  import ReplenishMentModel from './ReplenishMentModel';
+
 
   export default {
-    name: "OrderStatusList",
+    name:"SpuStockModel",
     mixins:[JeecgListMixin],
     components:{
       ARow,
+      ReplenishMentModel,
     },
-    data() {
-      return {
-        description: '订单',
-        status:"",
+    data(){
+      return{
+        description: '库存不足商品',
         shopId:"",
         visible: false,
         confirmLoading: false,
@@ -119,77 +105,49 @@
             }
           },
           {
-            title: '订单编号',
+            title: '图片',
             align: "center",
-            dataIndex: 'orderId'
+            dataIndex: 'images',
+            scopedSlots: {customRender: "avatarslot"}
           },
           {
-            title: '实付金额',
+            title: '商品名称',
             align: "center",
-            dataIndex: 'payment'
+            dataIndex: 'title'
           },
           {
-            title: '收货人',
+            title: '规格',
             align: "center",
-            dataIndex: 'consigneeSex',
+            dataIndex: 'ownSpec',
           },
           {
-            title: '联系方式',
+            title: '优惠价格',
             align: "center",
-            dataIndex: 'telphone'
+            dataIndex: 'newPrice'
           },
           {
-            title: '下单时间',
+            title: '价格',
             align: "center",
-            dataIndex: 'createTime'
+            dataIndex: 'price'
           },
           {
-            title: '订单状态',
+            title: '是否上架',
             align: "center",
-            dataIndex: 'status',
+            dataIndex: 'saleable',
             customRender: (text) => {
-              if(text==1){
-                return " 未付款";
-              }else if(text==2){
-                return <span style='color: green; font-weight:bold'>已付款</span>;
-              }else if(text==3){
-                return <span style='color: red;font-weight:bold'>未发货</span>;
-              }else if(text==4){
-                return "已发货";
-              }else if(text==5){
-                return "交易成功";
-              }else if(text==6){
-                return "交易关闭";
-              }else if(text==7){
-                return "已退款";
+              if(text==0){
+                return <span style='color: red; font-weight:bold'>未上架</span>;
+              }else if(text==1){
+                return <span style='color: green; font-weight:bold'>已上架</span>;
               }else {
                 return text;
               }
             }
           },
           {
-            title: '交易完成时间',
+            title: '库存',
             align: "center",
-            dataIndex: 'endTime'
-          },
-          {
-            title: '提货方式',
-            align: "center",
-            dataIndex: 'pickUp',
-            customRender: (text) => {
-              if(text==1){
-                return "自提";
-              }else if(text==2){
-                return "商家配送";
-              }else{
-                return text;
-              }
-            }
-          },
-          {
-            title: '备注',
-            align: "center",
-            dataIndex: 'buyerMessage'
+            dataIndex: 'stock'
           },
           {
             title: '操作',
@@ -220,9 +178,8 @@
         selectedRowKeys: [],
         selectedRows: [],
         url: {
-          list: "/kunze/order/selectOrder",
-          dayin:"/kunze/imidate/dayin",
-          jiedan:"/kunze/order/selectStatus",
+          list: "/kunze/menu/selectStock",
+          imgerver:window._CONFIG['staticDomainURL'],
         },
       }
     },
@@ -230,6 +187,9 @@
       this.shopId=this.$store.state.shopId
     },
     methods:{
+      getAvatarView: function (avatar) {
+        return getFileAccessHttpUrl(avatar,this.url.imgerver,"http")
+      },
       loadData(arg) {
         //加载数据 若传入参数1则加载第一页的内容
         if (arg === 1) {
@@ -245,11 +205,18 @@
           }
         })
       },
-      handList(status,shopId){
-        this.visible = true;
-        this.status = status;
+      handleReplen(record){
+        this.$refs.ReplenishMentModel.ReplenishMent(record);
+        this.$refs.ReplenishMentModel.title="补货";
+      },
+      modalFormOk() {
+        // 新增/修改 成功时，重载列表
+        this.loadData();
+      },
+      hearderList(shopId){
+        this.visible=true;
         this.shopId = shopId;
-        this.loadData(1);
+        this.loadData("1");
       },
       searchReset() {
         var that = this;
@@ -261,7 +228,6 @@
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
         param.shopId = this.shopId;
-        param.status = this.status;
         return filterObj(param);
       },
       onSelectChange(selectedRowKeys, selectionRows) {
@@ -293,8 +259,6 @@
         this.ipagination = pagination;
         this.loadData();
       },
-    },
+    }
   }
-
-
 </script>

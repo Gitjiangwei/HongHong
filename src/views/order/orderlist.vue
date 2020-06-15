@@ -247,9 +247,6 @@
       methods:{
         //确定退款
         refund(e){
-          console.log(e)
-
-
           let param = new URLSearchParams()
           param.append('shopID',this.shopId)
           param.append('orderId' , e)

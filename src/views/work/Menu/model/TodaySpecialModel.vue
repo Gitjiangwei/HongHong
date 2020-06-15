@@ -67,18 +67,6 @@
             format="YYYY-MM-DD"
           />
         </a-form-item>
-<!--        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="特卖结束时间"
-          hasFeedback
-        >
-          <a-date-picker
-            v-decorator="['specialendTime', {rules: [{ required: true, message: '请选择特卖结束时间', }]}]"
-            show-time
-            format="YYYY-MM-DD HH:mm:ss"
-          />
-        </a-form-item>-->
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
@@ -271,7 +259,6 @@
         this.close()
       },
       specialstartTime(rule, value, callback){
-        debugger;
         if(!value){
           callback("特卖日期不能为空！")
         }else{
