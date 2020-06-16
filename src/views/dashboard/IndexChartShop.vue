@@ -270,7 +270,6 @@
       },
       mmm(){
        let winWidth = window.innerWidth;
-        console.log(winWidth)
       },
       modalFormOkOrder(){
         this.loaders(this.shopId);
@@ -303,7 +302,7 @@
         this.$refs.SpuStockModel.title = "库存不足商品";
       },
       handleSpuNotShelf(){
-        this.$refs.SpuNotShelfList.hearderList(this,shopId);
+        this.$refs.SpuNotShelfList.hearderList(this.shopId);
         this.$refs.SpuNotShelfList.title = "未上架商品";
       },
       handleSaveSpu(){

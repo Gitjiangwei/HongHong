@@ -10,15 +10,6 @@
               <a-input placeholder="请输入超市名称" v-model="queryParam.shopName"></a-input>
             </a-form-item>
           </a-col>
-<!--          <a-col :md="6" :sm="24">
-            <a-form-item label="订单类型">
-              <a-select placeholder="请输入订单类型"  v-model="queryParam.ctype">
-                <a-select-option value="1">国内订单</a-select-option>
-                <a-select-option value="2">国际订单</a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>-->
-
           <a-col :md="6" :sm="24" >
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
