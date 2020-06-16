@@ -54,7 +54,7 @@
 
         <template slot="avatarslot" slot-scope="text, record, index">
           <div class="anty-img-wrap">
-            <a-avatar shape="square" :src="getAvatarView(record.wheelImages)" icon="user"/>
+            <a-avatar shape="square" :src="getAvatarView(record.image)" icon="user"/>
           </div>
         </template>
       </a-table>

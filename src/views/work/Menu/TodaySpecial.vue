@@ -62,7 +62,7 @@
 
         <template slot="avatarslot" slot-scope="text, record, index">
           <div class="anty-img-wrap">
-            <a-avatar shape="square" :src="getAvatarView(record.wheelImages)" icon="user"/>
+            <a-avatar shape="square" :src="getAvatarView(record.image)" icon="user"/>
           </div>
         </template>
 
@@ -126,7 +126,7 @@
           {
             title: '图片',
             align: "center",
-            dataIndex: 'wheelImages',
+            dataIndex: 'image',
             scopedSlots: {customRender: "avatarslot"}
           },
           {

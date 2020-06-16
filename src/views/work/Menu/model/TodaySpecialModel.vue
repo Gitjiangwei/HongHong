@@ -35,7 +35,7 @@
           hasFeedback
         >
           <a-input placeholder="请输入商品特卖价格" maxlength="30"
-                   v-decorator="['featuresPrice', {rules: [{ required: true, message: '请输入商品特卖价格', }]}]"/>
+                   v-decorator="['featuresPrice', validatorRules.spuPrice]"/>
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
@@ -44,7 +44,7 @@
           hasFeedback
         >
           <a-input placeholder="请输入商品特卖库存" maxlength="10"
-                   v-decorator="['featuresStock', {rules: [{ required: true, message: '请输入商品特卖库存', }]}]"/>
+                   v-decorator="['featuresStock', validatorRules.Stock]"/>
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
@@ -53,7 +53,7 @@
           hasFeedback
         >
           <a-input placeholder="请输入商品顺序" maxlength="10"
-                   v-decorator="['featuresWeight', {rules: [{ required: true, message: '请输入商品顺序', }]}]"/>
+                   v-decorator="['featuresWeight', validatorRules.checkNum]"/>
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
@@ -125,6 +125,15 @@
         validatorRules:{
           specialstartTime: {
             rules: [{required: true,validator: this.specialstartTime}]
+          },
+          Stock:{
+            rules: [{required: true,validator: this.checkStock}]
+          },
+          spuPrice: {
+            rules: [{required: true,validator: this.checkSpuPrice}]
+          },
+          checkNum: {
+            rules: [{required: true,validator: this.checkNum}]
           }
         },
         url: {
@@ -142,8 +151,6 @@
         queryByShopId({id:wheelId}).then((res)=>{
           if(res.success){
             this.selectedRole = res.result;
-          }else{
-            console.log(res.message);
           }
         });
       },
@@ -188,8 +195,6 @@
         getAction(this.url.shopList).then((res)=>{
           if(res.success){
             this.shopList = res.result;
-          }else{
-            console.log(res.message);
           }
         });
       },
@@ -273,7 +278,43 @@
             callback()
           }
         }
-      }
+      },
+      checkStock(rule, value, callback){
+        if(!value){
+          callback("库存数量不能为空！");
+        }else {
+          var reg =/^([1-9][\d]{0,7}|0)?$/;
+          if(!value.match(reg)){
+            callback("库存数量只能输入数字！")
+          }else {
+            callback();
+          }
+        }
+      },
+      checkSpuPrice(rule, value, callback){
+        if(!value){
+          callback("特卖价格不能为空！");
+        }else {
+          var priceReg = /(^[1-9]\d*(\.\d{1,2})?$)|(^0(\.\d{1,2})?$)/;
+          if(!value.match(priceReg)){
+            callback("请输入正确的特卖商品价格:整数或者保留两位小数");
+          }else {
+            callback();
+          }
+        }
+      },
+      checkNum(rule, value, callback){
+        if(!value){
+          callback("请输入顺序！");
+        }else {
+          var reg =/^([1-9][\d]{0,7}|0)?$/;
+          if(!value.match(reg)){
+            callback("顺序只能输入数字！")
+          }else {
+            callback();
+          }
+        }
+      },
     },
   }
 </script>

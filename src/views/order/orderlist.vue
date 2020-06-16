@@ -23,7 +23,11 @@
               </a-select>
             </a-form-item>
           </a-col>
-
+          <a-col :md="6" :sm="24">
+            <a-form-item label="联系方式">
+              <a-input placeholder="请输入联系方式" maxlength="11" v-model="queryParam.telphone"></a-input>
+            </a-form-item>
+          </a-col>
           <a-col :md="6" :sm="24" >
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>

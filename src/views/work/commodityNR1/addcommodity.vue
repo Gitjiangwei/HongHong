@@ -31,10 +31,10 @@
         :wrapper-col="wrapperCol"
       >
         <a-form-item label="标题"  hasFeedback>
-          <a-input  v-decorator="['title', {rules: [{ required: true, message: '请输入商品名称', }]}]" />
+          <a-input  maxlength="150" v-decorator="['title', {rules: [{ required: true, message: '请输入商品名称', }]}]" />
         </a-form-item>
         <a-form-item label="子标题" hasFeedback>
-          <a-input  v-decorator="['subTitle', {rules: [{ required: true, message: '请输入子标题', }]}]" />
+          <a-input  maxlength="200" v-decorator="['subTitle', {rules: [{ required: true, message: '请输入子标题', }]}]" />
         </a-form-item>
         <a-form-item label="品牌" hasFeedback>
           <a-select  placeholder="选择品牌"  v-decorator="['brand', {rules: [{ required: true, message: '请选择选择品牌', }]}]"  >
@@ -94,13 +94,13 @@
                   </a-form-item>
                 </template>
                 <a-form-item label="销售价格" hasFeedback>
-                  <a-input  placeholder="单位为元" v-decorator="['price', {rules: [{ required: true, message: '请输入销售价格', }]}]" />
+                  <a-input  placeholder="单位为元" maxlength="10" v-decorator="['price', validatorRules.spuPrice]" />
                 </a-form-item>
-                <a-form-item label="商品库存"  hasFeedback>
-                  <a-input   v-decorator="['stock', {rules: [{ required: true, message: '请输入商品库存', }]}]"  />
+                <a-form-item label="商品库存" maxlength="10"  hasFeedback>
+                  <a-input   v-decorator="['stock', validatorRules.Stock]"  />
                 </a-form-item>
                 <a-form-item label="商品图片" hasFeedback>
-                  <j-image-upload class="avatar-uploader" text="上传"  v-decorator="['image', {rules: [{ required: true, message: '请输入商品库存', }]}]" ></j-image-upload>
+                  <j-image-upload class="avatar-uploader" text="上传"  v-decorator="['image', {rules: [{ required: true, message: '请上传商品图片', }]}]" ></j-image-upload>
                 </a-form-item>
 
         </a-form>
@@ -134,10 +134,12 @@
                   <j-image-upload class="avatar-uploader" text="上传" v-model="fileList3" style="width: 104px;float: left "></j-image-upload>
                 </a-form-item>
                 <a-form-item label="包装清单"  >
-                  <a-input v-model="form.packingList" />
+                  <!--<a-input v-model="form.packingList" />-->
+                    <a-textarea placeholder="请输入包装清单" maxlength="500" v-model="form.packingList" />
                 </a-form-item>
                 <a-form-item label="售后服务"   >
-                  <a-input v-model="form.afterService" />
+                  <!--<a-input v-model="form.afterService" />-->
+                  <a-textarea placeholder="请输入售后服务" maxlength="500" v-model="form.afterService" />
                 </a-form-item>
                 <a-form-item label="商品描述" >
                   <j-editor v-model="form.description"/>
@@ -171,9 +173,11 @@
   import Vue from 'vue'
   import pick from 'lodash.pick'
   import moment from 'moment'
+  import ATextarea from "ant-design-vue/es/input/TextArea";
   export default {
     name: 'addcommodity',
     components: {
+      ATextarea,
       JImageUpload,
       JEditor
     },
@@ -210,6 +214,14 @@
           fileList2:[],
           fileList3:[],
           cids:[],
+          validatorRules:{
+            spuPrice: {
+              rules: [{required: true,validator: this.checkSpuPrice}]
+            },
+            Stock:{
+              rules: [{required: true,validator: this.checkStock}]
+            },
+          },
           formTranslate: this.$form.createForm(this),
         }
       },
@@ -442,6 +454,30 @@
           getAction('/kunze/category/qryList',{id:'',pid:''}).then((res)=>{
             that.options=res.result
           })
+        },
+        checkSpuPrice(rule, value, callback){
+          if(!value){
+            callback("商品价格不能为空！");
+          }else {
+            var priceReg = /(^[1-9]\d*(\.\d{1,2})?$)|(^0(\.\d{1,2})?$)/;
+            if(!value.match(priceReg)){
+              callback("请输入正确的商品价格:整数或者保留两位小数");
+            }else {
+              callback();
+            }
+          }
+        },
+        checkStock(rule, value, callback){
+          if(!value){
+            callback("库存数量不能为空！");
+          }else {
+            var reg =/^([1-9][\d]{0,7}|0)?$/;
+            if(!value.match(reg)){
+              callback("库存数量只能输入数字！")
+            }else {
+              callback();
+            }
+          }
         },
       },
       mounted() {
