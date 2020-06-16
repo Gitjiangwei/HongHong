@@ -235,6 +235,7 @@
         },
         nextStep1(){
           this.current=this.current-1
+
           this.$nextTick(() => {
             this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','brand','price','stock','image'))
           });
