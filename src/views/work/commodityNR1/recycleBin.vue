@@ -193,6 +193,9 @@
               </template>
             </a-form-item>
           </template>
+          <a-form-item label="优惠价格"  hasFeedback>
+            <a-input  placeholder="单位为元" v-decorator="['newPrice', {rules: [{ required: false, message: '', }]}]" />
+          </a-form-item>
           <a-form-item label="销售价格"  hasFeedback>
             <a-input  placeholder="单位为元" v-decorator="['price', {rules: [{ required: true, message: '请输入销售价格', }]}]" />
           </a-form-item>
@@ -291,6 +294,7 @@
             { title: '商品名称', dataIndex: 'title', key: 'title' },
             { title: '规格', dataIndex: 'ownSpec', key: 'ownSpec' },
             { title: '图片', dataIndex: 'images', key: 'images',scopedSlots: { customRender: 'images' } },
+            { title: '优惠价格', dataIndex: 'newPrice', key: 'newPrice' },
             { title: '价格', dataIndex: 'price', key: 'price' },
             { title: '编辑', dataIndex: 'isflag', key: 'isflag', scopedSlots: { customRender: 'bianji' } },
           ],

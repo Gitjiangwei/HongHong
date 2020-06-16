@@ -5,7 +5,6 @@
     :visible="visible"
     :confirmLoading="confirmLoading"
     @cancel="handleCancel"
-    @ok="handleCancel"
     cancelText="关闭"
   >
     <!-- 查询区域 -->
@@ -81,9 +80,9 @@
           </a-dropdown>
           </span>
         </span>
-
       </a-table>
     </div>
+    <order-detail ref="OrderDetail"></order-detail>
   </a-modal>
 </template>
 <script>
@@ -91,6 +90,7 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin';
   import {deleteAction, getAction, postAction} from '@/api/manage';
   import {filterObj,timeFix} from '@/utils/util';
+  import OrderDetail from './OrderDetail';
   import $ from 'jquery';
 
   export default {
@@ -98,6 +98,7 @@
     mixins:[JeecgListMixin],
     components:{
       ARow,
+      OrderDetail,
     },
     data() {
       return {
@@ -250,6 +251,10 @@
         this.status = status;
         this.shopId = shopId;
         this.loadData(1);
+      },
+      handleDetail(record) {
+        this.$refs.OrderDetail.detail(record);
+        this.$refs.OrderDetail.title = "订单详情";
       },
       searchReset() {
         var that = this;

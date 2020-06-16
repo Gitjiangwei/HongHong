@@ -5,7 +5,7 @@
     :visible="visible"
     :confirmLoading="confirmLoading"
     @cancel="handleCancel"
-    @ok="handleCancel"
+
     cancelText="关闭"
   >
 
@@ -185,7 +185,6 @@
           this.$message.warning('请选择一条记录！');
           return;
         }else {
-          var ids = "";
           let spuList=[]
           for (var a = 0; a < this.selectedRowKeys.length; a++) {
             spuList.push(this.selectionRows[a].id)
