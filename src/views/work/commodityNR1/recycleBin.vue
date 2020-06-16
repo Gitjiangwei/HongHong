@@ -670,6 +670,7 @@
                   id: that.sku.id,
                   indexes: this.indexes,
                   ownSpec:  this.ownSpec,
+                  newPrice: values.newPrice,
                   price: values.price,
                   stock: values.stock,
                   images:values.skuimage
