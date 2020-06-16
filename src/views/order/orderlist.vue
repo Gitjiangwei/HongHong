@@ -322,6 +322,7 @@
                     +'{"type": "", "name": "orders","value": "'+res.result.orders+'","required": false},'
                     +'{"type": "", "name": "saleNum","value": "'+res.result.saleNum+'","required": false},'
                     +'{"type": "", "name": "saleSum","value": "'+res.result.saleSum+'","required": false},'
+                    +'{"type": "", "name": "postFree","value": "'+res.result.postFree+'","required": false},'
                     +'{"type": "", "name": "practical","value": "'+res.result.practical+'","required": false},'
                     +'{"type": "", "name": "pickUp","value": "'+res.result.pickUp+'","required": false},'
                     +'{"type": "", "name": "shippingAddress","value": "'+res.result.distributionVo.shippingAddress+'","required": false},'

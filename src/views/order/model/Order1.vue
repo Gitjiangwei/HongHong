@@ -104,10 +104,10 @@
         <a-col :span="8">
         <a-button type="dashed" v-show="status==2" @click="nextStep">拒接接单</a-button>
         &nbsp;
-        <a-button type="primary" v-show="status==2"  @click="nextStep">确认接单</a-button>
+        <a-button type="primary" v-show="status==2"  @click="nextStep(2)">确认接单</a-button>
           <a-button type="dashed" v-show="status!=2"  @click="nextStops">下一步</a-button>
           &nbsp;
-          <a-button type="primary" v-show="status1=2"  @click="nextStep">打印小票</a-button>
+          <a-button type="primary" v-show="status!=2"  @click="nextStep(1)">打印小票</a-button>
         </a-col>
       </a-row>
     </a-form>
@@ -292,15 +292,17 @@
         }
         this.$emit('nextStep');
       },
-      nextStep () {
+      nextStep (isFlag) {
         let params = {
           orderId:this.orderId,
-          // status:this.status,
+           status:this.status,
         }
         postAction(this.url.dayin,params).then((res)=>{
           if(res.success){
-            // this.$message.success("接单成功！");
-            // this.$emit('nextStep');
+            if(isFlag==2) {
+               this.$message.success("接单成功！");
+               this.$emit('nextStep');
+            }
             let Data = [];
             for(let i = 0;i<res.result.commodityList.length;i++){
               let spuList = {
@@ -334,6 +336,7 @@
                 +'{"type": "", "name": "orders","value": "'+res.result.orders+'","required": false},'
                 +'{"type": "", "name": "saleNum","value": "'+res.result.saleNum+'","required": false},'
                 +'{"type": "", "name": "saleSum","value": "'+res.result.saleSum+'","required": false},'
+                +'{"type": "", "name": "postFree","value": "'+res.result.postFree+'","required": false},'
                 +'{"type": "", "name": "practical","value": "'+res.result.practical+'","required": false},'
                 +'{"type": "", "name": "pickUp","value": "'+res.result.pickUp+'","required": false},'
                 +'{"type": "", "name": "shippingAddress","value": "'+res.result.distributionVo.shippingAddress+'","required": false},'
@@ -355,7 +358,7 @@
             console.log(ss);
             var ip = "127.0.0.1";
             var port = "12345";
-            for(let i=0;i<2;i++) {
+            for(let i=0;i<isFlag;i++) {
               $.post("http://" + ip + ":" + port + "/printreport", ss,
                 function (data) {
                   data = decodeURIComponent(data);
