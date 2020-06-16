@@ -8,6 +8,7 @@
     @ok="handleCancel"
     cancelText="关闭"
   >
+
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
       <a-form layout="inline">
@@ -29,6 +30,12 @@
       </a-form>
     </div>
 
+    <!-- 操作按钮区域 -->
+    <div class="table-operator" style="margin-bottom: 16px;">
+      <a-dropdown v-if="selectedRowKeys.length > 0">
+        <a-button style="margin-left: 8px" @click="batchSalable"> 批量上架 </a-button>
+      </a-dropdown>
+    </div>
 
     <!-- table区域-begin -->
     <div>
@@ -54,7 +61,7 @@
           </div>
         </template>
         <span slot="action" slot-scope="text, record">
-          <a @click="handleReplen(record)">上架</a>
+          <a style="cursor: pointer" @click="handleReplen(record)">上架</a>
         </span>
 
       </a-table>
@@ -65,7 +72,7 @@
 
   import ARow from "ant-design-vue/es/grid/Row";
   import { JeecgListMixin } from '@/mixins/JeecgListMixin';
-  import {deleteAction, getAction, getFileAccessHttpUrl} from '@/api/manage';
+  import {postAction, getAction, getFileAccessHttpUrl} from '@/api/manage';
   import {filterObj,timeFix} from '@/utils/util';
 
   export default {
@@ -105,7 +112,7 @@
             dataIndex: 'title'
           },
           {
-            title: '规格',
+            title: '分类',
             align: "center",
             dataIndex: 'cname',
           },
@@ -140,6 +147,7 @@
         url: {
           list: "/kunze/spu/spuList",
           imgerver:window._CONFIG['staticDomainURL'],
+          spuSaleable:"/kunze/spu/updateSpuSaleable",
         },
       }
     },
@@ -155,6 +163,56 @@
         this.shopId = shopId;
         this.loadData("1");
       },
+      handleReplen(record){
+        let spuList=[]
+        spuList.push(record.id)
+        let  data = {
+          saleable:'1',
+          shopId:this.shopId,
+          spuList:spuList
+        }
+        postAction(this.url.spuSaleable,data).then((res)=>{
+          if(res.success){
+            this.$message.success('上架成功');
+            this.loadData("1")
+          }else {
+            this.$message.warning('上架失败 ');
+          }
+        })
+      },
+      batchSalable(){
+        if (this.selectedRowKeys.length <= 0) {
+          this.$message.warning('请选择一条记录！');
+          return;
+        }else {
+          var ids = "";
+          let spuList=[]
+          for (var a = 0; a < this.selectedRowKeys.length; a++) {
+            spuList.push(this.selectionRows[a].id)
+          }
+          let  data = {
+            saleable:'1',
+            shopId:this.shopId,
+            spuList:spuList
+          }
+          let that = this;
+          this.$confirm({
+            title:"确认上架",
+            content:"是否确认上架选中的商品！",
+            onOk:function () {
+              postAction(that.url.spuSaleable,data).then((res) =>{
+                if(res.success){
+                  that.$message.success(res.message);
+                  that.loadData();
+                  that.onClearSelected();
+                }else {
+                  that.$message.warning(res.message);
+                }
+              })
+            }
+          })
+        }
+      },
       loadData(arg){
         //加载数据 若传入参数1则加载第一页的内容
         if (arg === 1) {
@@ -163,7 +221,6 @@
         var params = this.getQueryParams();//查询条件
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
-            debugger;
             this.dataSource = res.result.list;
             this.ipagination.total = res.result.total;
           }
@@ -174,6 +231,7 @@
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
         param.shopId = this.shopId;
+        param.saleable = "0"
         return filterObj(param);
       },
       onSelectChange(selectedRowKeys, selectionRows) {
