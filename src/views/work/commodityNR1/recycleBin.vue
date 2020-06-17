@@ -156,12 +156,13 @@
             </a-row>
 
           </a-form>
+          <a-button type="primary" @click="modifyBasic" style="margin-left:70%">确定修改基本信息</a-button>
         </a-tab-pane>
 
 
 
 
-        <a-tab-pane key="2" tab="sku">
+        <a-tab-pane key="2" tab="规格">
           <a-table :columns="skucolumns" :data-source="skudata"  >
          <span slot="images" slot-scope="text,record">
            <img :src=record.images alt="">
@@ -192,13 +193,19 @@
           :wrapper-col="wrapperCol"
         >
           <a-form-item label="销售价格"  hasFeedback>
-            <a-input  placeholder="单位为元" v-decorator="['price', validatorRules.spuPrice]" />
+            <a-input  placeholder="单位为元"  v-decorator="['price', {rules: [{ required: true, message: '请输入商品价格', }]}]"  />
+<!--            v-decorator="['price', validatorRules.spuPrice]"-->
           </a-form-item>
-          <a-form-item label="商品库存"   hasFeedback>
-            <a-input  v-decorator="['stock', validatorRules.Stock]" />
+          <a-form-item label="优惠价格"  hasFeedback>
+            <a-input  placeholder="单位为元"  v-decorator="['newprice', {rules: [{ required: true, message: '请输入优惠价格', }]}]"  />
+            <!--            v-decorator="['price', validatorRules.spuPrice]"-->
+          </a-form-item>
+          <a-form-item label="商品库存"    hasFeedback>
+            <a-input type="number"  v-decorator="['stock', {rules: [{ required: true, message: '请输入商品库存', }]}]" />
+<!--            v-decorator="['stock', validatorRules.Stock]"-->
           </a-form-item>
           <a-form-item label="商品图片" hasFeedback>
-            <j-image-upload class="avatar-uploader" text="上传"  v-decorator="['skuimage', {rules: [{ required: true, message: '请输入商品库存', }]}]" ></j-image-upload>
+            <j-image-upload class="avatar-uploader" text="上传"  v-decorator="['skuimage', {rules: [{ required: true, message: '请输入商品图片', }]}]" ></j-image-upload>
           </a-form-item>
         </a-form>
       </a-modal>
@@ -266,6 +273,7 @@
           form: {
             brand:'',
             price:"",
+            newprice:'',
             stock:'',
             description:'',
             afterService:'',
@@ -315,6 +323,49 @@
         }
       },
       methods:{
+      //确定修改基本信息
+        modifyBasic(){
+          let that=this
+          this.formTranslate.validateFields((err, values) => {
+            that.form.spuimage=values.spuimage
+            that.form.spuimage1=values.spuimage1
+            that.form.spuimage2=values.spuimage2
+            that.form.spuimage3=values.spuimage3
+          })
+          let spuBo = {
+            'brandId': this.form.brand,
+            'cid1': this.cids[0],
+            'cid2': this.cids[1],
+            'cid3': this.cids[2],
+            'image': this.form.spuimage,
+            "images": that.form.spuimage1 + ',' + that.form.spuimage2 + ',' + that.form.spuimage3,
+            'shopId': this.shopId,
+            "id": this.spu.id,
+            'spuDetail': {
+              'afterService': this.form.afterService,
+              'description': this.form.description,
+              'packingList': this.form.packingList,
+            },
+            'subTitle': this.form.subTitle,
+            'title': this.form.title
+          }
+          httpAction('/kunze/spu/updateSpu', spuBo, 'post').then((res) => {
+            if (res.success == true) {
+              that.form.brand = []
+              that.cids = []
+              this.form.spuimage = ""
+              that.form.afterService = ''
+              that.form.description = ''
+              that.form.packingList = ''
+              that.form.subTitle = ''
+              that.form.title = ''
+              that.xiuBrandvisible = false
+              that.visible = false
+              that.$message.success('修改成功');
+              this.getAllProducts(this.shopId)
+            }
+          })
+        },
         delspuhandleCancel(){
           this.delspuvisible=false
         },
@@ -447,7 +498,7 @@
           this.form.stock=e.stock
           this.form.skuimage=e.skuimage
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title','brand', 'subTitle','price','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title','brand', 'subTitle','price','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description','newprice'))
           });
 
         },
@@ -512,7 +563,7 @@
               this.form.spuimage2=this.spu.images[1]
               this.form.spuimage3=this.spu.images[2]
               this.$nextTick(() => {
-                this.formTranslate.setFieldsValue(pick(this.form, 'title','brand', 'subTitle','price','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description'))
+                this.formTranslate.setFieldsValue(pick(this.form, 'title','brand', 'subTitle','price','newprice','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description'))
               });
               this.visible=true
             }
@@ -554,7 +605,7 @@
         },
         edit(record) {
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','newprice','stock','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description'))
           });
         },
 
@@ -591,46 +642,56 @@
         //点击修改sku确认按钮
         nextStep2(){
           console.log(32132)
-          debugger
           let that = this
           // 触发表单验证
           that.formTranslate.validateFields((err, values) => {
             console.log(values,11111)
-            if(values.skuimage){
+            that.form.stock=values.stock
+            that.form.price=values.price
+            that.form.newprice=values.newprice
+            that.form.skuimage=values.skuimage
+            if(values.price,values.stock,values.skuimage,values.newprice){
+              let priceReg = /(^[1-9]\d*(\.\d{1,2})?$)|(^0(\.\d{1,2})?$)/;
+              if(!that.form.price.match(priceReg)){
+                this.$message.warning('请输入正确的商品价格:整数或者保留两位小数');
+              }else {
+                if(!that.form.newprice.match(priceReg)){
+                  this.$message.warning('请输入正确的商品优惠价格:整数或者保留两位小数');
+                }else {
 
-                  that.form.stock=values.stock
-                  that.form.price=values.price
-                  that.form.skuimage=values.skuimage
-                  this.skuVos.push({
-                    id: that.sku.id,
-                    price: values.price,
-                    stock: values.stock,
-                    images:values.skuimage
 
-                  })
 
-              let spuBo = {
-                'shopId': this.shopId,
-                "id": this.spu.id,
-                'skuVos': this.skuVos,
-              }
-              httpAction('/kunze/spu/updateSpu', spuBo, 'post').then((res) => {
-                console.log(res)
-                if (res.success == true) {
-                  that.skuVos = []
-                  that.xiuBrandvisible = false
-                  that.visible = false
-                  that.$message.success('修改成功');
-                  this.getAllProducts(this.shopId)
+                    that.form.stock=values.stock
+                    that.form.price=values.price
+                    that.form.newprice=values.newprice
+                    that.form.skuimage=values.skuimage
+                    this.skuVos.push({
+                      id: that.sku.id,
+                      price: values.price,
+                      stock: values.stock,
+                      images:values.skuimage,
+                      newPrice:values.newprice
+
+                    })
+
+                    let spuBo = {
+                      'shopId': this.shopId,
+                      "id": this.spu.id,
+                      'skuVos': this.skuVos,
+                    }
+                    httpAction('/kunze/spu/updateSpu', spuBo, 'post').then((res) => {
+                      console.log(res)
+                      if (res.success == true) {
+                        that.skuVos = []
+                        that.xiuBrandvisible = false
+                        that.visible = false
+                        that.$message.success('修改成功');
+                        this.getAllProducts(this.shopId)
+                      }
+                    })
+
                 }
-              })
-
-
-
-                  // this.xiuBrandvisible=false
-
-
-
+              }
 
 
             }
@@ -639,63 +700,6 @@
 
 
 
-        onSubmit(){
-          let that=this
-          this.formTranslate.validateFields((err, values) => {
-                that.form.spuimage=values.spuimage
-                that.form.spuimage1=values.spuimage1
-                that.form.spuimage2=values.spuimage2
-                that.form.spuimage3=values.spuimage3
-
-              })
-                this.skuVos.forEach(e => {
-                  e.indexes = JSON.stringify(e.indexes)
-                  e.ownSpec = JSON.stringify(e.ownSpec)
-                })
-                let spuBo = {
-                  'brandId': this.form.brand,
-                  'cid1': this.cids[0],
-                  'cid2': this.cids[1],
-                  'cid3': this.cids[2],
-                  'image': this.form.spuimage,
-                  "images": that.form.spuimage1 + ',' + that.form.spuimage2 + ',' + that.form.spuimage3,
-                  'shopId': this.shopId,
-                  "id": this.spu.id,
-                  'skuVos': this.skuVos,
-                  'spuDetail': {
-                    'afterService': this.form.afterService,
-                    'description': this.form.description,
-                    'packingList': this.form.packingList,
-                    'specTemplate': JSON.stringify(this.specTemplate),
-                    'specifications': JSON.stringify(this.specifications),
-                  },
-                  'subTitle': this.form.subTitle,
-                  'title': this.form.title
-                }
-                httpAction('/kunze/spu/updateSpu', spuBo, 'post').then((res) => {
-                  if (res.success == true) {
-
-                    that.form.brand = []
-                    that.cids = []
-                    this.form.spuimage = ""
-                    that.skuVos = []
-                    that.form.afterService = ''
-                    that.form.description = ''
-                    that.form.price = ''
-                    that.form.stock = ''
-                    that.form.packingList = ''
-                    that.specTemplate = []
-                    that.specifications = []
-                    that.indexes = []
-                    that.form.subTitle = ''
-                    that.form.title = ''
-                    that.xiuBrandvisible = false
-                    that.visible = false
-                    that.$message.success('修改成功');
-                    this.getAllProducts(this.shopId)
-                  }
-                })
-              },
         resetForm(){},
         getBrand(){
           let that=this
