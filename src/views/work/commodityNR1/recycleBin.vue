@@ -162,7 +162,7 @@
 
 
 
-        <a-tab-pane key="2" tab="规格">
+        <a-tab-pane key="2"  tab="规格">
           <a-table :columns="skucolumns" :data-source="skudata"  >
          <span slot="images" slot-scope="text,record">
            <img :src=record.images alt="">
