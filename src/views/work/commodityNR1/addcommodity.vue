@@ -254,6 +254,7 @@
         },
         nextStep2(){
           this.formTranslate.validateFields((err, values) =>{
+            console.log(values)
             if (values.price && values.stock && values.image){
               if (this.indexes.length != 0) {
                 this.skuVos.push({
@@ -400,6 +401,7 @@
                 'title':this.form.title
               }
               httpAction('/kunze/spu/saveGood', spuBo,'post').then((res)=>{
+                console.log(res)
                 if(res.success==true){
                   that.current=0
                   that.form.brand=''
@@ -481,7 +483,7 @@
         },
       },
       mounted() {
-        this.shopId=JSON.parse(sessionStorage.getItem("store")).shopId
+        this.shopId=sessionStorage.getItem('shopId')
         this.getBrand()
       }
   }

@@ -718,11 +718,7 @@
         },
       },
       mounted() {
-        if(JSON.parse(sessionStorage.getItem("store")).shopId){
-          this.shopId=JSON.parse(sessionStorage.getItem("store")).shopId
-        }else {
-          this.shopId=sessionStorage.getItem('shopId')
-        }
+        this.shopId=sessionStorage.getItem('shopId')
       this.getAllProducts(this.shopId)
         this.getBrand()
       }
