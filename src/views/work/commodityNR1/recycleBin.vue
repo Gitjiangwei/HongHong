@@ -146,7 +146,26 @@
                 </a-form-item>
               </a-col>
             </a-row>
+            <a-row>
+              <a-col :span="24">
+                <a-form-item label="基本信息" hasFeedback>
+                  <template v-for="j in specifications">
+                    <template v-for="x in j.params">
+                      <a-row>
+                        <a-col :span="3">
+                          {{x.k}}
+                        </a-col>
+                        <a-col :span="1"></a-col>
+                        <a-col :span="20">
+                          <a-input v-model="x.v" />
+                        </a-col>
+                      </a-row>
 
+                    </template>
+                  </template>
+                </a-form-item>
+              </a-col>
+            </a-row>
             <a-row>
               <a-col :span="24">
                 <a-form-item label="商品描述" hasFeedback>
@@ -197,7 +216,7 @@
 <!--            v-decorator="['price', validatorRules.spuPrice]"-->
           </a-form-item>
           <a-form-item label="优惠价格"  hasFeedback>
-            <a-input  placeholder="单位为元"  v-decorator="['newprice', {rules: [{ required: true, message: '请输入优惠价格', }]}]"  />
+            <a-input  placeholder="单位为元"  v-decorator="['newPrice', {rules: [{ required: true, message: '请输入优惠价格', }]}]"  />
             <!--            v-decorator="['price', validatorRules.spuPrice]"-->
           </a-form-item>
           <a-form-item label="商品库存"    hasFeedback>
@@ -273,7 +292,7 @@
           form: {
             brand:'',
             price:"",
-            newprice:'',
+            newPrice:'',
             stock:'',
             description:'',
             afterService:'',
@@ -345,11 +364,13 @@
               'afterService': this.form.afterService,
               'description': this.form.description,
               'packingList': this.form.packingList,
+              "specifications":JSON.stringify(this.specifications),
             },
             'subTitle': this.form.subTitle,
             'title': this.form.title
           }
           httpAction('/kunze/spu/updateSpu', spuBo, 'post').then((res) => {
+            console.log(res)
             if (res.success == true) {
               that.form.brand = []
               that.cids = []
@@ -496,9 +517,10 @@
           this.xiuBrandvisible=true
           this.form.price=e.price
           this.form.stock=e.stock
+          this.form.newPrice=e.newPrice
           this.form.skuimage=e.skuimage
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title','brand', 'subTitle','price','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description','newprice'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title','brand', 'subTitle','price','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description','newPrice'))
           });
 
         },
@@ -532,14 +554,18 @@
         //点击查看按钮
         xiuBrandBtn(e){
           // this.form.banimage1=e.images
+          // console.log(e)
           this.spu=[]
           this.skudata=[]
           let that=this
           let param = new URLSearchParams()
           param.append('spuId',e.id)
           postAction('/kunze/sku/qrySkuBySpuId',param).then((res)=>{
-            console.log(res)
+            // console.log(res)
             if(res.success==true){
+              this.specifications=[]
+              this.specifications=JSON.parse(res.result[0].specifications)
+              // console.log(this.specifications)
               that.skudata=res.result
               that.skudata.forEach(e=>{
                 e.skuimage=e.images
@@ -550,7 +576,10 @@
               this.form.afterService=that.skudata[0].afterService
               this.form.description=that.skudata[0].description
               that.spu=e
-              that.spu.images=that.spu.images.split(",")
+              if(that.spu.images && typeof that.spu.images == 'string'){
+                that.spu.images=that.spu.images.split(",")
+              }
+
               this.form.title=this.spu.title
               this.form.subTitle=this.spu.subTitle
               this.brand.forEach(e=>{

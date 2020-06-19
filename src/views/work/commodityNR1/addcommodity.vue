@@ -36,13 +36,13 @@
         <a-form-item label="子标题" hasFeedback>
           <a-input  maxlength="200" v-decorator="['subTitle', {rules: [{ required: true, message: '请输入子标题', }]}]" />
         </a-form-item>
-        <a-form-item label="品牌" hasFeedback>
-          <a-select  placeholder="选择品牌"  v-decorator="['brand', {rules: [{ required: true, message: '请选择选择品牌', }]}]"  >
-          <a-select-option  v-for="v in brand" :value=v.bid :key="v.keys">
-            {{v.bname}}
-          </a-select-option>
-        </a-select>
-        </a-form-item>
+<!--        <a-form-item label="品牌" hasFeedback>-->
+<!--          <a-select  placeholder="选择品牌"  v-decorator="['brand', {rules: [{ required: true, message: '请选择选择品牌', }]}]"  >-->
+<!--          <a-select-option  v-for="v in brand" :value=v.bid :key="v.keys">-->
+<!--            {{v.bname}}-->
+<!--          </a-select-option>-->
+<!--        </a-select>-->
+<!--        </a-form-item>-->
       </a-form>
       <div style="margin-left: 35%">
         <a-button type="primary" disabled style="margin-right: 20px">
@@ -73,28 +73,47 @@
                 </a-form-item>
                 <template v-if="dxuandatas.length!=0">
                   <a-form-item label="选择参数" >
-                    <template v-for="v in dxuandatas">
-                      <template v-for="x in v.params">
+                    <template v-for="(v,e) in dxuandatas">
+                      <template v-for="(x,i) in v.params">
                         <template v-if="x.options!='' && x.global=='false'">
                           <a-row>
                             <a-col :span="4">
                               <span class="fenzu">{{x.k}}:</span>
                             </a-col>
                             <a-col :span="20">
+
                               <a-radio-group  :name=x.k :v-model=x.value :options="x.options" :default-value="x.options[0]" @change="onChange2" />
+<!--                              <a-button  shape="circle" icon="delete" @click="deleteDxuandatas(e,i,x.k )"/>-->
                             </a-col>
                           </a-row>
                           <br />
                         </template>
-                        <template v-else>
-
-                        </template>
+                      </template>
+                    </template>
+                    <template v-for="(v,e) in specifications">
+                      <template v-for="(x,i) in v.params">
+                        <a-row>
+                          <a-col :span="4">
+                            <span class="fenzu">{{x .k}}:</span>
+                          </a-col>
+                          <a-col :span="20">
+<!--                            <a-input  v-model="x.v" />-->
+                            <a-input ref="userNameInput" v-model="x.v" >
+                              <a-tooltip slot="suffix" title="删除该属性">
+                                <a-icon type="delete" style="color: rgba(0,0,0,.45)" @click="deleteSpec(e,i) " />
+                              </a-tooltip>
+                            </a-input>
+                          </a-col>
+                        </a-row>
                       </template>
                     </template>
                   </a-form-item>
                 </template>
                 <a-form-item label="销售价格" hasFeedback>
                   <a-input  placeholder="单位为元" maxlength="10" v-decorator="['price', validatorRules.spuPrice]" />
+                </a-form-item>
+                <a-form-item label="优惠价格" hasFeedback>
+                  <a-input  placeholder="单位为元" maxlength="10" v-decorator="['newPrice', validatorRules.spuPrice]" />
                 </a-form-item>
                 <a-form-item label="商品库存" maxlength="10"  hasFeedback>
                   <a-input   v-decorator="['stock', validatorRules.Stock]"  />
@@ -183,6 +202,7 @@
     },
       data(){
         return{
+          bb:'',
           fenl:'',
           labelCol: { span: 4 },
           wrapperCol: { span: 14 },
@@ -199,7 +219,8 @@
             packingList:'',
             subTitle:'',
             title:'',
-            image:''
+            image:'',
+            newPrice:''
           },
           brand:[],  //品牌的集合
           options:[],  //分类级联下拉
@@ -226,9 +247,37 @@
         }
       },
       methods:{
+
+      //点击删除专属属性
+        deleteDxuandatas(e,i,t){
+          console.log(e, i)
+          this.dxuandatas[e].params.splice(i,1)
+          this.dxuandatas.forEach((x,y)=>{
+            if(x.params.length==0){
+              this.dxuandatas.splice(y,1)
+            }
+          })
+
+          for(let key in this.ownSpec){
+            if(t==key){
+              delete this.ownSpec[key];
+            }
+          }
+          this.indexes.splice(i,1)
+          console.log(this.dxuandatas)
+        },
+      //点击删除全局属性
+        deleteSpec(e,i){
+          this.specifications[e].params.splice(i,1)
+          this.specifications.forEach((x,y)=>{
+            if(x.params.length==0){
+              this.specifications.splice(y,1)
+            }
+          })
+        },
         edit(record) {
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','brand','price','stock','image'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','brand','price','stock','image','newPrice'))
           });
         },
       // 点击下一步
@@ -236,11 +285,11 @@
           let that = this
           // 触发表单验证
           this.formTranslate.validateFields((err, values) => {
-            if(values.title && values.subTitle &&values.brand){
+            if(values.title && values.subTitle){
               that.form.title=values.title
               console.log(values.brand)
               that.form.subTitle=values.subTitle
-              that.form.brand=values.brand
+              // that.form.brand=values.brand
               this.current=this.current-(-1)
             }
           })
@@ -249,56 +298,112 @@
           this.current=this.current-1
 
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','brand','price','stock','image'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','brand','price','stock','image','newPrice'))
           });
         },
         nextStep2(){
+          // console.log(this.specifications)
+
           this.formTranslate.validateFields((err, values) =>{
-            console.log(values)
-            if (values.price && values.stock && values.image){
-              if (this.indexes.length != 0) {
-                this.skuVos.push({
-                  indexes: this.indexes,
-                  ownSpec: this.ownSpec,
-                  price: values.price,
-                  stock: values.stock,
-                  images:values.image
-                })
-                this.current = this.current - (-1)
-              } else {
+            if (values.price && values.stock && values.image && values.newPrice){
+              if(this.indexes.length==0 && this.specifications.length==0){
                 this.$message.warning('请选择所属分类');
-              }
+              }else {
+                if(this.specifications.length!=0){
+
+                }
+              if (this.indexes.length != 0) {
+
+                let nn = 0
+                this.specifications.forEach(e => {
+                  e.params.forEach(e=>{
+                    if(e.v==''){
+                      this.$message.error('请填写'+e.k);
+                    }else {
+                      nn+=1
+                    }
+                  })
+                })
+                if (nn == this.specifications.length) {
+
+                  // this.specifications
+                  this.skuVos.push({
+                    indexes: this.indexes,
+                    ownSpec: this.ownSpec,
+                    price: values.price,
+                    newPrice: values.newPrice,
+                    stock: values.stock,
+                    images: values.image
+                  })
+                  this.current = this.current - (-1)
+                }
+
+              }}
+
             }
           })
         },
         nextStep3(){
           this.current=this.current-1
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','brand','price','stock','image'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','brand','price','stock','image','newPrice'))
           });
         },
         determine(){
           this.formTranslate.validateFields((err, values) => {
-            if(values.price && values.stock &&values.image){
-              if(this.indexes.length!=0){
-                // console.log(1)
-                this.skuVos.push({
-                  indexes: this.indexes,
-                  ownSpec:  this.ownSpec,
-                  price: values.price,
-                  stock: values.stock,
-                  images: values.image
-                })
-                this.form.stock=''
-                this.form.price=''
-                this.dxuandatas=[]
-                this.$message.success('保存成功，可以再次添加');
-              }else {
+            if(values.price && values.stock &&values.image && values.newPrice){
+              if(this.indexes.length==0 && this.specifications.length==0){
                 this.$message.warning('请选择所属分类');
+              }else {
+                if(this.specifications.length!=0){
+
+
+                  let nn=0
+                  this.specifications.forEach(e=>{
+                    e.params.forEach(e=>{
+                      if(e.v==''){
+                        this.$message.error('请填写'+e.k);
+                      }else {
+                        nn+=1
+                      }
+                    })
+
+                  })
+                  if(nn==this.specifications.length) {
+
+                    this.skuVos.push({
+                      indexes: this.indexes,
+                      ownSpec: this.ownSpec,
+                      price: values.price,
+                      newPrice: values.newPrice,
+                      stock: values.stock,
+                      images: values.image
+                    })
+                    this.form.stock = ''
+                    this.form.price = ''
+                    this.dxuandatas = []
+                    this.$message.success('保存成功，可以再次添加');
+                  }
+                } else {
+                  this.skuVos.push({
+                    indexes: this.indexes,
+                    ownSpec: this.ownSpec,
+                    price: values.price,
+                    newPrice: values.newPrice,
+                    stock: values.stock,
+                    images: values.image
+                  })
+                  this.form.stock = ''
+                  this.form.price = ''
+                  this.dxuandatas = []
+                  this.$message.success('保存成功，可以再次添加');
+                }
               }
+
             }
           })
         },
+
         //点击参数单选框
         onChange2(e){
           let val=e.target.value
@@ -331,20 +436,57 @@
           that.ownSpec={}
           that.index=[]
           that.specTemplate={}
-          that.specifications=[]
+          this.specifications=[]
+          that.dxuandatas=[]
+
           getAction('/kunze/spec/specList',{categoryId:value[2]}).then((res)=>{
+            console.log(JSON.parse(res.result.specifications))
             if(res.result==null){
               that.dxuandatas=[]
             }else {
               that.dxuandatas=JSON.parse(res.result.specifications)
+              // JSON.parse(res.result.specifications).forEach(e=>{
+              //
+              //     if(e.params[0].global=='false'){
+              //       that.dxuandatas.push(e)
+              //     }
+              //
+              // })
+              // console.log(that.dxuandatas)
               that.dxuandatas.forEach(e=>{
                 e.params.forEach((y,i)=>{
                   y.value=''
-                  if(typeof y.options=='string'){
+
+                  let nn= {
+                    k:y.k,
+                    global: true,
+                    searchable: true,
+                    v:''
+                  }
+                  let nm=[]
+                  nm.push(nn)
+
+                  if(y.global=='true'){
+                    that.specifications.push({
+                      group:e.group,
+                      params:nm
+                    })
+                  }
+
+                  // if(y.global=='true'){
+                  //   that.specifications.push({
+                  //       k:y.k,
+                  //       val:''
+                  //
+                  //   })
+                  //
+                  // }
+
+
+                  if(typeof y.options=='string' ){
                     y.options=y.options.split(',');
                     if(y.options[0]==''){
                     }else {
-                      // console.log(y.k,y.options[0])
                       if(y.global=='false') {
                         Vue.set(that.ownSpec, y.k, y.options[0])
                       }
@@ -353,26 +495,14 @@
                       }
                       that.indexes.push(0)
                       that.index.push(y.k)
-                      let nn= {
-                          k:y.k,
-                          v:y.options[0],
-                          global: true,
-                          searchable: true
-                        }
-                        let nm=[]
-                      nm.push(nn)
-                      if(y.global=='true'){
-                        that.specifications.push({
-                          group:e.group,
-                          params:nm
-                        })
-                      }
                     }
                   }
                 })
               })
             }
           })
+          // console.log(that.specifications)
+
         },
         onSubmit(){
           let that=this
@@ -382,7 +512,7 @@
                 e.ownSpec=JSON.stringify(e.ownSpec)
               })
               let spuBo={
-                'brandId': this.form.brand,
+                'brandId': '6742',
                 'cid1': this.cids[0],
                 'cid2': this.cids[1],
                 'cid3': this.cids[2],
@@ -400,7 +530,7 @@
                 'subTitle': this.form.subTitle,
                 'title':this.form.title
               }
-              httpAction('/kunze/spu/saveGood', spuBo,'post').then((res)=>{
+          httpAction('/kunze/spu/saveGood', spuBo,'post').then((res)=>{
                 console.log(res)
                 if(res.success==true){
                   that.current=0
