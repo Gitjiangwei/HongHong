@@ -150,7 +150,11 @@
         this.$emit('prevStep', this.userList);
       },
       nextStops (){
-        this.$emit('nextStep');
+        if(this.status==4){
+          this.$emit('nextStep',"4");
+        }else {
+          this.$emit('nextStep');
+        }
       },
       nextStep () {
         let params = {
@@ -160,7 +164,7 @@
         postAction(this.url.edit,params).then((res) =>{
           if(res.success){
             this.$message.success("开始配送！");
-            this.$emit('nextStep')
+            this.$emit('nextStep',"4")
           }
         })
 

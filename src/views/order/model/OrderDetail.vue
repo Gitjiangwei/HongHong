@@ -36,6 +36,7 @@
           :buyerMessage="buyerMessage"
           :orderId="orderId"
           :status="status"
+          :postFee="postFee"
           v-if="currentTab === 0"
           @nextStep="nextStep"/>
           <order2
@@ -141,7 +142,10 @@
         this.close()
         this.currentTab=0
       },
-      nextStep () {
+      nextStep (data) {
+        if (data!=null&&data!=""&&data!=undefined) {
+          this.status = data;
+        }
         if (this.currentTab < 2) {
           this.currentTab += 1
         }

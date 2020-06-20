@@ -291,9 +291,11 @@
             }
             postAction(this.url.dayin,params).then((res)=>{
               if(res.success){
-                this.$message.success("接单成功！");
-                this.loadData();
-                this.onClearSelected();
+                //if(this.j == 1) {
+                  this.$message.success("接单成功！");
+                  this.loadData();
+                  this.onClearSelected();
+                //}
                 let Data = [];
                 for(let i = 0;i<res.result.commodityList.length;i++){
                   let spuList = {
@@ -345,7 +347,6 @@
                 }
                 var ip = "127.0.0.1";
                 var port = "12345";
-                for(let i=0;i<2;i++) {
                   $.post("http://" + ip + ":" + port + "/printreport", ss,
                     function (data) {
                       data = decodeURIComponent(data);
@@ -353,12 +354,20 @@
                         alert("连接HttpPrinter失败");
                       } else {
                         var obj = JSON.parse(data);
+                        $.post("http://" + ip + ":" + port + "/printreport", ss,
+                          function (data) {
+                            data = decodeURIComponent(data);
+                            if (data == "") {
+                              alert("连接HttpPrinter失败");
+                            } else {
+                              var obj = JSON.parse(data);
+                            }
+                          });
                       }
                     });
-                }
+
               }
             });
-
         },
         handleDetail(record) {
           this.$refs.OrderDetail.detail(record);
