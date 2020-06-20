@@ -73,6 +73,10 @@
                   实付金额：
                   <span>￥{{payAmout | NumberFormat}}</span>
                 </li>
+                <li style="font-weight: bold">
+                  合计：
+                  <span>￥{{priceTotle | NumberFormat}}</span>
+                </li>
               </ul>
             </div>
             <a-card :bordered="false">
@@ -169,7 +173,11 @@
       data:{
         type:Array,
         require:false,
-      }
+      },
+      priceTotle:{
+        type:String,
+        require:false,
+      },
     },
     data(){
       return{
@@ -180,6 +188,7 @@
         calls: this.call,
         telphone: this.telphone,
         address: this.address,
+        priceTotle:this.priceTotle,
         orderId:"",
         status:this.status,
         buyerMessage: this.buyerMessage,
@@ -344,6 +353,7 @@
                   + '{"type": "", "name": "contact","value": "' + res.result.distributionVo.contact + '","required": false},'
                   + '{"type": "", "name": "call","value": "' + res.result.distributionVo.call + '","required": false},'
                   + '{"type": "", "name": "buyerMessage","value": "' + res.result.buyerMessage + '","required": false},'
+                  + '{"type": "", "name": "priceTotle","value": "' + res.result.priceTotle + '","required": false},'
                   + ']',
 
                 "Field": '['  ///*字段， type ftBlob (base64格式) ,ftString ftInteger ftBoolean, ftFloat, ftCurrency,ftDateTime,  size (ftString 设置为实际长度,其他的设置为0,例如 ftInteger ftBlob 等设置为0 )
@@ -356,7 +366,6 @@
                 "Data": JSON.stringify(Data),
 
               }
-              console.log(ss);
               var ip = "127.0.0.1";
               var port = "12345";
               $.post("http://" + ip + ":" + port + "/printreport", ss,

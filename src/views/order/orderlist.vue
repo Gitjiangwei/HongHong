@@ -335,6 +335,7 @@
                     +'{"type": "", "name": "contact","value": "'+res.result.distributionVo.contact+'","required": false},'
                     +'{"type": "", "name": "call","value": "'+res.result.distributionVo.call+'","required": false},'
                     +'{"type": "", "name": "buyerMessage","value": "'+res.result.buyerMessage+'","required": false},'
+                    +'{"type": "", "name": "priceTotle","value": "' + res.result.priceTotle + '","required": false},'
                     +']',
 
                   "Field": '['  ///*字段， type ftBlob (base64格式) ,ftString ftInteger ftBoolean, ftFloat, ftCurrency,ftDateTime,  size (ftString 设置为实际长度,其他的设置为0,例如 ftInteger ftBlob 等设置为0 )

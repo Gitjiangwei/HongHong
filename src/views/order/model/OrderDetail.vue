@@ -37,6 +37,7 @@
           :orderId="orderId"
           :status="status"
           :postFee="postFee"
+          :priceTotle = "priceTotle"
           v-if="currentTab === 0"
           @nextStep="nextStep"/>
           <order2
@@ -90,6 +91,7 @@
         telphone: "",
         address: "",
         status:"",
+        priceTotle:"0",
         buyerMessage: "",
         uploadLoading:false,
         labelCol: {
@@ -127,6 +129,7 @@
         this.salesSum = result.saleSum;
         this.postFee = result.postFree;
         this.payAmout = result.practical;
+        this.priceTotle = result.priceTotle;
       },
 
       close() {

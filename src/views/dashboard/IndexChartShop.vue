@@ -224,6 +224,7 @@
       }
     },
     created(){
+      this.timer();
       setTimeout(() => {
         this.loading = !this.loading
       }, 1000);
@@ -276,6 +277,19 @@
       },
       modalFormOkStock(){
         this.loaderStock(this.shopId);
+      },
+      //定时任务，10秒刷新一次数据
+      timer(){
+        return setInterval(()=>{
+          setTimeout(() => {
+            this.loaders(this.shopId);
+            this.loaderOrder(this.shopId);
+          }, 500);
+          setTimeout(() => {
+            this.loaderStock(this.shopId);
+            this.loaderSevenDeal(this.shopId);
+          }, 500);
+        },10000)
       },
       loaders(shopId){
         let params = {
