@@ -110,13 +110,18 @@
               </a-col>
             </a-row>
             <a-row>
+<!--              <a-col :span="12">-->
+<!--                <a-form-item label="品牌" hasFeedback>-->
+<!--                  <a-select  placeholder="选择品牌"   v-decorator="['brand', {rules: [{ required: true, message: '请选择品牌', }]}]">-->
+<!--                    <a-select-option  v-for="v in brand" :value=v.bid :key="v.keys" >-->
+<!--                      {{v.bname}}-->
+<!--                    </a-select-option>-->
+<!--                  </a-select>-->
+<!--                </a-form-item>-->
+<!--              </a-col>-->
               <a-col :span="12">
-                <a-form-item label="品牌" hasFeedback>
-                  <a-select  placeholder="选择品牌"   v-decorator="['brand', {rules: [{ required: true, message: '请选择品牌', }]}]">
-                    <a-select-option  v-for="v in brand" :value=v.bid :key="v.keys" >
-                      {{v.bname}}
-                    </a-select-option>
-                  </a-select>
+                <a-form-item label="包装清单" hasFeedback >
+                  <a-input  v-decorator="['packingList', {rules: [{ required: false, message: '请输入包装清单', }]}]"/>
                 </a-form-item>
               </a-col>
               <a-col :span="12">
@@ -125,13 +130,7 @@
                 </a-form-item>
               </a-col>
             </a-row>
-            <a-row>
-              <a-col :span="12">
-                <a-form-item label="包装清单" hasFeedback >
-                  <a-input  v-decorator="['packingList', {rules: [{ required: false, message: '请输入包装清单', }]}]"/>
-                </a-form-item>
-              </a-col>
-            </a-row>
+
             <a-row>
               <a-col :span="12">
                 <a-form-item label="spu轮播图" hasFeedback>
@@ -148,7 +147,7 @@
             </a-row>
             <a-row>
               <a-col :span="24">
-                <a-form-item label="基本信息" hasFeedback>
+                <a-form-item label="基本信息" v-if="specifications.length!=0">
                   <template v-for="j in specifications">
                     <template v-for="x in j.params">
                       <a-row>
@@ -346,46 +345,62 @@
         modifyBasic(){
           let that=this
           this.formTranslate.validateFields((err, values) => {
-            that.form.spuimage=values.spuimage
-            that.form.spuimage1=values.spuimage1
-            that.form.spuimage2=values.spuimage2
-            that.form.spuimage3=values.spuimage3
-          })
-          let spuBo = {
-            'brandId': this.form.brand,
-            'cid1': this.cids[0],
-            'cid2': this.cids[1],
-            'cid3': this.cids[2],
-            'image': this.form.spuimage,
-            "images": that.form.spuimage1 + ',' + that.form.spuimage2 + ',' + that.form.spuimage3,
-            'shopId': this.shopId,
-            "id": this.spu.id,
-            'spuDetail': {
-              'afterService': this.form.afterService,
-              'description': this.form.description,
-              'packingList': this.form.packingList,
-              "specifications":JSON.stringify(this.specifications),
-            },
-            'subTitle': this.form.subTitle,
-            'title': this.form.title
-          }
-          httpAction('/kunze/spu/updateSpu', spuBo, 'post').then((res) => {
-            console.log(res)
-            if (res.success == true) {
-              that.form.brand = []
-              that.cids = []
-              this.form.spuimage = ""
-              that.form.afterService = ''
-              that.form.description = ''
-              that.form.packingList = ''
-              that.form.subTitle = ''
-              that.form.title = ''
-              that.xiuBrandvisible = false
-              that.visible = false
-              that.$message.success('修改成功');
-              this.getAllProducts(this.shopId)
+            if(values.subTitle && values.title ){
+              that.form.spuimage=values.spuimage
+              that.form.spuimage1=values.spuimage1
+              that.form.spuimage2=values.spuimage2
+              that.form.spuimage3=values.spuimage3
+              let spuBo = {
+                'brandId': this.form.brand,
+                'cid1': this.cids[0],
+                'cid2': this.cids[1],
+                'cid3': this.cids[2],
+                'image': this.form.spuimage,
+                "images": that.form.spuimage1 + ',' + that.form.spuimage2 + ',' + that.form.spuimage3,
+                'shopId': this.shopId,
+                "id": this.spu.id,
+                'spuDetail': {
+                  'afterService': this.form.afterService,
+                  'description': this.form.description,
+                  'packingList': this.form.packingList,
+                  "specifications":JSON.stringify(this.specifications),
+                },
+                'subTitle': this.form.subTitle,
+                'title': this.form.title
+              }
+              httpAction('/kunze/spu/updateSpu', spuBo, 'post').then((res) => {
+                console.log(res)
+                if (res.success == true) {
+                  that.form.brand = []
+                  that.cids = []
+                  this.form.spuimage = ""
+                  that.form.afterService = ''
+                  that.form.description = ''
+                  that.form.packingList = ''
+                  that.form.subTitle = ''
+                  that.form.title = ''
+                  that.xiuBrandvisible = false
+                  that.visible = false
+                  that.$message.success('修改成功');
+                  this.getAllProducts(this.shopId)
+                }else {
+                  that.form.brand = []
+                  that.cids = []
+                  this.form.spuimage = ""
+                  that.form.afterService = ''
+                  that.form.description = ''
+                  that.form.packingList = ''
+                  that.form.subTitle = ''
+                  that.form.title = ''
+                  that.xiuBrandvisible = false
+                  that.visible = false
+                  that.$message.error('修改失败');
+                }
+              })
             }
+
           })
+
         },
         delspuhandleCancel(){
           this.delspuvisible=false
@@ -520,7 +535,7 @@
           this.form.newPrice=e.newPrice
           this.form.skuimage=e.skuimage
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title','brand', 'subTitle','price','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description','newPrice'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description','newPrice'))
           });
 
         },
@@ -592,7 +607,7 @@
               this.form.spuimage2=this.spu.images[1]
               this.form.spuimage3=this.spu.images[2]
               this.$nextTick(() => {
-                this.formTranslate.setFieldsValue(pick(this.form, 'title','brand', 'subTitle','price','newprice','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description'))
+                this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','newPrice','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description'))
               });
               this.visible=true
             }
@@ -634,7 +649,7 @@
         },
         edit(record) {
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','newprice','stock','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','newPrice','stock','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description'))
           });
         },
 
@@ -679,27 +694,31 @@
             that.form.price=values.price
             that.form.newprice=values.newprice
             that.form.skuimage=values.skuimage
-            if(values.price,values.stock,values.skuimage,values.newprice){
+            // console.log(values.price, values.stock, values.skuimage, values.newPrice)
+            if(values.price,values.stock,values.skuimage,values.newPrice){
+              console.log(1)
               let priceReg = /(^[1-9]\d*(\.\d{1,2})?$)|(^0(\.\d{1,2})?$)/;
               if(!that.form.price.match(priceReg)){
+                console.log(2)
                 this.$message.warning('请输入正确的商品价格:整数或者保留两位小数');
               }else {
-                if(!that.form.newprice.match(priceReg)){
+                if(!that.form.newPrice.match(priceReg)){
+                  console.log(3)
                   this.$message.warning('请输入正确的商品优惠价格:整数或者保留两位小数');
                 }else {
 
-
+                  console.log(4)
 
                     that.form.stock=values.stock
                     that.form.price=values.price
-                    that.form.newprice=values.newprice
+                    that.form.newPrice=values.newPrice
                     that.form.skuimage=values.skuimage
                     this.skuVos.push({
                       id: that.sku.id,
                       price: values.price,
                       stock: values.stock,
                       images:values.skuimage,
-                      newPrice:values.newprice
+                      newPrice:values.newPrice
 
                     })
 
@@ -708,7 +727,8 @@
                       "id": this.spu.id,
                       'skuVos': this.skuVos,
                     }
-                    httpAction('/kunze/spu/updateSpu', spuBo, 'post').then((res) => {
+
+                  httpAction('/kunze/spu/updateSpu', spuBo, 'post').then((res) => {
                       console.log(res)
                       if (res.success == true) {
                         that.skuVos = []
@@ -747,7 +767,7 @@
         },
       },
       mounted() {
-        this.shopId=sessionStorage.getItem('shopId')
+        this.shopId=localStorage.getItem('shopId')
       this.getAllProducts(this.shopId)
         this.getBrand()
       }
