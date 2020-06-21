@@ -270,8 +270,7 @@
                 console.log(res)
                 res.result.userInfo.shopId = res.result.shopId;
                 this.$store.commit('gaishopid',res.result.shopId);
-
-                sessionStorage.setItem('shopId',res.result.shopId )
+                localStorage.setItem('shopId',res.result.shopId )
                 this.departConfirm(res)
               }).catch((err) => {
                 that.requestFailed(err);
