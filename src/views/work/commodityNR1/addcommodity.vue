@@ -148,9 +148,9 @@
                   <j-image-upload class="avatar-uploader" text="上传" v-model="fileList" ></j-image-upload>
                 </a-form-item>
                 <a-form-item label="商品轮播图片" >
-                  <j-image-upload class="avatar-uploader" text="上传" v-model="fileList1" style="width: 104px;margin-right: 30px;float: left"></j-image-upload>
-                  <j-image-upload class="avatar-uploader" text="上传" v-model="fileList2" style="width: 104px;margin-right: 30px;float: left"></j-image-upload>
-                  <j-image-upload class="avatar-uploader" text="上传" v-model="fileList3" style="width: 104px;float: left "></j-image-upload>
+                  <j-image-upload class="avatar-uploader" text="上传" v-model="bannerImg1" style="width: 104px;margin-right: 30px;float: left"></j-image-upload>
+                  <j-image-upload class="avatar-uploader" text="上传" v-model="bannerImg2" style="width: 104px;margin-right: 30px;float: left"></j-image-upload>
+                  <j-image-upload class="avatar-uploader" text="上传" v-model="bannerImg3" style="width: 104px;float: left "></j-image-upload>
                 </a-form-item>
                 <a-form-item label="包装清单"  >
                   <!--<a-input v-model="form.packingList" />-->
@@ -231,9 +231,9 @@
           specTemplate:{},
           specifications:[],
           fileList:[],
-          fileList1:[],
-          fileList2:[],
-          fileList3:[],
+          bannerImg1:'',
+          bannerImg2:'',
+          bannerImg3:'',
           cids:[],
           validatorRules:{
             spuPrice: {
@@ -287,7 +287,6 @@
           this.formTranslate.validateFields((err, values) => {
             if(values.title && values.subTitle){
               that.form.title=values.title
-              console.log(values.brand)
               that.form.subTitle=values.subTitle
               // that.form.brand=values.brand
               this.current=this.current-(-1)
@@ -506,18 +505,31 @@
         },
         onSubmit(){
           let that=this
-          console.log(this.skuVos)
+
               this.skuVos.forEach(e=>{
                 e.indexes=JSON.stringify(e.indexes)
                 e.ownSpec=JSON.stringify(e.ownSpec)
               })
-              let spuBo={
+
+              let bannerImgs=''
+              if(this.bannerImg1!=''){
+                bannerImgs+=this.bannerImg1+','
+              }
+            if(this.bannerImg2!=''){
+              bannerImgs+=this.bannerImg2+','
+            }
+            if(this.bannerImg3!=''){
+              bannerImgs+=this.bannerImg3
+            }
+
+          console.log(bannerImgs)
+          let spuBo={
                 'brandId': '6742',
                 'cid1': this.cids[0],
                 'cid2': this.cids[1],
                 'cid3': this.cids[2],
                 'image': this.fileList,
-                'images': this.fileList1+","+this.fileList2+","+this.fileList3,
+                'images': bannerImgs,
                 'shopId':this.shopId,
                 'skuVos':this.skuVos,
                 'spuDetail': {
@@ -530,6 +542,7 @@
                 'subTitle': this.form.subTitle,
                 'title':this.form.title
               }
+
           httpAction('/kunze/spu/saveGood', spuBo,'post').then((res)=>{
                 console.log(res)
                 if(res.success==true){
@@ -548,7 +561,7 @@
                   that.indexes=[]
                   that.form.subTitle=''
                   that.form.title=''
-                  that.fileList1=[], that.fileList2=[], that.fileList3=[]
+                  that.bannerImg1='', that.bannerImg2='', that.bannerImg3=''
                   that.$message.success('添加成功');
                 }else {
                   that.$message.warning('添加失败');
@@ -567,7 +580,7 @@
                   that.indexes=[]
                   that.form.subTitle=''
                   that.form.title=''
-                  that.fileList1=[], that.fileList2=[], that.fileList3=[]
+                  that.bannerImg1='', that.bannerImg2='', that.bannerImg3=''
                 }
               })
         },
@@ -613,7 +626,7 @@
         },
       },
       mounted() {
-        this.shopId=sessionStorage.getItem('shopId')
+        this.shopId=localStorage.getItem('shopId')
         this.getBrand()
       }
   }
