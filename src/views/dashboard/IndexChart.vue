@@ -1,7 +1,7 @@
 <template>
   <div class="page-header-index-wide">
     <a-row :gutter="24">
-      <a-col :sm="24" :md="12" :xl="12" :style="{ marginBottom: '24px' }">
+      <a-col :sm="24" :md="12" :xl="8" :style="{ marginBottom: '24px' }">
         <chart-card :loading="loading" title="总销售额" :total="totalSales | NumberFormat">
           <a-tooltip title="指标说明" slot="action">
             <a-icon type="info-circle-o" />
@@ -19,7 +19,7 @@
           <template slot="footer">今日销售额<span>￥ {{toDay | NumberFormat}}</span></template>
         </chart-card>
       </a-col>
-      <a-col :sm="24" :md="12" :xl="12" :style="{ marginBottom: '24px' }">
+      <a-col :sm="24" :md="12" :xl="8" :style="{ marginBottom: '24px' }">
         <chart-card :loading="loading" title="订单量" :total="totalOrder | NumberFormat">
           <a-tooltip title="指标说明" slot="action">
             <a-icon type="info-circle-o" />
@@ -30,7 +30,26 @@
           <template slot="footer">日订单量<span> {{ todaysOrder | NumberFormat }}</span></template>
         </chart-card>
       </a-col>
-  <!--    <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
+      <a-col :sm="24" :md="12" :xl="8" :style="{ marginBottom: '24px' }">
+        <chart-card title="设置手续费" style="width: 100%;height: 184px" :loading="loading">
+          <a-tooltip title="手续费说明" slot="action">
+            <a-icon type="info-circle-o" />
+          </a-tooltip>
+          <div style="margin-bottom: 20px;font-size: 16px;font-weight: bold">
+            当前手续费：
+            <span style="color: #2eabff;">{{serviceCharge}} %</span>
+          </div>
+          <div style="line-height:32px; font-size: 16px;font-weight: bold">
+            修改手续费：
+            <a-input-search style="width: 50%;"
+                            placeholder="请输入手续费"
+                            enter-button="确认"
+                            @search="onSearch"
+            />
+          </div>
+        </chart-card>
+      </a-col>
+<!--    <a-col :sm="24" :md="12" :xl="8" :style="{ marginBottom: '24px' }">
         <chart-card :loading="loading" title="支付笔数" :total="6560 | NumberFormat">
           <a-tooltip title="指标说明" slot="action">
             <a-icon type="info-circle-o" />
@@ -40,27 +59,27 @@
           </div>
           <template slot="footer">转化率 <span>60%</span></template>
         </chart-card>
-      </a-col>
-      <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
-        <chart-card :loading="loading" title="运营活动效果" total="78%">
-          <a-tooltip title="指标说明" slot="action">
-            <a-icon type="info-circle-o" />
-          </a-tooltip>
-          <div>
-            <mini-progress color="rgb(19, 194, 194)" :target="80" :percentage="78" :height="8" />
-          </div>
-          <template slot="footer">
-            <trend flag="down" style="margin-right: 16px;">
-              <span slot="term">同周比</span>
-              12%
-            </trend>
-            <trend flag="up">
-              <span slot="term">日环比</span>
-              80%
-            </trend>
-          </template>
-        </chart-card>
       </a-col>-->
+      <!--    <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
+          <chart-card :loading="loading" title="运营活动效果" total="78%">
+            <a-tooltip title="指标说明" slot="action">
+              <a-icon type="info-circle-o" />
+            </a-tooltip>
+            <div>
+              <mini-progress color="rgb(19, 194, 194)" :target="80" :percentage="78" :height="8" />
+            </div>
+            <template slot="footer">
+              <trend flag="down" style="margin-right: 16px;">
+                <span slot="term">同周比</span>
+                12%
+              </trend>
+              <trend flag="up">
+                <span slot="term">日环比</span>
+                80%
+              </trend>
+            </template>
+          </chart-card>
+        </a-col>-->
     </a-row>
 
     <a-card :loading="loading" :bordered="false" :body-style="{padding: '0'}">
@@ -147,7 +166,7 @@
   import Bar from '@/components/chart/Bar'
   import LineChartMultid from '@/components/chart/LineChartMultid'
   import HeadInfo from '@/components/tools/HeadInfo.vue'
-  import {getAction} from '@/api/manage'
+  import {getAction,postAction} from '@/api/manage'
 
   import Trend from '@/components/Trend'
   import { getLoginfo,getVisitInfo } from '@/api/api'
@@ -201,6 +220,8 @@
         totalOrder:"0",
         todaysOrder:"0",
         loginfo:{},
+        chargeId:"",
+        serviceCharge:"0",
         visitFields:['ip','visit'],
         visitInfo:[],
         url:{
@@ -209,6 +230,10 @@
           loaderOrder:"/kunze/menu/orderLeader",
           loaderOrders:"/kunze/menu/orderLeaders",
           loaderSales:"/kunze/menu/sales",
+          chargInsert:"/kunze/charge/saveCharge",
+          chargeUpdate:"/kunze/charge/updateCharge",
+          queryCharge:"/kunze/charge/queryCharge",
+
         },
         indicator: <a-icon type="loading" style="font-size: 24px" spin />
       }
@@ -222,6 +247,7 @@
       this.loads();
       this.loaderOrder();
       this.loaderSales();
+      this.loaderCharge();
     },
     methods: {
       loaderSales(shopId){
@@ -247,6 +273,38 @@
             this.toDay = res.result.toDays;
           }
         });
+      },
+      loaderCharge(){
+        getAction(this.url.queryCharge,{}).then((res) =>{
+          if(res.success){
+            this.chargeId = res.result.id;
+            this.serviceCharge = res.result.service_charge;
+          }
+        })
+      },
+      onSearch(e){
+        let saveCharge={
+           id:this.chargeId,
+           serviceCharge:e,
+        }
+        let url = "";
+        let save = "";
+        if(this.chargeId==null||this.chargeId==""||this.chargeId==undefined){
+          url = this.url.chargInsert;
+          save = "添加"
+        }else {
+          url = this.url.chargeUpdate;
+          save = "修改"
+        }
+        postAction(url,saveCharge).then((res)=>{
+          if(res.success){
+            this.loaderCharge()
+            this.$message.success("手续费"+save+"成功");
+          }else {
+            this.$message.error("手续费"+save+"失败");
+          }
+
+        })
       },
       loaderOrder(shopId){
         let params = {
@@ -303,11 +361,13 @@
         };
         getAction(this.url.loaderboard,params).then((res) => {
           if (res.success) {
+            debugger;
             for (let i = 0; i < res.result.length; i++) {
               this.rankList.push({
                 id:res.result[i].shopId,
                 name: res.result[i].shopName,
-                total: res.result[i].payment
+                total: res.result[i].payment,
+                charge:res.result[i].serviceCharge
               })
             }
           }
