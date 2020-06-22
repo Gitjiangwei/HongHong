@@ -301,7 +301,8 @@
         }
         postAction(url,saveCharge).then((res)=>{
           if(res.success){
-            this.loaderCharge()
+            this.loaderCharge();
+            this.loaderboard(0,0);
             this.$message.success("手续费"+save+"成功");
           }else {
             this.$message.error("手续费"+save+"失败");
