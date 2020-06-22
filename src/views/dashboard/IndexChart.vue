@@ -101,7 +101,7 @@
                 <bar title="销售额排行" :dataSource="barData"/>
               </a-col>
               <a-col :xl="8" :lg="12" :md="12" :sm="24" :xs="24">
-                <rank-list title="门店销售排行榜" @func="loads" :list="rankList"/>
+                <rank-list title="门店销售排行榜" @func="loads" @more="more" :list="rankList"/>
               </a-col>
             </a-row>
           </a-tab-pane>
@@ -152,6 +152,7 @@
         </a-card>
       </a-col>
     </a-row>
+    <shop-profit-list ref="ShopProfitList"></shop-profit-list>
   </div>
 </template>
 
@@ -167,7 +168,7 @@
   import LineChartMultid from '@/components/chart/LineChartMultid'
   import HeadInfo from '@/components/tools/HeadInfo.vue'
   import {getAction,postAction} from '@/api/manage'
-
+  import ShopProfitList from '../work/Supermarket/ShopProfitList'
   import Trend from '@/components/Trend'
   import { getLoginfo,getVisitInfo } from '@/api/api'
 
@@ -202,7 +203,8 @@
       Bar,
       Trend,
       LineChartMultid,
-      HeadInfo
+      HeadInfo,
+      ShopProfitList
     },
     data() {
       return {
@@ -235,6 +237,7 @@
           queryCharge:"/kunze/charge/queryCharge",
 
         },
+        choiceTime:"0",
         indicator: <a-icon type="loading" style="font-size: 24px" spin />
       }
     },
@@ -347,6 +350,19 @@
         })
         this.loaderOrder(data);
         this.loaderSales(data);
+        //this.more();
+      },
+      more(){
+        var choice = "超市销售总排行";
+        if(this.choiceTime == 1){
+          choice = "今日超市销售排行";
+        }else if(this.choiceTime == 2){
+          choice = "本周超市销售排行";
+        }else if(this.choiceTime == 3){
+          choice = "本年超市销售排行";
+        }
+        this.$refs.ShopProfitList.shopMore(this.choiceTime);
+        this.$refs.ShopProfitList.title = choice;
       },
       loaderboard (more,choiceTime) {
         if(more==0&&choiceTime==0){
@@ -355,6 +371,7 @@
           this.loaderSales();
         }
         this.rankList = [];
+        this.choiceTime = choiceTime;
         let params = {
           more:more,
           choiceTime:choiceTime,
@@ -362,12 +379,12 @@
         getAction(this.url.loaderboard,params).then((res) => {
           if (res.success) {
             debugger;
-            for (let i = 0; i < res.result.length; i++) {
+            for (let i = 0; i < res.result.list.length; i++) {
               this.rankList.push({
-                id:res.result[i].shopId,
-                name: res.result[i].shopName,
-                total: res.result[i].payment,
-                charge:res.result[i].serviceCharge
+                id:res.result.list[i].shopId,
+                name: res.result.list[i].shopName,
+                total: res.result.list[i].payment,
+                charge:res.result.list[i].serviceCharge
               })
             }
           }
@@ -413,7 +430,9 @@
       }
     }
   }
-
+  a:hover{
+    text-decoration: underline;
+  }
   /* 首页访问量统计 */
   .head-info {
     position: relative;

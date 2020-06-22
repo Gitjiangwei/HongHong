@@ -1,12 +1,12 @@
 <template>
   <div class="rank">
-    <h4 class="title">{{ title }}</h4>
+    <h4 class="title">{{ title }}<a id="more" @click="more" style="margin-left: 68%;cursor: pointer">全部</a></h4>
     <ul class="list" :style="{height:height?`${height}px`:'auto',overflow:'auto'}">
       <li :key="index" v-for="(item, index) in list">
         <a @click="loads(item.id)">
           <span :class="index < 3 ? 'active' : null">{{ index + 1 }}</span>
           <span>{{ item.name }}</span>
-          <span>{{ item.total }}</span>
+          <span style="color: #00DB00">{{ item.total }} <span style="color: red;font-weight: bold;margin-left: 30px">{{item.charge}}</span></span>
         </a>
       </li>
     </ul>
@@ -34,13 +34,18 @@
     methods:{
       loads(shopId){
         this.$emit('func',shopId)
+      },
+      more(){
+        this.$emit('more');
       }
     }
   }
 </script>
 
 <style lang="less" scoped>
-
+  #more:hover{
+    text-decoration:underline;
+  }
   .rank {
     padding: 0 32px 32px 72px;
 
