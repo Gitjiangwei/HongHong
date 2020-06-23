@@ -1,52 +1,75 @@
 <template>
   <div>
+
+
+
     <a-row>
-      <a-col  :xl="18" :lg="18" :md="18" :sm="24" :xs="24">
+      <a-col  :xl="23" :lg="23" :md="23" :sm="24" :xs="24">
         <span style="font-weight: bold; font-size: 16px;display: inline-block;margin: 0 0 0 10px">平台信息数据统计</span>
         <a-card style="width: 100%;" :loading="loading">
           <div style="width:100% ;height: 100%">
             <a-row>
-              <a-col  style="border-right:2px solid  rgba(246, 246, 246, 1) " :xl="8" :lg="12" :md="12" :sm="24" :xs="24">
-              <div class="card-item" >
-                <a-col>
+              <a-col  style="border-right:2px solid  rgba(246, 246, 246, 1) " :xl="6" :lg="12" :md="12" :sm="24" :xs="24">
+                <div class="card-item" >
+                  <a-col>
+                    <div class="img">
+                      <img src="../../assets/money.png" alt="" @click="mmm">
+                    </div>
+                    <div class="font">
+                      <div class="font-item" style="line-height: 68px;">月交易额</div>
+                      <div class="font-item" style="line-height: 40px; font-size: 26px">{{moneyMoney | NumberFormat}} &nbsp;<span style="color: #D5D6D9;font-size: 12px">元</span> </div>
+                    </div>
+                  </a-col>
+                </div>
+              </a-col>
+
+
+              <a-col  style="border-right:2px solid  rgba(246, 246, 246, 1) " :xl="6" :lg="12" :md="12" :sm="24" :xs="24">
+                <div class="card-item" >
+                  <a-col>
+                    <div class="img">
+                      <img src="../../assets/money.png" alt="" @click="mmm">
+                    </div>
+                    <div class="font">
+                      <div class="font-item" style="line-height: 68px;">日交易额</div>
+                      <div class="font-item" style="line-height: 40px; font-size: 26px">{{moneyMoney | NumberFormat}} &nbsp;<span style="color: #D5D6D9;font-size: 12px">元</span> </div>
+                    </div>
+                  </a-col>
+                </div>
+              </a-col>
+
+
+              <a-col :xl="6" :lg="12" :md="12" :sm="24" :xs="24" style="border-right:2px solid  rgba(246, 246, 246, 1) ">
+                <div class="card-item" >
                   <div class="img">
-                    <img src="../../assets/money.png" alt="" @click="mmm">
+                    <img src="../../assets/commodity.png" alt="">
                   </div>
                   <div class="font">
-                    <div class="font-item" style="line-height: 68px;">月交易额</div>
-                    <div class="font-item" style="line-height: 40px; font-size: 26px">{{moneyMoney | NumberFormat}} &nbsp;<span style="color: #D5D6D9;font-size: 12px">元</span> </div>
+                    <div class="font-item" style="line-height: 86px;">商品数量</div>
+                    <div class="font-item" style="line-height: 40px;font-size: 26px">{{spuNum | NumberFormat}} &nbsp;<span style="color: #D5D6D9;font-size: 12px">件</span></div>
                   </div>
-                </a-col>
-              </div>
+                </div>
               </a-col>
-
-
-              <a-col :xl="8" :lg="12" :md="12" :sm="24" :xs="24" style="border-right:2px solid  rgba(246, 246, 246, 1) ">
-              <div class="card-item" >
-                <div class="img">
-                  <img src="../../assets/commodity.png" alt="">
+              <a-col :xl="6" :lg="12" :md="12" :sm="24" :xs="24">
+                <div class="card-item">
+                  <div class="img">
+                    <img src="../../assets/dd.png" alt="">
+                  </div>
+                  <div class="font">
+                    <div class="font-item" style="line-height: 86px;">订单数量</div>
+                    <div class="font-item" style="line-height: 40px;font-size: 26px">{{orderNum | NumberFormat}} &nbsp;<span style="color: #D5D6D9;font-size: 12px">单</span></div>
+                  </div>
                 </div>
-                <div class="font">
-                  <div class="font-item" style="line-height: 86px;">商品数量</div>
-                  <div class="font-item" style="line-height: 40px;font-size: 26px">{{spuNum | NumberFormat}} &nbsp;<span style="color: #D5D6D9;font-size: 12px">件</span></div>
-                </div>
-              </div>
-              </a-col>
-              <a-col :xl="8" :lg="12" :md="12" :sm="24" :xs="24">
-              <div class="card-item">
-                <div class="img">
-                  <img src="../../assets/dd.png" alt="">
-                </div>
-                <div class="font">
-                  <div class="font-item" style="line-height: 86px;">订单数量</div>
-                  <div class="font-item" style="line-height: 40px;font-size: 26px">{{orderNum | NumberFormat}} &nbsp;<span style="color: #D5D6D9;font-size: 12px">单</span></div>
-                </div>
-              </div>
               </a-col>
             </a-row>
 
           </div>
         </a-card>
+      </a-col>
+    </a-row>
+    <a-row>
+      <a-col  :xl="18" :lg="18" :md="18" :sm="24" :xs="24">
+
 
 
 
@@ -145,7 +168,8 @@
       </a-col>
       <a-col :span="1">
       </a-col>
-      <a-col  :xl="4" :lg="12" :md="12" :sm="24" :xs="24">
+      <a-col  :xl="4" :lg="12" :md="12" :sm="24" :xs="24" style="height: 100%;margin-top: 20px">
+
         <span style="font-weight: bold; font-size: 16px;display: inline-block;margin: 0 0 0 10px">设置配送费</span>
         <a-card style="width: 100%;height: 184px" :loading="loading">
           <div style="margin-bottom: 20px;font-size: 16px;font-weight: bold">当前配送费： {{deliveryFee}}￥</div>
@@ -156,6 +180,15 @@
             @search="onSearch"
           />
         </a-card>
+        <div style="font-weight: bold; font-size: 16px;display: inline-block;margin: 20px 0 10px 10px">设置配送费</div>
+        <a-card style="width: 100%;" :loading="loading" class="mesg">
+          <div style="font-size: 13px;margin-bottom: 10px" v-for="v in mesdata">
+            <span style="color:#7fb5ff">{{v.status }}</span>
+            <span>{{v.mesg}}</span>
+            <span>{{v.time}}</span>
+          </div>
+        </a-card>
+
       </a-col>
     </a-row>
     <order-status-list ref="OrderStatusList" @ok="modalFormOkOrder"></order-status-list>
@@ -214,6 +247,58 @@
             type: "05-11",
             },
         ],
+        mesdata:[
+         {
+            status:'[订单消息]',
+            mesg:'您有新的订单',
+            time:' 6-20 18:30'
+          },{
+            status:'[订单消息]',
+            mesg:'您有新的订单',
+            time:' 6-20 18:30'
+          },
+          {
+            status:'[订单消息]',
+            mesg:'您有新的订单',
+            time:' 6-20 18:30'
+          },{
+            status:'[订单消息]',
+            mesg:'您有新的订单',
+            time:' 6-20 18:30'
+          },
+
+          {
+            status:'[订单消息]',
+            mesg:'您有新的订单',
+            time:' 6-20 18:30'
+          },{
+            status:'[订单消息]',
+            mesg:'您有新的订单',
+            time:' 6-20 18:30'
+          },
+
+          {
+            status:'[订单消息]',
+            mesg:'您有新的订单',
+            time:' 6-20 18:30'
+          },{
+            status:'[订单消息]',
+            mesg:'您有新的订单',
+            time:' 6-20 18:30'
+          },
+
+
+
+
+
+
+
+
+
+
+
+
+        ],
         url:{
           selectInfo:"/kunze/menu/selectInfo",
           selectOrder:"/kunze/menu/selectOrderstatistics",
@@ -221,6 +306,7 @@
           selectSeven:"/kunze/menu/selectSevenDeal",
         },
         indicator: <a-icon type="loading" style="font-size: 24px" spin />
+
       }
     },
     created(){
@@ -459,6 +545,10 @@
         }
       }
     }
+  }
+  .mesg{
+    height: calc(100% - 224px)
+
   }
 
 </style>
