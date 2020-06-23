@@ -44,6 +44,7 @@ import hasPermission from '@/utils/hasPermission'
 import vueBus from '@/utils/vueBus';
 import JeecgComponents from '@/components/jeecg/index'
 import FormModel from 'ant-design-vue';
+import Distpicker from 'v-distpicker'
 
 
 Vue.config.productionTip = false
@@ -57,6 +58,7 @@ Vue.use(JDictSelectTag)
 Vue.use(Print)
 Vue.use(VueApexCharts)
 Vue.component('apexchart', VueApexCharts)
+Vue.component('v-distpicker', Distpicker)
 Vue.use(preview)
 Vue.use(vueBus);
 Vue.use(JeecgComponents);

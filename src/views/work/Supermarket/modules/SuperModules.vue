@@ -25,6 +25,7 @@
           label="超市地址"
           hasFeedback
         >
+          <v-distpicker province="广东省" city="广州市" area="海珠区" @selected="onSelected"></v-distpicker>
           <a-input placeholder="请输入超市地址" maxlength="30"
                    v-decorator="['shopAddress', {rules: [{ required: true, message: '请输入超市地址', }]}]"/>
         </a-form-item>
@@ -216,6 +217,12 @@
 
           }
         })
+      },
+      onSelected(data) {
+        debugger;
+        this.address.province = data.province.value
+        this.address.city = data.city.value
+        this.address.county = data.area.value
       },
       beforeUpload: function(file){
         var fileType = file.type;

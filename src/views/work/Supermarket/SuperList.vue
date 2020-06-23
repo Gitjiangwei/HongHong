@@ -121,7 +121,7 @@
           {
             title: '超市地址',
             align:"center",
-            dataIndex: 'shopAddress'
+            dataIndex: 'addressTotal'
           },
           {
             title: '图片',
