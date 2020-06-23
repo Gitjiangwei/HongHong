@@ -120,6 +120,7 @@
           },
           {
             title: '超市地址',
+            width: 300,
             align:"center",
             dataIndex: 'addressTotal'
           },
@@ -207,19 +208,28 @@
         }
         var params = this.getQueryParams();//查询条件
         getAction(this.url.list, params).then((res) => {
+          console.log(res)
           if (res.success) {
             this.dataSource = res.result.list;
             this.ipagination.total = res.result.total;
           }
         })
       },
-      handleAdd:function(){
+      handleAdd:function(e){
+
         this.$refs.SuperModules.add();
         this.$refs.SuperModules.title = "新增超市信息";
       },
       handleEdit:function(record){
+
+        let opens=[]
+        opens.push(record.province)
+        opens.push(record.city)
+        opens.push(record.area)
         this.$refs.SuperModules.edit(record);
         this.$refs.SuperModules.title = "修改超市信息";
+        this.$refs.SuperModules.optionss = opens;
+        console.log(opens)
       },
       handleDelete:function(ids){
         let that = this;
