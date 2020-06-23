@@ -180,12 +180,12 @@
             @search="onSearch"
           />
         </a-card>
-        <div style="font-weight: bold; font-size: 16px;display: inline-block;margin: 20px 0 10px 10px">设置配送费</div>
+        <div style="font-weight: bold; font-size: 16px;display: inline-block;margin: 32px 0 10px 10px">最新消息</div>
         <a-card style="width: 100%;" :loading="loading" class="mesg">
-          <div style="font-size: 13px;margin-bottom: 10px" v-for="v in mesdata">
-            <span style="color:#7fb5ff">{{v.status }}</span>
-            <span>{{v.mesg}}</span>
-            <span>{{v.time}}</span>
+          <div style="font-size: 13px;margin-bottom: 6px" v-for="v in mesdata">
+            <span style="color:#7fb5ff">【{{v.status }}】</span>
+            <span style="font-size: 8px">{{v.sendEvent}}</span>
+            <span style="color: #9e9e9e;font-size: 8px"> &nbsp;{{v.menuTime}}</span>
           </div>
         </a-card>
 
@@ -247,63 +247,13 @@
             type: "05-11",
             },
         ],
-        mesdata:[
-         {
-            status:'[订单消息]',
-            mesg:'您有新的订单',
-            time:' 6-20 18:30'
-          },{
-            status:'[订单消息]',
-            mesg:'您有新的订单',
-            time:' 6-20 18:30'
-          },
-          {
-            status:'[订单消息]',
-            mesg:'您有新的订单',
-            time:' 6-20 18:30'
-          },{
-            status:'[订单消息]',
-            mesg:'您有新的订单',
-            time:' 6-20 18:30'
-          },
-
-          {
-            status:'[订单消息]',
-            mesg:'您有新的订单',
-            time:' 6-20 18:30'
-          },{
-            status:'[订单消息]',
-            mesg:'您有新的订单',
-            time:' 6-20 18:30'
-          },
-
-          {
-            status:'[订单消息]',
-            mesg:'您有新的订单',
-            time:' 6-20 18:30'
-          },{
-            status:'[订单消息]',
-            mesg:'您有新的订单',
-            time:' 6-20 18:30'
-          },
-
-
-
-
-
-
-
-
-
-
-
-
-        ],
+        mesdata:[],
         url:{
           selectInfo:"/kunze/menu/selectInfo",
           selectOrder:"/kunze/menu/selectOrderstatistics",
           selectStock:"/kunze/menu/selectWarehouseStatistics",
           selectSeven:"/kunze/menu/selectSevenDeal",
+          selectNews:"/kunze/menu/queryOrderRecordTotal",
         },
         indicator: <a-icon type="loading" style="font-size: 24px" spin />
 
@@ -311,6 +261,7 @@
     },
     created(){
       this.timer();
+      this.newsTimer();
       setTimeout(() => {
         this.loading = !this.loading
       }, 1000);
@@ -323,6 +274,7 @@
       setTimeout(() => {
         this.loaderStock(shopId);
         this.loaderSevenDeal(shopId);
+        this.loadDateNews(shopId);
       }, 500);
 
     },
@@ -336,6 +288,14 @@
         postAction('/kunze/shop/queryShops',param).then((res)=>{
           if(res.success){
             this.deliveryFee=((res.result.list[0].postFree)/100).toFixed(2)
+          }
+        })
+      },
+      //查询最新消息
+      loadDateNews(shopId){
+        getAction(this.url.selectNews,{shopId:shopId,pageNo:"1",pageSize:"10"}).then((res)=>{
+          if(res.success){
+            this.mesdata = res.result.list;
           }
         })
       },
@@ -376,6 +336,12 @@
             this.loaderSevenDeal(this.shopId);
           }, 500);
         },10000)
+      },
+      //最新消息定时任务，1秒刷新一次
+      newsTimer(){
+        return setInterval(()=>{
+          this.loadDateNews(this.shopId);
+        },1000)
       },
       loaders(shopId){
         let params = {
