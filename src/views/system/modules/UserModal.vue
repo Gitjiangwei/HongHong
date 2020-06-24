@@ -71,7 +71,12 @@
         </a-form-item>
         <a-form-item label="所属超市" :labelCol="labelCol"  v-if="shShow==true" :wrapperCol="wrapperCol">
 <!--          <j-select-position placeholder="请选择超市" :multiple="false" v-decorator="['superShop', {}]"/>-->
-          <j-select-shop placeholder="请选择超市" :multiple="false" v-decorator="['superShop', {}]" />
+<!--          <j-select-shop placeholder="请选择超市" :multiple="false" v-decorator="['superShop', {}]" />-->
+          <a-select  placeholder="选择所属超市" v-decorator="['superShop', {rules: [{ required: true, message: '请选择所属超市', }]}]" >
+                      <a-select-option  v-for="v in brand" :value=v.id :key="v.keys">
+                        {{v.shopName}}
+                      </a-select-option>
+                    </a-select>
         </a-form-item>
         <!--部门分配-->
         <a-form-item label="部门分配" :labelCol="labelCol" v-if="shopShow==true" :wrapperCol="wrapperCol" v-show="!departDisabled">
@@ -164,7 +169,7 @@
   import JSelectPosition from '@/components/jeecgbiz/JSelectPosition'
   import JSelectShop from  '@/components/jeecgbiz/JSelectShop'
   import { ACCESS_TOKEN } from "@/store/mutation-types"
-  import { getAction } from '@/api/manage'
+  import { getAction , postAction } from '@/api/manage'
   import {addUser,editUser,queryUserRole,queryall } from '@/api/api'
   import { disabledAuthFilter } from "@/utils/authFilter"
   import {duplicateCheck } from '@/api/api'
@@ -180,6 +185,7 @@
     },
     data () {
       return {
+        brand:[],
         shShow: false,
         departDisabled: false, //是否是我的部门调用该页面
         roleDisabled: false, //是否是角色维护调用该页面
@@ -276,6 +282,7 @@
     created () {
       const token = Vue.ls.get(ACCESS_TOKEN);
       this.headers = {"X-Access-Token":token};
+      this.getshop()
 
     },
     computed:{
@@ -284,6 +291,16 @@
       }
     },
     methods: {
+      //获取超市
+      getshop(){
+        let param = new URLSearchParams()
+        param.append('pageNo','1')
+        param.append('pageSize' , '200')
+        postAction('/kunze/shop/queryShops',param).then((res)=>{
+          console.log(res)
+          this.brand=res.result.list
+        })
+      },
       isDisabledAuth(code){
         return disabledAuthFilter(code);
       },
@@ -308,7 +325,6 @@
       loadUserRoles(userid){
         queryUserRole({userid:userid}).then((res)=>{
           if(res.success){
-            debugger;
             this.selectedRole = res.result;
           }else{
             console.log(res.message);
@@ -347,7 +363,7 @@
         that.visible = true;
         that.model = Object.assign({}, record);
         that.$nextTick(() => {
-          that.form.setFieldsValue(pick(this.model,'username','sex','realname','email','phone','activitiSync','workNo','telephone','post','staterShop','superShop'))
+          that.form.setFieldsValue(pick(this.model,'username','superShop','sex','realname','email','phone','activitiSync','workNo','telephone','post','staterShop','superShop'))
         });
         //身份为上级显示负责部门，否则不显示
         if(this.model.identity=="2"){
@@ -417,7 +433,6 @@
         // 触发表单验证
         this.form.validateFields((err, values) => {
           if (!err) {
-            debugger;
             that.confirmLoading = true;
             if(!values.birthday){
               values.birthday = '';
@@ -444,6 +459,7 @@
             }else{
               obj=editUser(formData);
             }
+            // console.log(formData)
             obj.then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
