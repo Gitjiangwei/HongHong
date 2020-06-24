@@ -23,11 +23,25 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="超市地址"
+
+        >
+          <a-cascader
+            :field-names="{ label: 'name', value: 'id', children: 'children' }"
+            :options="options"
+            :default-value=options
+            placeholder="选择地址"
+            @change="onChange"
+
+          />
+        </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="超市详细地址"
           hasFeedback
         >
-          <v-distpicker province="广东省" city="广州市" area="海珠区" @selected="onSelected"></v-distpicker>
-          <a-input placeholder="请输入超市地址" maxlength="30"
-                   v-decorator="['shopAddress', {rules: [{ required: true, message: '请输入超市地址', }]}]"/>
+          <a-input placeholder="请输入详细地址" maxlength="10"
+                   v-decorator="['shopAddress', {rules: [{ required: true, message: '请输入详细地址', }]}]"/>
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
@@ -103,6 +117,9 @@
     data(){
       return{
         title: "操作",
+        options:[],   //地址级联下啦数据
+        optionss:[],   //地址级联下啦数据
+        city:[],  //省市区id集合
         visible: false,
         formData: {},
         fileList: [],
@@ -142,13 +159,43 @@
     created() {
       const token = Vue.ls.get(ACCESS_TOKEN);
       this.headers = {"X-Access-Token": token};
+
+
+    },
+    mounted () {
+      this.getRegionInfo()
+
     },
     methods:{
+      //地址级联下拉选择事件
+      onChange(value){
+        // console.log(value)
+        this.city=value
+      },
+      //获取地址
+    getRegionInfo(){
+      getAction('kunze/user/getRegionInfo').then((res)=>{
+        // if(res.result[0].children)
+        // console.log(res)
+        this.options=res.result[0].children
+        this.options.forEach(e=>{
+          e.label=e.id
+          e.children.forEach((e=>{
+            e.label=e.id
+            e.children.forEach((e=>{
+              e.label=e.id
+
+            }))
+          }))
+        })
+      })
+    },
       moment,
       add() {
         this.edit({});
       },
       edit(record) {
+        // console.log(record)
         this.resetScreenSize(); // 调用此方法,根据屏幕宽度自适应调整抽屉的宽度
         this.visible = true;
         // debugger;
@@ -185,6 +232,7 @@
         const that = this;
         // 触发表单验证
         this.form.validateFields((err, values) => {
+
           if (!err) {
             that.confirmLoading = true;
             let httpurl = '';
@@ -197,7 +245,11 @@
               method = 'post';
             }
             let formData = Object.assign(this.model, values);
+            console.log(formData)
             formData.image = that.fileList;
+            formData.province = that.city[0];
+            formData.city = that.city[1];
+            formData.area = that.city[2];
             // debugger;
             //时间格式化
             formData.startBusiness = formData.startBusiness ? formData.startBusiness.format('HH:mm') : null;
