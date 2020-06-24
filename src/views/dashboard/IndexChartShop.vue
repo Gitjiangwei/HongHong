@@ -182,10 +182,10 @@
         </a-card>
         <div style="font-weight: bold; font-size: 16px;display: inline-block;margin: 32px 0 10px 10px">最新消息</div>
         <a-card style="width: 100%;" :loading="loading" class="mesg">
-          <div style="font-size: 13px;margin-bottom: 6px" v-for="v in mesdata">
+          <div style="font-size: 13px;margin-bottom: 4px" v-for="v in mesdata">
             <span style="color:#7fb5ff">【{{v.status }}】</span>
             <span style="font-size: 8px">{{v.sendEvent}}</span>
-            <span style="color: #9e9e9e;font-size: 8px"> &nbsp;{{v.menuTime}}</span>
+            <span style="color: #9e9e9e;font-size: 8px"> &nbsp;{{v.menutime}}</span>
           </div>
         </a-card>
 
@@ -341,7 +341,7 @@
       newsTimer(){
         return setInterval(()=>{
           this.loadDateNews(this.shopId);
-        },1000)
+        },3000)
       },
       loaders(shopId){
         let params = {
