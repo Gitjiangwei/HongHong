@@ -13,11 +13,11 @@
                 <div class="card-item" >
                   <a-col>
                     <div class="img">
-                      <img src="../../assets/money.png" alt="" @click="mmm">
+                      <img src="@/assets/money.png" alt="" @click="mmm">
                     </div>
                     <div class="font">
                       <div class="font-item" style="line-height: 68px;">月交易额</div>
-                      <div class="font-item" style="line-height: 40px; font-size: 26px">{{moneyMoney | NumberFormat}} &nbsp;<span style="color: #D5D6D9;font-size: 12px">元</span> </div>
+                      <div class="font-item" style="line-height: 40px; font-size: 26px">{{totalMoney | NumberFormat}} &nbsp;<span style="color: #D5D6D9;font-size: 12px">元</span> </div>
                     </div>
                   </a-col>
                 </div>
@@ -28,11 +28,11 @@
                 <div class="card-item" >
                   <a-col>
                     <div class="img">
-                      <img src="../../assets/money.png" alt="" @click="mmm">
+                      <img src="@/assets/toDay.png" alt="" @click="mmm">
                     </div>
                     <div class="font">
                       <div class="font-item" style="line-height: 68px;">日交易额</div>
-                      <div class="font-item" style="line-height: 40px; font-size: 26px">{{moneyMoney | NumberFormat}} &nbsp;<span style="color: #D5D6D9;font-size: 12px">元</span> </div>
+                      <div class="font-item" style="line-height: 40px; font-size: 26px">{{toDayTotalPrice | NumberFormat}} &nbsp;<span style="color: #D5D6D9;font-size: 12px">元</span> </div>
                     </div>
                   </a-col>
                 </div>
@@ -42,7 +42,7 @@
               <a-col :xl="6" :lg="12" :md="12" :sm="24" :xs="24" style="border-right:2px solid  rgba(246, 246, 246, 1) ">
                 <div class="card-item" >
                   <div class="img">
-                    <img src="../../assets/commodity.png" alt="">
+                    <img src="@/assets/commodity.png" alt="">
                   </div>
                   <div class="font">
                     <div class="font-item" style="line-height: 86px;">商品数量</div>
@@ -53,7 +53,7 @@
               <a-col :xl="6" :lg="12" :md="12" :sm="24" :xs="24">
                 <div class="card-item">
                   <div class="img">
-                    <img src="../../assets/dd.png" alt="">
+                    <img src="@/assets/dd.png" alt="">
                   </div>
                   <div class="font">
                     <div class="font-item" style="line-height: 86px;">订单数量</div>
@@ -224,6 +224,11 @@
         span:8,
         loading: true,
         moneyMoney:"0",
+        postFree:"0",
+        totalMoney:"0",
+        toDayMoney:"0",
+        toDayPostFree:"0",
+        toDayTotalPrice:"0",
         orderNum:"0",
         spuNum:"0",
         pending:"0",
@@ -350,6 +355,11 @@
         getAction(this.url.selectInfo,params).then((res) => {
             if(res.success){
               this.moneyMoney = res.result.moneyMoney;
+              this.postFree = res.result.moneyPostfree;
+              this.totalMoney = res.result.totalMoney;
+              this.toDayMoney = res.result.toDayMoney;
+              this.toDayPostFree = res.result.toDayPostFree;
+              this.toDayTotalPrice = res.result.toDayTotalPrice;
               this.orderNum = res.result.orderNum;
               this.spuNum = res.result.spuNum;
             }
