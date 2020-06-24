@@ -203,6 +203,7 @@
             },
             {
               title: '备注',
+              width:400,
               align: "center",
               dataIndex: 'buyerMessage'
             },
