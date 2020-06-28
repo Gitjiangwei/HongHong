@@ -72,11 +72,13 @@
         <a-form-item label="所属超市" :labelCol="labelCol"  v-if="shShow==true" :wrapperCol="wrapperCol">
 <!--          <j-select-position placeholder="请选择超市" :multiple="false" v-decorator="['superShop', {}]"/>-->
 <!--          <j-select-shop placeholder="请选择超市" :multiple="false" v-decorator="['superShop', {}]" />-->
-          <a-select  placeholder="选择所属超市" v-decorator="['superShop', {rules: [{ required: true, message: '请选择所属超市', }]}]" >
+<!--          <a-select  placeholder="选择所属超市" v-decorator="['superShop', {rules: [{ required: true, message: '请选择所属超市', }]}]" >
                       <a-select-option  v-for="v in brand" :value=v.id :key="v.keys">
                         {{v.shopName}}
                       </a-select-option>
-                    </a-select>
+                    </a-select>-->
+          <a-input placeholder="请选择超市" maxlength="256" @click="handleShopList"
+                   v-decorator="['shopName', {rules: [{ required: true, message: '请选择超市', }]}]"/>
         </a-form-item>
         <!--部门分配-->
         <a-form-item label="部门分配" :labelCol="labelCol" v-if="shopShow==true" :wrapperCol="wrapperCol" v-show="!departDisabled">
@@ -157,6 +159,7 @@
       </a-popconfirm>
       <a-button @click="handleSubmit" type="primary" :loading="confirmLoading">提交</a-button>
     </div>
+    <shop-list-model ref="ShopListModel" @func="modalFormOkShop"></shop-list-model>
   </a-drawer>
 </template>
 
@@ -174,6 +177,7 @@
   import { disabledAuthFilter } from "@/utils/authFilter"
   import {duplicateCheck } from '@/api/api'
   import JImageUpload from '../../../components/jeecg/JImageUpload'
+  import ShopListModel from '../../work/Supermarket/modules/ShopListModel';
 
   export default {
     name: "UserModal",
@@ -181,7 +185,8 @@
       JImageUpload,
       departWindow,
       JSelectPosition,
-      JSelectShop
+      JSelectShop,
+      ShopListModel
     },
     data () {
       return {
@@ -265,6 +270,7 @@
         uploadLoading:false,
         confirmLoading: false,
         headers:{},
+        shopId:"",
         form:this.$form.createForm(this),
         picUrl: "",
         url: {
@@ -292,7 +298,7 @@
     },
     methods: {
       //获取超市
-      getshop(){
+/*      getshop(){
         let param = new URLSearchParams()
         param.append('pageNo','1')
         param.append('pageSize' , '200')
@@ -300,7 +306,7 @@
           console.log(res)
           this.brand=res.result.list
         })
-      },
+      },*/
       isDisabledAuth(code){
         return disabledAuthFilter(code);
       },
@@ -312,6 +318,16 @@
           this.modalWidth = 800;
         }
         this.modaltoggleFlag = !this.modaltoggleFlag;
+      },
+      handleShopList(){
+        this.$refs.ShopListModel.title = "选择超市";
+        this.$refs.ShopListModel.shopList();
+      },
+      modalFormOkShop(data){
+        debugger;
+        this.shopId = data.id;
+        this.model.shopId = data.id;
+        this.form.setFieldsValue({shopName:data.shopName});
       },
       initialRoleList(){
         queryall().then((res)=>{

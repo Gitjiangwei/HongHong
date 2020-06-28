@@ -52,16 +52,8 @@
                    v-decorator="['wheelUrl', {rules: [{ required: true, message: '请输入图片跳转地址', }]}]"/>
         </a-form-item>
         <a-form-item label="超市" :labelCol="labelCol" :wrapperCol="wrapperCol" >
-          <a-select
-            style="width: 100%"
-            placeholder="请选择超市"
-            optionFilterProp = "children"
-            v-decorator="['shopId', {rules: [{ required: true, message: '请选择超市', }]}]"
-            v-model="selectedRole">
-            <a-select-option  v-for="(role,roleindex) in shopList" :key="roleindex.toString()" :value="role.id"  >
-              {{ role.shopName }}
-            </a-select-option>
-          </a-select>
+          <a-input placeholder="请选择超市" maxlength="256" @click="handleShopList"  readonly
+                   v-decorator="['shopName', {rules: [{ required: true, message: '请选择超市', }]}]"/>
         </a-form-item>
         <a-form-item label="图片" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <j-image-upload class="avatar-uploader"  text="上传" v-model="fileList" ></j-image-upload>
@@ -86,6 +78,7 @@
       </a-form>
 
     </a-spin>
+    <shop-list-model ref="ShopListModel" @func="modalFormOkShop"></shop-list-model>
   </a-modal>
 </template>
 <script>
@@ -96,12 +89,13 @@
   import JImageUpload from '../../../../components/jeecg/JImageUpload';
   import {getAction, httpAction} from '@/api/manage';
   import {queryByShopId} from '@/api/api';
-
+  import ShopListModel from '../../Supermarket/modules/ShopListModel';
   export default {
     name:"WeelModel",
     components:{
       ARow,
-      JImageUpload
+      JImageUpload,
+      ShopListModel
     },
     data(){
       return{
@@ -128,6 +122,7 @@
         headers: {},
         avatar: "",
         isArris: false,
+        shopId:"",
         confirmLoading: false,
         form: this.$form.createForm(this),
         validatorRules: {},
@@ -176,7 +171,7 @@
         }
         that.model = Object.assign({}, record);
         that.$nextTick(() => {
-          that.form.setFieldsValue(pick(this.model, 'wheelName', 'wheelPort','wheelIsflag','wheelUrl','shopId','wheelNo','isFlag'))
+          that.form.setFieldsValue(pick(this.model, 'wheelName', 'wheelPort','wheelIsflag','wheelUrl','shopName','wheelNo','isFlag'))
 /*          //时间格式化
           this.form.setFieldsValue({startBusiness: this.model.startBusiness ? moment(this.model.startBusiness, 'HH:mm') : null});
           this.form.setFieldsValue({endBusiness: this.model.endBusiness ? moment(this.model.endBusiness, 'HH:mm') : null});*/
@@ -188,6 +183,15 @@
         this.$emit('close');
         this.visible = false;
         this.fileList=[];
+      },
+      handleShopList(){
+        this.$refs.ShopListModel.title = "选择超市";
+        this.$refs.ShopListModel.shopList();
+      },
+      modalFormOkShop(data){
+        this.shopId = data.id;
+        this.model.shopId = data.id;
+        this.form.setFieldsValue({shopName:data.shopName});
       },
       initialShopList(){
         getAction(this.url.shopList).then((res)=>{

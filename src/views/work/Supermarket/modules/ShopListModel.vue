@@ -13,11 +13,11 @@
         <a-row :gutter="24">
 
           <a-col :span="8">
-            <a-form-item label="商品名称" >
-              <a-input placeholder="请输入商品名称"  v-model="queryParam.title"></a-input>
+            <a-form-item label="超市名称" >
+              <a-input placeholder="请输入超市名称"  v-model="queryParam.shopName"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="8">
+<!--          <a-col :span="8">
             <a-form-item label="商品分类">
               <a-cascader
                 :field-names="{ label: 'name', value: 'id', children: 'childrenList'}"
@@ -27,7 +27,7 @@
                 @change="onChangeShop"
               />
             </a-form-item>
-          </a-col>
+          </a-col>-->
           <a-col :span="8"  >
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                 <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
@@ -62,28 +62,22 @@
   </a-modal>
 </template>
 <script>
+
   import ARow from "ant-design-vue/es/grid/Row";
   import {deleteAction, getAction, postAction,getFileAccessHttpUrl} from '@/api/manage';
   import {filterObj} from '@/utils/util';
 
   export default {
-    name:"TodaySpuList",
+    name:"ShopListModel",
     components: {
       ARow,
     },
     data(){
       return{
-        description: '选择商品页',
+        description: '选择超市页',
         title: "操作",
         visible: false,
         confirmLoading: false,
-        search:{
-          shopId:"",
-          title:'',
-          brandId:'',
-          cid3:'',
-          saleable:""
-        },
         // 查询条件
         queryParam: {},
         // 表头
@@ -105,9 +99,14 @@
             scopedSlots: {customRender: "avatarslot"}
           },
           {
-            title: '商品名称',
+            title: '超市名称',
             align: "center",
-            dataIndex: 'title',
+            dataIndex: 'shopName',
+          },
+          {
+            title: '超市地址',
+            align: "center",
+            dataIndex: 'shopAddress',
           }
         ],
         //数据集
@@ -136,34 +135,27 @@
         selectedRowKeys: [],
         selectedRows: [],
         url: {
-          list: "/kunze/spu/spuList",
+          list: "/kunze/shop/list",
           imgerver: window._CONFIG['staticDomainURL'],
-          categorylist:"/kunze/category/qryList",
         },
       }
     },
     created() {
-      this.shopId = this.$store.state.shopId;
+      //this.shopId = this.$store.state.shopId;
     },
     methods:{
       getAvatarView: function (avatar) {
         return getFileAccessHttpUrl(avatar,this.url.imgerver,"http")
       },
-      spuList(){
+      shopList(){
         this.visible = true;
-        this.handleCategory();
         this.loadData(1);
       },
-      handleCategory(){
-        getAction(this.url.categorylist,{id:'',pid:''}).then((res)=>{
-          this.options=res.result
-        })
-      },
-      //选择分类
+/*      //选择分类
       onChangeShop(e){
         this.cids=e
         this.search.cid3=e[2]
-      },
+      },*/
       loadData(arg) {
         //加载数据 若传入参数1则加载第一页的内容
         if (arg === 1) {
@@ -187,8 +179,6 @@
       searchReset() {
         var that = this;
         that.queryParam = {};
-        that.cids=[];
-        that.search.cid3=[];
         that.loadData(1);
       },
       handleOk(){
@@ -196,6 +186,11 @@
           this.$message.warning('请选择一条数据！');
           return;
         } else {
+          /*  this.$emit('func',this.selectedRows);
+            this.selectedRowKeys = [];
+            this.selectionRows = [];
+            this.close();*/
+          console.log(this.selectionRows[0]);
           this.$emit('func',this.selectionRows[0]);
           this.close();
         }
@@ -205,8 +200,6 @@
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
-        param.shopId = this.shopId;
-        param.cid3 = this.search.cid3;
         return filterObj(param);
       },
       getQueryField() {
@@ -241,7 +234,4 @@
       },
     }
   }
-
-
-
 </script>

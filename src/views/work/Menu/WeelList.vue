@@ -27,6 +27,11 @@
               </a-select>
             </a-form-item>
           </a-col>
+          <a-col :md="6" :sm="24">
+            <a-form-item label="超市">
+              <a-input placeholder="请输入超市"    v-model="queryParam.shopName"/>
+            </a-form-item>
+          </a-col>
           <a-col :md="6" :sm="24" >
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
@@ -104,6 +109,7 @@
       </a-table>
     </div>
     <weel-model ref="WeelModel" @ok="modalFormOk"></weel-model>
+    <shop-list-model ref="ShopListModel" @func="modalFormOkShop"></shop-list-model>
   </a-card>
 </template>
 <script>
@@ -112,7 +118,8 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin';
   import {deleteAction, getAction, postAction,getFileAccessHttpUrl} from '@/api/manage';
   import {filterObj,timeFix} from '@/utils/util';
-  import WeelModel from './model/WeelModel'
+  import WeelModel from './model/WeelModel';
+  import ShopListModel from '../Supermarket/modules/ShopListModel';
 
 
   export default {
@@ -120,7 +127,8 @@
     mixins: [JeecgListMixin],
     components: {
       ARow,
-      WeelModel
+      WeelModel,
+      ShopListModel
     },
     data() {
       return {
@@ -281,6 +289,15 @@
           }
         })
       },
+/*      handleShopList(){
+        this.$refs.ShopListModel.title = "选择超市";
+        this.$refs.ShopListModel.shopList();
+      },
+      modalFormOkShop(data){
+        this.shopId = data.id;
+        this.model.shopName = data.id;
+        this.form.setFieldsValue({shopName:data.shopName});
+      },*/
       handleIsFlagEnable:function(record){
         let params={
             ids:record.wheelId,
