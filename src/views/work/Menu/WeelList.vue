@@ -29,7 +29,7 @@
           </a-col>
           <a-col :md="6" :sm="24">
             <a-form-item label="超市">
-              <a-input placeholder="请输入超市"    v-model="queryParam.shopName"/>
+              <a-input placeholder="请输入超市"  :value ="shopName"  @click="handleShopList" />
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="24" >
@@ -258,6 +258,7 @@
           column: 'createTime',
           order: 'desc',
         },
+        shopName:"",
         selectedRowKeys: [],
         selectedRows: [],
         url: {
@@ -289,15 +290,16 @@
           }
         })
       },
-/*      handleShopList(){
+      handleShopList(){
         this.$refs.ShopListModel.title = "选择超市";
         this.$refs.ShopListModel.shopList();
       },
       modalFormOkShop(data){
+        debugger;
         this.shopId = data.id;
-        this.model.shopName = data.id;
-        this.form.setFieldsValue({shopName:data.shopName});
-      },*/
+        //this.model.shopName = data.id;
+        this.shopName = data.shopName;
+      },
       handleIsFlagEnable:function(record){
         let params={
             ids:record.wheelId,
@@ -403,7 +405,8 @@
       },
       searchReset() {
         var that = this;
-        that.queryParam = {}
+        that.queryParam = {};
+        that.shopName = "";
         that.loadData(1);
       },
       getQueryParams() {
@@ -411,6 +414,7 @@
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
+        param.shopName = this.shopName;
         return filterObj(param);
       },
       getQueryField() {

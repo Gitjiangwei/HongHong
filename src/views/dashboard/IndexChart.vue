@@ -37,7 +37,9 @@
           </a-tooltip>
           <div style="margin-bottom: 20px;font-size: 16px;font-weight: bold">
             当前手续费：
-            <span style="color: #2eabff;">{{serviceCharge}} %</span>
+            <span style="color: #2eabff;margin-right: 2%">{{serviceCharge}} %</span>
+            选择超市：
+            <a-input style="width: 50%;"  :value="value" placeholder="请选择超市" @click="handleShopList"  />
           </div>
           <div style="line-height:32px; font-size: 16px;font-weight: bold">
             修改手续费：
@@ -153,6 +155,7 @@
       </a-col>
     </a-row>
     <shop-profit-list ref="ShopProfitList"></shop-profit-list>
+    <shop-list-model ref="ShopListModel" @func="modalFormOkShop"></shop-list-model>
   </div>
 </template>
 
@@ -171,6 +174,7 @@
   import ShopProfitList from '../work/Supermarket/ShopProfitList'
   import Trend from '@/components/Trend'
   import { getLoginfo,getVisitInfo } from '@/api/api'
+  import ShopListModel from '../work/Supermarket/modules/ShopListModel'
 
   const rankList = [];
 /*  for (let i = 0; i < 7; i++) {
@@ -204,7 +208,8 @@
       Trend,
       LineChartMultid,
       HeadInfo,
-      ShopProfitList
+      ShopProfitList,
+      ShopListModel
     },
     data() {
       return {
@@ -213,6 +218,7 @@
         rankList,
         sourceData,
         barData,
+        value:"",
         isDownUp: "down",
         isDownUps: "down",
         totalSales:"0",
@@ -224,6 +230,8 @@
         loginfo:{},
         chargeId:"",
         serviceCharge:"0",
+        shopId:"",
+        chargeShopId:"",
         visitFields:['ip','visit'],
         visitInfo:[],
         url:{
@@ -277,11 +285,27 @@
           }
         });
       },
+      handleShopList(){
+        this.$refs.ShopListModel.title = "选择超市";
+        this.$refs.ShopListModel.shopList();
+      },
+      modalFormOkShop(data){
+        this.chargeShopId = data.id;
+        //this.model.shopName = data.id;
+        this.value = data.shopName;
+        this.loaderCharge();
+      },
       loaderCharge(){
-        getAction(this.url.queryCharge,{}).then((res) =>{
+        getAction(this.url.queryCharge,{shopId:this.chargeShopId}).then((res) =>{
           if(res.success){
-            this.chargeId = res.result.id;
-            this.serviceCharge = res.result.service_charge;
+            debugger;
+            if(res.result == null){
+              this.chargeId = "";
+              this.serviceCharge = "0";
+            }else {
+              this.chargeId = res.result.id;
+              this.serviceCharge = res.result.service_charge;
+            }
           }
         })
       },
@@ -289,6 +313,7 @@
         let saveCharge={
            id:this.chargeId,
            serviceCharge:e,
+          shopId:this.chargeShopId,
         }
         let url = "";
         let save = "";
@@ -385,6 +410,7 @@
                 id:res.result.list[i].shopId,
                 name: res.result.list[i].shopName,
                 total: res.result.list[i].payment,
+                shopCharge: res.result.list[i].charge+"%",
                 charge:res.result.list[i].serviceCharge
               })
             }
