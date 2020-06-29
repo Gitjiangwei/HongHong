@@ -1,11 +1,8 @@
 <template>
   <div>
-
-
-
     <a-row>
       <a-col  :xl="23" :lg="23" :md="23" :sm="24" :xs="24">
-        <span style="font-weight: bold; font-size: 16px;display: inline-block;margin: 0 0 0 10px">平台信息数据统计</span>
+        <span style="font-weight: bold; font-size: 16px;display: inline-block;margin: 0 0 0 10px">平台信息数据统计<span style="font-size: 10px;color: #00A0E9">（注：平台会扣除每单 <span style="color:red;font-size: 16px">{{charge}}%</span> 的手续费）</span></span>
         <a-card style="width: 100%;" :loading="loading">
           <div style="width:100% ;height: 100%">
             <a-row>
@@ -17,7 +14,13 @@
                     </div>
                     <div class="font">
                       <div class="font-item" style="line-height: 68px;">月交易额</div>
-                      <div class="font-item" style="line-height: 40px; font-size: 26px">{{totalMoney | NumberFormat}} &nbsp;<span style="color: #D5D6D9;font-size: 12px">元</span> </div>
+                      <div class="font-item" style="line-height: 40px; font-size: 26px;">{{totalMoney | NumberFormat}} &nbsp;<span style="color: #D5D6D9;font-size: 12px">元</span> </div>
+                      <div class="font-item" style="line-height: 26px;font-size: 12px; width: 150%; margin: 20px 0 0 -65%;border-top: 1px solid #E8E8E8">
+                        订单交易额：<span style="font-weight:bold; color: #2eabff">{{moneyMoney | NumberFormat}}</span> 元
+                        （含：交易完成：<span style="font-weight: bold">{{okTotal}}</span>单<span style="color: #00DB00;font-weight: bold">{{okPayment|NumberFormat}}</span>元，退款<span style="font-weight: bold">{{refundTotal}}</span>单<span style="color: #00DB00;font-weight: bold">{{refundPayment|NumberFormat}}</span>元）；
+                        配送费：<span style="font-weight:bold; color: #2eabff">{{postFree | NumberFormat}}</span> 元；
+                        手续费：<span style="font-weight:bold; color: #2eabff">{{chargeTotal | NumberFormat}}</span> 元
+                      </div>
                     </div>
                   </a-col>
                 </div>
@@ -223,9 +226,15 @@
       return{
         span:8,
         loading: true,
-        moneyMoney:"0",
-        postFree:"0",
-        totalMoney:"0",
+        charge:"0", //手续费率
+        chargeTotal:"0", //手续费
+        moneyMoney:"0",//月订单交易额
+        postFree:"0", //月配送费
+        totalMoney:"0", //月交易总额
+        okPayment:"0",//月交易成功交易额
+        okTotal:"0", //月交易成功订单数
+        refundPayment:"0", //月订单退款额度
+        refundTotal:"0", //月退款订单数
         toDayMoney:"0",
         toDayPostFree:"0",
         toDayTotalPrice:"0",
@@ -354,9 +363,15 @@
         }
         getAction(this.url.selectInfo,params).then((res) => {
             if(res.success){
-              this.moneyMoney = res.result.moneyMoney;
-              this.postFree = res.result.moneyPostfree;
-              this.totalMoney = res.result.totalMoney;
+              this.moneyMoney = res.result.moneyMoney; //月交易额(包含退款)
+              this.postFree = res.result.moneyPostfree; //月配送费
+              this.totalMoney = res.result.totalMoney; //月总交易额
+              this.okPayment = res.result.okPayment; //月交易成功交易额
+              this.okTotal = res.result.okTotal; //月交易成功订单数
+              this.refundPayment = res.result.refundPayment; //月订单退款额度
+              this.refundTotal = res.result.refundTotal;//月退款订单数
+              this.charge = res.result.charge;//手续费率
+              this.chargeTotal = res.result.chargeTotal; //手续费
               this.toDayMoney = res.result.toDayMoney;
               this.toDayPostFree = res.result.toDayPostFree;
               this.toDayTotalPrice = res.result.toDayTotalPrice;
