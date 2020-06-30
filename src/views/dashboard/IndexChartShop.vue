@@ -34,6 +34,12 @@
                     <div class="font">
                       <div class="font-item" style="line-height: 68px;">日交易额</div>
                       <div class="font-item" style="line-height: 40px; font-size: 26px">{{toDayTotalPrice | NumberFormat}} &nbsp;<span style="color: #D5D6D9;font-size: 12px">元</span> </div>
+                      <div class="font-item" style="line-height: 26px;font-size: 12px; width: 150%; margin: 20px 0 0 -65%;border-top: 1px solid #E8E8E8">
+                        订单交易额：<span style="font-weight:bold; color: #2eabff">{{toDayMoney | NumberFormat}}</span> 元
+                        （含配送费：交易完成：<span style="font-weight: bold">{{toDayokTotal}}</span>单<span style="color: #00DB00;font-weight: bold">{{toDayOkPayment|NumberFormat}}</span>元，退款<span style="font-weight: bold">{{toDayRefundTotal}}</span>单<span style="color: #00DB00;font-weight: bold">{{toDayRefundPayment|NumberFormat}}</span>元）；
+                        <!--配送费：<span style="font-weight:bold; color: #2eabff">{{postFree | NumberFormat}}</span> 元；-->
+                        手续费：<span style="font-weight:bold; color: #2eabff">{{toDayChargeTotal | NumberFormat}}</span> 元
+                      </div>
                     </div>
                   </a-col>
                 </div>
@@ -218,9 +224,13 @@
         okTotal:"0", //月交易成功订单数
         refundPayment:"0", //月订单退款额度
         refundTotal:"0", //月退款订单数
-        toDayMoney:"0",
-        toDayPostFree:"0",
-        toDayTotalPrice:"0",
+        toDayMoney:"0", //当日交易额
+        toDayOkPayment:"0", /**当日成功交易*/
+        toDayRefundPayment:"0", /**当日退款金额*/
+        toDayokTotal:"0", /**当日交易成功订单数*/
+        toDayRefundTotal:"0",  /**当日退款订单数*/
+        toDayChargeTotal:"0",/**当日手续费*/
+        toDayTotalPrice:"0", /**当日盈利*/
         orderNum:"0",
         spuNum:"0",
         pending:"0",
@@ -354,10 +364,14 @@
               this.refundPayment = res.result.refundPayment; //月订单退款额度
               this.refundTotal = res.result.refundTotal;//月退款订单数
               this.charge = res.result.charge;//手续费率
-              this.chargeTotal = res.result.chargeTotal; //手续费
-              this.toDayMoney = res.result.toDayMoney;
-              this.toDayPostFree = res.result.toDayPostFree;
-              this.toDayTotalPrice = res.result.toDayTotalPrice;
+              this.chargeTotal = res.result.chargeTotal; //月手续费
+              this.toDayMoney = res.result.toDayMoney; //当日交易额
+              this.toDayOkPayment = res.result.toDayOkPayment; /**当日成功交易*/
+              this.toDayRefundPayment = res.result.toDayRefundPayment; /**当日退款金额*/
+              this.toDayokTotal = res.result.toDayokTotal; /**当日交易成功订单数*/
+              this.toDayRefundTotal = res.result.toDayRefundTotal;  /**当日退款订单数*/
+              this.toDayChargeTotal = res.result.toDayChargeTotal;/**当日手续费*/
+              this.toDayTotalPrice = res.result.toDayTotalPrice; /**当日盈利*/
               this.orderNum = res.result.orderNum;
               this.spuNum = res.result.spuNum;
             }
