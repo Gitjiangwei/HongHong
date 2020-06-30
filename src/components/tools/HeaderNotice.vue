@@ -81,6 +81,7 @@
   import ShowAnnouncement from './ShowAnnouncement'
   import store from '@/store/'
   import DynamicNotice from './DynamicNotice'
+  import Utils from "../../assets/js/util"
 
 
   export default {
@@ -88,6 +89,7 @@
     components: {
       DynamicNotice,
       ShowAnnouncement,
+      Utils
     },
     data () {
       return {
@@ -232,6 +234,7 @@
             description: `您有一条新的订单，请注意查收`,
           });
           this.loadData();
+          Utils.$emit('demo','msg');
         }
         //心跳检测重置
         //this.heartCheck.reset().start();

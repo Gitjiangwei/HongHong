@@ -109,6 +109,7 @@
   import {filterObj,timeFix} from '@/utils/util';
   import $ from 'jquery';
   import OrderDetail from "./model/OrderDetail"
+  import Utils from "../../assets/js/util"
 
 
   export default {
@@ -116,7 +117,8 @@
       mixins:[JeecgListMixin],
       components:{
         ARow,
-        OrderDetail
+        OrderDetail,
+        Utils
       },
       data() {
         return {
@@ -248,6 +250,13 @@
         this.shopId=this.$store.state.shopId;
 
         this.loadData();
+      },
+      mounted(){
+        var that = this;
+        Utils.$on('demo', function (msg) {
+          console.log(msg);
+          that.loadData(1);
+        })
       },
       methods:{
         //确定退款
