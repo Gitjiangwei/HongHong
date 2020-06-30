@@ -247,8 +247,8 @@
       handleDelete:function(record){
         let that = this;
         let status = record.status;
-        if(status!=2){
-          this.$message.warning("只能删除已结束的特卖商品");
+        if(status ==1){
+          this.$message.warning("只能删除未开始或者已结束的特卖商品");
           return;
         }else {
           deleteAction(that.url.delete,{ids:record.featuresId}).then((res)=>{

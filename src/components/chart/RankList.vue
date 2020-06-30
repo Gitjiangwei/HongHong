@@ -6,7 +6,7 @@
         <a @click="loads(item.id)">
           <span :class="index < 3 ? 'active' : null">{{ index + 1 }}</span>
           <span>{{ item.name }}</span>
-          <span style="color: #00DB00">{{ item.total }} <span style="color: red;font-weight: bold;margin-left: 30px">{{item.charge}}</span></span>
+          <span style="color: #00DB00;font-weight: bold;"><span style="color: #2eabff;background-color: #fff;font-weight: bold"> {{ item.shopCharge }}</span> {{ item.total }}<span style="color: red;font-weight: bold;margin-left: 50px">{{item.charge}}</span></span>
         </a>
       </li>
     </ul>
@@ -73,6 +73,9 @@
             line-height: 20px;
             width: 20px;
             text-align: center;
+          }
+          &:nth-child(3){
+            width: 190px;
           }
           &.active {
             background-color: #314659;
