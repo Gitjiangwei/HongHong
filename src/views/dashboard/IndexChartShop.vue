@@ -17,16 +17,14 @@
                       <div class="font-item" style="line-height: 40px; font-size: 26px;">{{totalMoney | NumberFormat}} &nbsp;<span style="color: #D5D6D9;font-size: 12px">元</span> </div>
                       <div class="font-item" style="line-height: 26px;font-size: 12px; width: 150%; margin: 20px 0 0 -65%;border-top: 1px solid #E8E8E8">
                         订单交易额：<span style="font-weight:bold; color: #2eabff">{{moneyMoney | NumberFormat}}</span> 元
-                        （含：交易完成：<span style="font-weight: bold">{{okTotal}}</span>单<span style="color: #00DB00;font-weight: bold">{{okPayment|NumberFormat}}</span>元，退款<span style="font-weight: bold">{{refundTotal}}</span>单<span style="color: #00DB00;font-weight: bold">{{refundPayment|NumberFormat}}</span>元）；
-                        配送费：<span style="font-weight:bold; color: #2eabff">{{postFree | NumberFormat}}</span> 元；
+                        （含配送费：交易完成：<span style="font-weight: bold">{{okTotal}}</span>单<span style="color: #00DB00;font-weight: bold">{{okPayment|NumberFormat}}</span>元，退款<span style="font-weight: bold">{{refundTotal}}</span>单<span style="color: #00DB00;font-weight: bold">{{refundPayment|NumberFormat}}</span>元）；
+                        <!--配送费：<span style="font-weight:bold; color: #2eabff">{{postFree | NumberFormat}}</span> 元；-->
                         手续费：<span style="font-weight:bold; color: #2eabff">{{chargeTotal | NumberFormat}}</span> 元
                       </div>
                     </div>
                   </a-col>
                 </div>
               </a-col>
-
-
               <a-col  style="border-right:2px solid  rgba(246, 246, 246, 1) " :xl="6" :lg="12" :md="12" :sm="24" :xs="24">
                 <div class="card-item" >
                   <a-col>
@@ -40,8 +38,6 @@
                   </a-col>
                 </div>
               </a-col>
-
-
               <a-col :xl="6" :lg="12" :md="12" :sm="24" :xs="24" style="border-right:2px solid  rgba(246, 246, 246, 1) ">
                 <div class="card-item" >
                   <div class="img">
@@ -65,19 +61,12 @@
                 </div>
               </a-col>
             </a-row>
-
           </div>
         </a-card>
       </a-col>
     </a-row>
     <a-row>
       <a-col  :xl="18" :lg="18" :md="18" :sm="24" :xs="24">
-
-
-
-
-
-
         <span style="font-weight: bold; font-size: 16px;display: inline-block;margin: 20px 0 0 10px">订单统计与仓库统计</span>
         <a-row>
           <a-col  :xl="11" :lg="11" :md="11" :sm="24" :xs="24">
@@ -105,8 +94,6 @@
               </div>
             </div>
           </div>
-
-
         </a-card>
           </a-col>
           <a-col :span="2"></a-col>
@@ -136,7 +123,6 @@
             </div>
           </div>
         </a-card>
-
       </a-col>
         </a-row>
         <a-row>
@@ -191,7 +177,6 @@
             <span style="color: #9e9e9e;font-size: 8px"> &nbsp;{{v.menutime}}</span>
           </div>
         </a-card>
-
       </a-col>
     </a-row>
     <order-status-list ref="OrderStatusList" @ok="modalFormOkOrder"></order-status-list>
@@ -209,7 +194,6 @@
   import SpuStockModel from "../work/commodity1/model/SpuStockModel"
   import SpuNotShelfList from "../work/commodityNR1/model/SpuNotShelfList"
   import qs from 'qs'
-
 
   export default {
     name:"IndexChartShop",
@@ -229,7 +213,6 @@
         charge:"0", //手续费率
         chargeTotal:"0", //手续费
         moneyMoney:"0",//月订单交易额
-        postFree:"0", //月配送费
         totalMoney:"0", //月交易总额
         okPayment:"0",//月交易成功交易额
         okTotal:"0", //月交易成功订单数
@@ -364,7 +347,7 @@
         getAction(this.url.selectInfo,params).then((res) => {
             if(res.success){
               this.moneyMoney = res.result.moneyMoney; //月交易额(包含退款)
-              this.postFree = res.result.moneyPostfree; //月配送费
+              //this.postFree = res.result.moneyPostfree; //月配送费
               this.totalMoney = res.result.totalMoney; //月总交易额
               this.okPayment = res.result.okPayment; //月交易成功交易额
               this.okTotal = res.result.okTotal; //月交易成功订单数
