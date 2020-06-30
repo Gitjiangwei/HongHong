@@ -73,10 +73,10 @@
                   实付金额：
                   <span>￥{{payAmout | NumberFormat}}</span>
                 </li>
-                <li style="font-weight: bold">
+<!--                <li style="font-weight: bold">
                   合计：
                   <span>￥{{priceTotle | NumberFormat}}</span>
-                </li>
+                </li>-->
               </ul>
             </div>
             <a-card :bordered="false">
@@ -174,10 +174,10 @@
         type:Array,
         require:false,
       },
-      priceTotle:{
+/*      priceTotle:{
         type:String,
         require:false,
-      },
+      },*/
     },
     data(){
       return{
@@ -188,7 +188,6 @@
         calls: this.call,
         telphone: this.telphone,
         address: this.address,
-        priceTotle:this.priceTotle,
         orderId:"",
         status:this.status,
         buyerMessage: this.buyerMessage,

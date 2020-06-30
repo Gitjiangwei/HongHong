@@ -129,7 +129,7 @@
         this.salesSum = result.saleSum;
         this.postFee = result.postFree;
         this.payAmout = result.practical;
-        this.priceTotle = result.priceTotle;
+        //this.priceTotle = result.priceTotle;
       },
 
       close() {
