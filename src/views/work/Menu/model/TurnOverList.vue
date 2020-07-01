@@ -83,7 +83,7 @@
           {
             title: '时间',
             align: "center",
-            dataIndex: 'createTime',
+            dataIndex: 'occurrenceTime',
           },
           {
             title: '手续费率',
