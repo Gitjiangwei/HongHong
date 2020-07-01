@@ -9,7 +9,7 @@
               <a-col  style="border-right:2px solid  rgba(246, 246, 246, 1) " :xl="6" :lg="12" :md="12" :sm="24" :xs="24">
                 <div class="card-item" >
                   <a-col>
-                    <div class="img">
+                    <div class="img" @click="handleTurn('0')">
                       <img src="@/assets/money.png" alt="" @click="mmm">
                     </div>
                     <div class="font">
@@ -28,7 +28,7 @@
               <a-col  style="border-right:2px solid  rgba(246, 246, 246, 1) " :xl="6" :lg="12" :md="12" :sm="24" :xs="24">
                 <div class="card-item" >
                   <a-col>
-                    <div class="img">
+                    <div class="img" @click="handleTurn('1')">
                       <img src="@/assets/toDay.png" alt="" @click="mmm">
                     </div>
                     <div class="font">
@@ -188,6 +188,7 @@
     <order-status-list ref="OrderStatusList" @ok="modalFormOkOrder"></order-status-list>
     <spu-stock-model ref="SpuStockModel" @ok="modalFormOkStock"></spu-stock-model>
     <spu-not-shelf-list ref="SpuNotShelfList" @ok="modalFormOkStock"></spu-not-shelf-list>
+    <turn-over-list ref="TurnOverList"></turn-over-list>
   </div>
 </template>
 <script>
@@ -199,6 +200,8 @@
   import OrderStatusList from "../order/model/OrderStatusList"
   import SpuStockModel from "../work/commodity1/model/SpuStockModel"
   import SpuNotShelfList from "../work/commodityNR1/model/SpuNotShelfList"
+  import Utils from "../../assets/js/util"
+  import TurnOverList from "../work/Menu/model/TurnOverList"
   import qs from 'qs'
 
   export default {
@@ -210,7 +213,9 @@
       LineChartMultid,
       OrderStatusList,
       SpuStockModel,
-      SpuNotShelfList
+      SpuNotShelfList,
+      TurnOverList,
+      Utils
     },
     data(){
       return{
@@ -268,7 +273,6 @@
     },
     created(){
       this.timer();
-      this.newsTimer();
       setTimeout(() => {
         this.loading = !this.loading
       }, 1000);
@@ -284,6 +288,13 @@
         this.loadDateNews(shopId);
       }, 500);
 
+    },
+    mounted(){
+      let that = this;
+      Utils.$on('indexShop', function (msg) {
+          this.loaderOrder(that.shopId);
+          this.loadDateNews(that.shopId);
+      });
     },
     methods:{
       //查询配送费
@@ -325,6 +336,14 @@
       mmm(){
        let winWidth = window.innerWidth;
       },
+      handleTurn(dateFlag){
+        let title = "月历史交易清单";
+        if(dateFlag == 1){
+          title = "日历史交易清单";
+        }
+        this.$refs.TurnOverList.turnList(dateFlag,this.shopId);
+        this.$refs.TurnOverList.title = title;
+      },
       modalFormOkOrder(){
         this.loaders(this.shopId);
       },
@@ -343,12 +362,6 @@
             this.loaderSevenDeal(this.shopId);
           }, 500);
         },10000)
-      },
-      //最新消息定时任务，1秒刷新一次
-      newsTimer(){
-        return setInterval(()=>{
-          this.loadDateNews(this.shopId);
-        },3000)
       },
       loaders(shopId){
         let params = {
@@ -476,6 +489,7 @@
       border-radius: 42px;
       margin:26px 30px 26px 40px;
       float: left;
+      cursor: pointer;
     }
     .font{
       height: 100%;

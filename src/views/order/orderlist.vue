@@ -254,7 +254,6 @@
       mounted(){
         var that = this;
         Utils.$on('orderList', function (msg) {
-          console.log(msg);
           that.loadData(1);
         })
       },

@@ -234,7 +234,8 @@
             description: `您有一条新的订单，请注意查收`,
           });
           this.loadData();
-          Utils.$emit('demo','msg');
+          Utils.$emit('orderList','msg');
+          Utils.$emit('indexShop','msg');
         }
         //心跳检测重置
         //this.heartCheck.reset().start();
