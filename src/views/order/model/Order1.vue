@@ -12,7 +12,7 @@
                     :labelCol="{span: 5}"
                     :wrapperCol="{span: 19}"
                   >
-                    <span style="font-weight: bold">{{calls}}</span>
+                    <span style="font-weight: bold">{{consigneeSex}}</span>
                   <!-- <a-input disabled :value={calls} />-->
                 </a-form-item>
                     </a-col>
@@ -146,7 +146,7 @@
         type:String,
         require:false
       },
-      call: {
+      consigneeSex: {
         type:String,
         require:false
       },
@@ -185,7 +185,7 @@
         salesSum:this.salesSum,
         postFee:this.postFee,
         payAmout:this.payAmout,
-        calls: this.call,
+        consigneeSex: this.consigneeSex,
         telphone: this.telphone,
         address: this.address,
         orderId:"",

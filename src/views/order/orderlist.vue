@@ -253,7 +253,7 @@
       },
       mounted(){
         var that = this;
-        Utils.$on('demo', function (msg) {
+        Utils.$on('orderList', function (msg) {
           console.log(msg);
           that.loadData(1);
         })

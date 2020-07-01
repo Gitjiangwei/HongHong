@@ -27,7 +27,7 @@
       </a-steps>
       <div class="content">
         <order1
-          :call="call"
+          :consigneeSex="consigneeSex"
           :telphone = "telphone"
           :salesNum="salesNum"
           :address="address"
@@ -81,7 +81,7 @@
         visible: false,
         formData: {},
         model: {},
-        call:'',
+        consigneeSex:'',
         orderId:"",
         payTime:"",
         salesNum:"0",
@@ -120,7 +120,8 @@
         this.orderId = record.orderId;
         this.payTime = record.createTime;
         this.telphone = record.telphone;
-        this.call = record.consigneeSex;
+        this.consigneeSex = record.consigneeSex;
+        debugger;
         this.status = record.status;
         let {result} = await getAction(this.url.detail,{orderId:this.orderId});
         this.address = result.distributionVo.shippingAddress;
