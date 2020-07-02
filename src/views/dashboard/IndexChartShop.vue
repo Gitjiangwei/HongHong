@@ -13,7 +13,7 @@
                       <img src="@/assets/money.png" alt="" @click="mmm">
                     </div>
                     <div class="font">
-                      <div class="font-item" style="line-height: 68px;">月交易额</div>
+                      <div class="font-item" style="line-height: 68px;">月利润</div>
                       <div class="font-item" style="line-height: 40px; font-size: 26px;">{{totalMoney | NumberFormat}} &nbsp;<span style="color: #D5D6D9;font-size: 12px">元</span> </div>
                       <div class="font-item" style="line-height: 26px;font-size: 12px; width: 150%; margin: 20px 0 0 -65%;border-top: 1px solid #E8E8E8">
                         订单交易额：<span style="font-weight:bold; color: #2eabff">{{moneyMoney | NumberFormat}}</span> 元
@@ -32,9 +32,9 @@
                       <img src="@/assets/toDay.png" alt="" @click="mmm">
                     </div>
                     <div class="font">
-                      <div class="font-item" style="line-height: 68px;">日交易额</div>
+                      <div class="font-item" style="line-height: 68px;">日利润</div>
                       <div class="font-item" style="line-height: 40px; font-size: 26px">{{toDayTotalPrice | NumberFormat}} &nbsp;<span style="color: #D5D6D9;font-size: 12px">元</span> </div>
-                      <div class="font-item" style="line-height: 26px;font-size: 12px; width: 150%; margin: 20px 0 0 -65%;border-top: 1px solid #E8E8E8">
+                      <div class="font-item" style="line-height: 26px;font-size: 12px; width: 150%; margin: 20px 0 0 -58%;border-top: 1px solid #E8E8E8">
                         订单交易额：<span style="font-weight:bold; color: #2eabff">{{toDayMoney | NumberFormat}}</span> 元
                         （含配送费：交易完成：<span style="font-weight: bold">{{toDayokTotal}}</span>单<span style="color: #00DB00;font-weight: bold">{{toDayOkPayment|NumberFormat}}</span>元，退款<span style="font-weight: bold">{{toDayRefundTotal}}</span>单<span style="color: #00DB00;font-weight: bold">{{toDayRefundPayment|NumberFormat}}</span>元）；
                         <!--配送费：<span style="font-weight:bold; color: #2eabff">{{postFree | NumberFormat}}</span> 元；-->

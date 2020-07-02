@@ -109,6 +109,7 @@
         formData: {},
         model: {},
         shopId:"",
+        skuId:"",
         labelCol: {
           xs: {span: 24},
           sm: {span: 5},
@@ -137,7 +138,8 @@
           }
         },
         url: {
-          add:"/kunze/features/saveSpuFeatures"
+          add:"/kunze/features/saveSpuFeatures",
+          identical:"/kunze/features/identical",
         },
       }
     },
@@ -204,6 +206,7 @@
         this.form.setFieldsValue({spuName:data.title});
       },
       modalFormOkSku(data) {
+        this.skuId = data.id;
         this.model.skuId = data.id;
         this.form.setFieldsValue({skuName:data.ownSpec});
       },
@@ -275,7 +278,19 @@
           if(mytime >= valtime){
             callback("特卖日期只能大于当天日期！")
           }else {
-            callback()
+            let  param = {
+              skuId:this.skuId,
+              featuresTime: value.format('YYYY-MM-DD'),
+            };
+            debugger;
+            postAction(this.url.identical,param).then((res)=>{
+              if(res.success){
+                callback();
+              }else {
+                callback(res.message);
+              }
+            })
+
           }
         }
       },

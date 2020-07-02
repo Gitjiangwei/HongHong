@@ -60,6 +60,15 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
+        <!-- 字符串超长截取省略号显示-->
+        <span slot="description" slot-scope="text">
+          <j-ellipsis :value="text" :length="20" />
+        </span>
+        <span slot="parameterRender" slot-scope="text">
+          <j-ellipsis :value="text" :length="20" />
+        </span>
+
+
         <template slot="avatarslot" slot-scope="text, record, index">
           <div class="anty-img-wrap">
             <a-avatar shape="square" :src="getAvatarView(record.image)" icon="user"/>
@@ -95,14 +104,16 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin';
   import {deleteAction, getAction, postAction,getFileAccessHttpUrl} from '@/api/manage';
   import {filterObj,timeFix} from '@/utils/util';
-  import TodaySpecialModel from './model/TodaySpecialModel'
+  import TodaySpecialModel from './model/TodaySpecialModel';
+  import JEllipsis from "@/components/jeecg/JEllipsis";
 
   export default {
     name:"TodaySpecial",
     mixins: [JeecgListMixin],
     components: {
       ARow,
-      TodaySpecialModel
+      TodaySpecialModel,
+      JEllipsis
     },
     data(){
       return{
@@ -184,6 +195,13 @@
             title: '创建人',
             align: "center",
             dataIndex: 'createName'
+          },
+          {
+            title: '备注',
+            align: "center",
+            width: 250,
+            dataIndex: 'remarks',
+            scopedSlots: {customRender: 'description'},
           },
           {
             title: '操作',

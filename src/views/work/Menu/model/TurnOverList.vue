@@ -8,7 +8,7 @@
     cancelText="关闭"
   >
     <!-- 查询区域 -->
-<!--    <div class="table-page-search-wrapper">
+    <div class="table-page-search-wrapper">
       <a-form layout="inline">
         <a-row :gutter="24">
           <a-col :md="8" :sm="24">
@@ -26,7 +26,7 @@
 
         </a-row>
       </a-form>
-    </div>-->
+    </div>
 
 
     <!-- table区域-begin -->
