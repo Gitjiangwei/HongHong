@@ -267,6 +267,7 @@
             { title: '商品名称', dataIndex: 'title', key: 'title' },
             { title: '规格', dataIndex: 'ownSpec', key: 'ownSpec' },
             { title: '图片', dataIndex: 'images', key: 'images',scopedSlots: { customRender: 'images' } },
+            { title: '优惠价格', dataIndex: 'newPrice', key: 'price' },
             { title: '价格', dataIndex: 'price', key: 'price' },
             { title: '编辑', dataIndex: 'isflag', key: 'isflag', scopedSlots: { customRender: 'bianji' } },
           ],
