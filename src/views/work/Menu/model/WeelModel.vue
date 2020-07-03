@@ -70,10 +70,11 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="是否启用"
-          hasFeedback
-        >
-          <a-switch v-decorator="['isFlag', { valuePropName: 'checked' }]" />
+          label="是否启用">
+          <a-radio-group buttonStyle="solid" v-decorator="[ 'isFlag', {'initialValue':'1'}]">
+            <a-radio-button :value="'0'">启用</a-radio-button>
+            <a-radio-button :value="'1'">未启用</a-radio-button>
+          </a-radio-group>
         </a-form-item>
       </a-form>
 
@@ -157,11 +158,6 @@
         that.initialShopList();
         that.visible = true;
         that.form.resetFields();
-        if(record.isFlag=="0"){
-          record.isFlag = true;
-        }else {
-          record.isFlag = false;
-        }
         debugger;
         if(record.hasOwnProperty("wheelId")){
           that.loadShopList(record.wheelId);
