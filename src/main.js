@@ -45,7 +45,8 @@ import vueBus from '@/utils/vueBus';
 import JeecgComponents from '@/components/jeecg/index'
 import FormModel from 'ant-design-vue';
 import Distpicker from 'v-distpicker'
-
+import * as voicePromptFun from './utils/voicePrompt'
+Vue.prototype.voicePrompt = voicePromptFun.voicePrompt  //语音提醒
 
 Vue.config.productionTip = false
 Vue.use(Storage, config.storageOptions)
