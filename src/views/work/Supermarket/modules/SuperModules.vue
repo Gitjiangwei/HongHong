@@ -89,6 +89,15 @@
         <a-form-item label="超市图片" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <j-image-upload class="avatar-uploader" text="上传" v-model="fileList" v-decorator="['image', validatorRules.image]" ></j-image-upload>
         </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="是否上架">
+          <a-radio-group buttonStyle="solid" v-decorator="[ 'isFlag', {'initialValue':'0'}]">
+            <a-radio-button :value="'0'">下架</a-radio-button>
+            <a-radio-button :value="'1'">上架</a-radio-button>
+          </a-radio-group>
+        </a-form-item>
       </a-form>
     </a-spin>
     <div class="drawer-bootom-button" v-show="!disableSubmit">
@@ -198,7 +207,6 @@
         // console.log(record)
         this.resetScreenSize(); // 调用此方法,根据屏幕宽度自适应调整抽屉的宽度
         this.visible = true;
-        // debugger;
         this.form.resetFields();
         if(record.id!=null && record.id != "" && record.id !=undefined){
           setTimeout(() => {
@@ -212,7 +220,7 @@
           this.model.endBusiness = time[1];
         }
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model, 'shopName', 'shopAddress','personCharge','telphone','idenitiy', 'startBusiness', 'endBusiness'))
+          this.form.setFieldsValue(pick(this.model, 'shopName', 'shopAddress','personCharge','telphone','idenitiy', 'startBusiness', 'endBusiness','isFlag'))
           //时间格式化
           this.form.setFieldsValue({startBusiness: this.model.startBusiness ? moment(this.model.startBusiness, 'HH:mm') : null});
           this.form.setFieldsValue({endBusiness: this.model.endBusiness ? moment(this.model.endBusiness, 'HH:mm') : null});

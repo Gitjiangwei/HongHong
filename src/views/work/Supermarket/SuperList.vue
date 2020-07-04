@@ -57,7 +57,11 @@
           </div>
         </template>
 
-
+        <!-- 状态渲染模板 -->
+        <template slot="customRenderStatus" slot-scope="isFlag">
+          <a-tag v-if="isFlag==0" color="green">已下架</a-tag>
+          <a-tag v-if="isFlag==1" color="orange">已上架</a-tag>
+        </template>
 
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
@@ -69,6 +73,14 @@
               <a-menu-item>
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
                   <a>删除</a>
+                </a-popconfirm>
+              </a-menu-item>
+              <a-menu-item>
+                <a-popconfirm title="确定上架吗?" v-if="record.isFlag==0" @confirm="() => handleUpdate(record.id,'1')">
+                  <a>上架</a>
+                </a-popconfirm>
+                <a-popconfirm title="确定下架吗?" v-if="record.isFlag==1" @confirm="() => handleUpdate(record.id,'0')">
+                  <a>下架</a>
                 </a-popconfirm>
               </a-menu-item>
             </a-menu>
@@ -161,6 +173,17 @@
             dataIndex: 'updateTime'
           },
           {
+            title: '是否上架',
+            align:"center",
+            dataIndex: 'isFlag',
+            scopedSlots: { customRender: 'customRenderStatus' },
+            filterMultiple: false,
+            filters: [
+              { text: '已下架', value: '0' },
+              { text: '已上架', value: '1' },
+            ]
+          },
+          {
             title: '操作',
             dataIndex: 'action',
             align:"center",
@@ -190,6 +213,7 @@
         url:{
           list:"/kunze/shop/list",
           delete:"/kunze/shop/delShops",
+          shelves:"/kunze/shop/updateShop",
           imgerver:window._CONFIG['staticDomainURL'],
         },
       }
@@ -221,7 +245,6 @@
         this.$refs.SuperModules.title = "新增超市信息";
       },
       handleEdit:function(record){
-
         let opens=[]
         opens.push(record.province)
         opens.push(record.city)
@@ -230,6 +253,30 @@
         this.$refs.SuperModules.title = "修改超市信息";
         this.$refs.SuperModules.optionss = opens;
         console.log(opens)
+      },
+      handleUpdate:function(ids,isFlag){
+        let that = this;
+        let param = {
+          id:ids,
+          isFlag:isFlag
+        }
+        postAction(this.url.shelves,param).then((res) =>{
+          if(res.success){
+            if(isFlag=="1"){
+              that.$message.success("上架成功");
+            }else {
+              that.$message.success("下架成功");
+            }
+            that.loadData();
+            that.onClearSelected();
+          }else {
+            if(isFlag=="1"){
+              that.$message.success("上架失败");
+            }else {
+              that.$message.success("下架失败");
+            }
+          }
+        })
       },
       handleDelete:function(ids){
         let that = this;
@@ -287,6 +334,7 @@
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
+        param.isFlag = this.filters.isFlag;
         return filterObj(param);
       },
       getQueryField() {
@@ -316,6 +364,7 @@
           this.isorter.column = sorter.field;
           this.isorter.order = "ascend" == sorter.order ? "asc" : "desc"
         }
+        this.filters.isFlag = filters.isFlag[0];
         this.ipagination = pagination;
         this.loadData();
       },

@@ -79,7 +79,11 @@
           </div>
         </template>
 
-
+        <!-- 状态渲染模板 -->
+        <template slot="customRenderStatus" slot-scope="isFlag">
+          <a-tag v-if="isFlag==0" color="green">是</a-tag>
+          <a-tag v-if="isFlag==1" color="orange">否</a-tag>
+        </template>
 
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
@@ -223,15 +227,12 @@
             title: '是否启用',
             align: "center",
             dataIndex: 'isFlag',
-            customRender: (text) => {
-              if(text==1){
-                return "否";
-              }else if(text==0){
-                return "是";
-              }else{
-                return text;
-              }
-            }
+            scopedSlots: { customRender: 'customRenderStatus' },
+            filterMultiple: false,
+            filters: [
+              { text: '是', value: '0' },
+              { text: '否', value: '1' },
+            ]
           },
           {
             title: '操作',
@@ -415,6 +416,7 @@
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
         param.shopName = this.shopName;
+        param.isFlag = this.filters.isFlag;
         return filterObj(param);
       },
       getQueryField() {
@@ -444,6 +446,7 @@
           this.isorter.column = sorter.field;
           this.isorter.order = "ascend" == sorter.order ? "asc" : "desc"
         }
+        this.filters.isFlag = filters.isFlag[0];
         this.ipagination = pagination;
         this.loadData();
       },
