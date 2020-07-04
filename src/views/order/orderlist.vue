@@ -260,6 +260,9 @@
       methods:{
         //确定退款
         refund(e){
+          console.log(e)
+
+
           let param = new URLSearchParams()
           param.append('shopID',this.shopId)
           param.append('orderId' , e)
@@ -407,8 +410,29 @@
             }
           })
         },
-        handleDelete(orderId){
-
+        //拒接接单
+        handleDelete(e){
+          console.log(111)
+          let param = new URLSearchParams()
+          param.append('shopID',this.shopId)
+          param.append('orderId' , e)
+          param.append('userID' , "")
+          postAction('/kunze/order/selectOrderById',param).then((res)=>{
+            let amount=res.result.amountPayment - (- res.result.postFree)
+            let params = new URLSearchParams()
+            params.append('orderNo',res.result.orderId)
+            params.append('amount' , amount)
+            postAction('/kunze/wechatpay/doRefund',params).then((res)=>{
+              console.log(res)
+              if(res.success==true){
+                this.$message.success('退款成功');
+                this.loadData();
+              }else {
+                this.$message.warning('退款失败');
+                this.loadData();
+              }
+            })
+          })
         },
         searchReset() {
           var that = this;
