@@ -233,6 +233,9 @@
             message: '订单消息',
             description: `您有一条新的订单，请注意查收`,
           });
+          let audio = new Audio();
+          audio.src = "../../assets/qiqi.mp3";
+          audio.play();
           this.loadData();
           Utils.$emit('orderList','msg');
           Utils.$emit('indexShop','msg');

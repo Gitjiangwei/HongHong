@@ -215,7 +215,7 @@
 <!--            v-decorator="['price', validatorRules.spuPrice]"-->
           </a-form-item>
           <a-form-item label="优惠价格"  hasFeedback>
-            <a-input  placeholder="单位为元"  v-decorator="['newPrice', {rules: [{ required: true, message: '请输入优惠价格', }]}]"  />
+            <a-input  placeholder="单位为元"  v-decorator="['newPrice', {rules: [{ required: false, message: '请输入优惠价格', }]}]"  />
             <!--            v-decorator="['price', validatorRules.spuPrice]"-->
           </a-form-item>
           <a-form-item label="商品库存"    hasFeedback>
@@ -686,30 +686,49 @@
         },
         //点击修改sku确认按钮
         nextStep2(){
-          console.log(32132)
-          let that = this
+          let that = this;
           // 触发表单验证
           that.formTranslate.validateFields((err, values) => {
-            console.log(values,11111)
+            if(values.newPrice==undefined){
+              values.newPrice="";
+            }
             that.form.stock=values.stock
             that.form.price=values.price
-            that.form.newprice=values.newprice
+            that.form.newprice=values.newPrice
             that.form.skuimage=values.skuimage
             // console.log(values.price, values.stock, values.skuimage, values.newPrice)
-            if(values.price,values.stock,values.skuimage,values.newPrice){
-              console.log(1)
+            debugger;
+            if (that.form.stock=='0'){
+              this.$message.warning('库存不能为0');
+              return;
+            }
+            if (that.form.price=='0'){
+              this.$message.warning('销售价格不能为0');
+              return;
+            }
+            if (that.form.newprice=='0'){
+              this.$message.warning('优惠价格不能为0');
+              return;
+            }
+            if(values.price,values.stock,values.skuimage){
               let priceReg = /(^[1-9]\d*(\.\d{1,2})?$)|(^0(\.\d{1,2})?$)/;
               if(!that.form.price.match(priceReg)){
-                console.log(2)
                 this.$message.warning('请输入正确的商品价格:整数或者保留两位小数');
+                return
               }else {
-                if(!that.form.newPrice.match(priceReg)){
-                  console.log(3)
-                  this.$message.warning('请输入正确的商品优惠价格:整数或者保留两位小数');
-                }else {
-
-                  console.log(4)
-
+                if(that.form.newprice!=""&&that.form.newprice!=undefined&&that.form.newprice!=null){
+                  if(!that.form.newprice.match(priceReg)){
+                    this.$message.warning('请输入正确的商品优惠价格:整数或者保留两位小数');
+                    return;
+                  }else {
+                    let newPrice = parseFloat(that.form.newprice);
+                    let price = parseFloat(that.form.price);
+                    if(newPrice>=price){
+                      this.$message.warning('优惠价格不能大于销售价格！');
+                      return;
+                    }
+                  }
+                }
                     that.form.stock=values.stock
                     that.form.price=values.price
                     that.form.newPrice=values.newPrice
@@ -721,16 +740,13 @@
                       images:values.skuimage,
                       newPrice:values.newPrice
 
-                    })
-
+                    });
                     let spuBo = {
                       'shopId': this.shopId,
                       "id": this.spu.id,
                       'skuVos': this.skuVos,
                     }
-
                   httpAction('/kunze/spu/updateSpu', spuBo, 'post').then((res) => {
-                      console.log(res)
                       if (res.success == true) {
                         that.skuVos = []
                         that.xiuBrandvisible = false
@@ -740,7 +756,6 @@
                       }
                     })
 
-                }
               }
 
 

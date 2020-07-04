@@ -113,7 +113,7 @@
                   <a-input  placeholder="单位为元" maxlength="10" v-decorator="['price', validatorRules.spuPrice]" />
                 </a-form-item>
                 <a-form-item label="优惠价格" hasFeedback>
-                  <a-input  placeholder="单位为元" maxlength="10" v-decorator="['newPrice', validatorRules.spuPrice]" />
+                  <a-input  placeholder="单位为元" maxlength="10" v-decorator="['newPrice', validatorRules.spuNewPrice]" />
                 </a-form-item>
                 <a-form-item label="商品库存" maxlength="10"  hasFeedback>
                   <a-input   v-decorator="['stock', validatorRules.Stock]"  />
@@ -228,6 +228,7 @@
           ownSpec:{},
           indexes:[],
           index:[],
+          spuPrice:"",
           specTemplate:{},
           specifications:[],
           fileList:[],
@@ -238,6 +239,9 @@
           validatorRules:{
             spuPrice: {
               rules: [{required: true,validator: this.checkSpuPrice}]
+            },
+            spuNewPrice: {
+              rules: [{required: false,validator: this.checkSpuNewPrice}]
             },
             Stock:{
               rules: [{required: true,validator: this.checkStock}]
@@ -302,9 +306,9 @@
         },
         nextStep2(){
           // console.log(this.specifications)
-
           this.formTranslate.validateFields((err, values) =>{
-            if (values.price && values.stock && values.image && values.newPrice){
+            debugger;
+            if (values.price && values.stock && values.image){
               if(this.indexes.length==0 && this.specifications.length==0){
                 this.$message.warning('请选择所属分类');
               }else {
@@ -324,7 +328,9 @@
                   })
                 })
                 if (nn == this.specifications.length) {
-
+                  if(values.newPrice==undefined){
+                    values.newPrice = "";
+                  }
                   // this.specifications
                   this.skuVos.push({
                     indexes: this.indexes,
@@ -355,7 +361,6 @@
                 this.$message.warning('请选择所属分类');
               }else {
                 if(this.specifications.length!=0){
-
 
                   let nn=0
                   this.specifications.forEach(e=>{
@@ -601,20 +606,42 @@
           })
         },
         checkSpuPrice(rule, value, callback){
-          if(!value){
-            callback("商品价格不能为空！");
+          if(!value||value=="0"){
+            callback("销售价格不能为空或者销售价格不能为0！");
           }else {
             var priceReg = /(^[1-9]\d*(\.\d{1,2})?$)|(^0(\.\d{1,2})?$)/;
             if(!value.match(priceReg)){
-              callback("请输入正确的商品价格:整数或者保留两位小数");
+              callback("请输入正确的销售价格:整数或者保留两位小数");
             }else {
               callback();
             }
           }
         },
+        checkSpuNewPrice(rule, value, callback){
+          if(value=="0"){
+            callback("优惠价格不能为0！");
+          }else {
+            if(value==null||value==""||value==undefined){
+              callback();
+            }else {
+              var priceReg = /(^[1-9]\d*(\.\d{1,2})?$)|(^0(\.\d{1,2})?$)/;
+              if (!value.match(priceReg)) {
+                callback("请输入正确的销售价格:整数或者保留两位小数");
+              } else {
+                let price = parseFloat(this.spuPrice);
+                let newPrice = parseFloat(value);
+                if (newPrice >= price) {
+                  callback("优惠价格不能大于等于销售价格");
+                } else {
+                  callback();
+                }
+              }
+            }
+          }
+        },
         checkStock(rule, value, callback){
-          if(!value){
-            callback("库存数量不能为空！");
+          if(!value||value=="0"){
+            callback("库存数量不能为空或者库存不能为0！");
           }else {
             var reg =/^([1-9][\d]{0,7}|0)?$/;
             if(!value.match(reg)){
