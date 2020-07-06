@@ -461,6 +461,7 @@
             formData.selecteddeparts = this.userDepartModel.departIdList.length>0?this.userDepartModel.departIdList.join(","):'';
             formData.identity=this.identity;
             formData.staterShop=this.staterShop;
+            formData.shopId = this.shopId;
             //如果是上级择传入departIds,否则为空
             if(this.identity==="2"){
               formData.departIds=this.departIds.join(",");
