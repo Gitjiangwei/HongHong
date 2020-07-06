@@ -1,45 +1,34 @@
 <template>
-  <a-card :bordered="false">
-    <!-- 查询区域 -->
+  <a-modal
+    :title="title"
+    :width="1600"
+    :visible="visible"
+    :confirmLoading="confirmLoading"
+    @cancel="handleCancel"
+    @ok="handleOk"
+    cancelText="关闭"
+  >
     <div class="table-page-search-wrapper">
       <a-form layout="inline">
         <a-row :gutter="24">
 
-          <a-col :md="6" :sm="24">
-            <a-form-item label="专区名称">
-              <a-input placeholder="请输入专区名称" v-model="queryParam.homgName"></a-input>
+          <a-col :span="8">
+            <a-form-item label="专区名称" >
+              <a-input placeholder="请输入专区名称"  v-model="queryParam.homgName"></a-input>
             </a-form-item>
           </a-col>
-
-          <a-col :md="6" :sm="24" >
-            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
-              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-            </span>
+          <a-col :span="8"  >
+              <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+                <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+                <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+                <!--<a-button type="primary" @click="superQuery" icon="filter" style="margin-left: 8px">高级查询</a-button>-->
+              </span>
           </a-col>
-
         </a-row>
       </a-form>
     </div>
-    <!-- 操作按钮区域 -->
-    <div class="table-operator">
-      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-dropdown v-if="selectedRowKeys.length > 0">
-        <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
-        </a-menu>
-        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
-      </a-dropdown>
-    </div>
-
-
     <!-- table区域-begin -->
     <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
-        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
-        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
-      </div>
-
       <a-table
         ref="table"
         size="middle"
@@ -49,7 +38,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange,type:'radio'}"
         @change="handleTableChange">
 
         <!-- 字符串超长截取省略号显示-->
@@ -62,48 +51,29 @@
             <a-avatar shape="square" :src="getAvatarView(record.image)" icon="user"/>
           </div>
         </template>
-
-
-        <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
-          <a-divider type="vertical" />
-          <a-dropdown>
-            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                   <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
-        </span>
-
       </a-table>
-      <home-page-model ref="HomePageModel" @ok="modalFormOk"></home-page-model>
     </div>
-  </a-card>
+  </a-modal>
 </template>
 <script>
   import ARow from "ant-design-vue/es/grid/Row";
-  import { JeecgListMixin } from '@/mixins/JeecgListMixin';
-  import {deleteAction, getAction, postAction,getFileAccessHttpUrl} from '@/api/manage';
-  import {filterObj,timeFix} from '@/utils/util';
+  import {getAction,getFileAccessHttpUrl} from '@/api/manage';
+  import {filterObj} from '@/utils/util';
   import JEllipsis from "@/components/jeecg/JEllipsis";
-  import HomePageModel from "./model/HomePageModel"
+
 
   export default {
-    name:"HomgPage",
-    mixins: [JeecgListMixin],
+    name:"CategroyOneList",
     components: {
       ARow,
-      JEllipsis,
-      HomePageModel
+      JEllipsis
     },
     data(){
       return{
-        description: '分类专区查询',
-        loading: false,
+        description: '选择分区页',
+        title: "操作",
+        visible: false,
+        confirmLoading: false,
         // 查询条件
         queryParam: {},
         // 表头
@@ -119,35 +89,15 @@
             }
           },
           {
-            title: '专区名称',
-            align: "center",
-            dataIndex: 'homgName'
-          },
-          {
             title: '图片',
             align: "center",
             dataIndex: 'image',
             scopedSlots: {customRender: "avatarslot"}
           },
           {
-            title: '分类名',
+            title: '专区名称',
             align: "center",
-            dataIndex: 'cid1',
-          },
-          {
-            title: '创建时间',
-            align: "center",
-            dataIndex: 'createTime'
-          },
-          {
-            title: '更新时间',
-            align: "center",
-            dataIndex: 'updateTime'
-          },
-          {
-            title: '操作人',
-            align: "center",
-            dataIndex: 'updateName'
+            dataIndex: 'homgName',
           },
           {
             title: '备注',
@@ -156,20 +106,14 @@
             dataIndex: 'remank',
             scopedSlots: {customRender: 'description'},
           },
-          {
-            title: '操作',
-            dataIndex: 'action',
-            align: "center",
-            scopedSlots: {customRender: 'action'},
-          }
         ],
         //数据集
         dataSource: [],
         // 分页参数
         ipagination: {
           current: 1,
-          pageSize: 30,
-          pageSizeOptions: ['20', '30', '40'],
+          pageSize: 10,
+          pageSizeOptions: ['10', '20', '30'],
           showTotal: (total, range) => {
             return range[0] + "-" + range[1] + " 共" + total + "条"
           },
@@ -181,7 +125,11 @@
           column: 'createTime',
           order: 'desc',
         },
-        shopName:"",
+        loading: false,
+        shopId:"",
+        cids:[],
+        options:[],
+        fenl:'',
         selectedRowKeys: [],
         selectedRows: [],
         url: {
@@ -191,46 +139,58 @@
       }
     },
     created() {
-      this.shopId=this.$store.state.shopId;
-      this.loadData(1);
     },
     methods:{
       getAvatarView: function (avatar) {
         return getFileAccessHttpUrl(avatar,this.url.imgerver,"http")
       },
-      loadData(arg) {
+      loadData(arg){
         //加载数据 若传入参数1则加载第一页的内容
         if (arg === 1) {
           this.ipagination.current = 1;
         }
         var params = this.getQueryParams();//查询条件
         getAction(this.url.list, params).then((res) => {
+          debugger;
           if (res.success) {
             this.dataSource = res.result.list;
             this.ipagination.total = res.result.total;
           }
         })
       },
-      handleAdd(){
-        this.$refs.HomePageModel.add();
-        this.$refs.HomePageModel.title = "新增分类专区";
+      handlePageList(){
+        this.visible = true;
+        this.loadData(1);
       },
-      handleEdit(record){
-        this.$refs.HomePageModel.edit(record);
-        this.$refs.HomePageModel.title = "修改分类专区";
+      handleCancel() {
+        this.close();
       },
-      modalFormOk() {
-        // 新增/修改 成功时，重载列表
-        this.loadData();
+      close() {
+        this.$emit('ok');
+        this.visible = false;
       },
       searchReset() {
         var that = this;
         that.queryParam = {};
-        that.shopName = "";
         that.loadData(1);
+      },
+      handleOk(){
+        if (this.selectedRowKeys.length <= 0) {
+          this.$message.warning('请选择一条数据！');
+          return;
+        } else {
+          /*  this.$emit('func',this.selectedRows);
+            this.selectedRowKeys = [];
+            this.selectionRows = [];
+            this.close();*/
+          console.log(this.selectionRows[0]);
+          this.$emit('func',this.selectionRows[0]);
+          this.close();
+        }
       },
       getQueryParams() {
         var param = Object.assign({}, this.queryParam, this.isorter);
+        debugger;
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
@@ -263,7 +223,6 @@
           this.isorter.column = sorter.field;
           this.isorter.order = "ascend" == sorter.order ? "asc" : "desc"
         }
-        this.filters.isFlag = filters.isFlag[0];
         this.ipagination = pagination;
         this.loadData();
       },

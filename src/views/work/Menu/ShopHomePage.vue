@@ -71,7 +71,7 @@
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
               <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+                <a-popconfirm title="确定删除吗?删除以后首页将不再显示" @confirm="() => handleDelete(record)">
                    <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>
@@ -80,7 +80,7 @@
         </span>
 
       </a-table>
-      <home-page-model ref="HomePageModel" @ok="modalFormOk"></home-page-model>
+      <shop-home-page-model ref="ShopHomePageModel" @ok="modalFormOk"></shop-home-page-model>
     </div>
   </a-card>
 </template>
@@ -90,19 +90,20 @@
   import {deleteAction, getAction, postAction,getFileAccessHttpUrl} from '@/api/manage';
   import {filterObj,timeFix} from '@/utils/util';
   import JEllipsis from "@/components/jeecg/JEllipsis";
-  import HomePageModel from "./model/HomePageModel"
+  import ShopHomePageModel from "./model/ShopHomePageModel"
+
 
   export default {
-    name:"HomgPage",
+    name:"ShopHomePage",
     mixins: [JeecgListMixin],
     components: {
       ARow,
       JEllipsis,
-      HomePageModel
+      ShopHomePageModel
     },
     data(){
       return{
-        description: '分类专区查询',
+        description: '超市分类专区查询',
         loading: false,
         // 查询条件
         queryParam: {},
@@ -130,11 +131,6 @@
             scopedSlots: {customRender: "avatarslot"}
           },
           {
-            title: '分类名',
-            align: "center",
-            dataIndex: 'cid1',
-          },
-          {
             title: '创建时间',
             align: "center",
             dataIndex: 'createTime'
@@ -145,15 +141,10 @@
             dataIndex: 'updateTime'
           },
           {
-            title: '操作人',
-            align: "center",
-            dataIndex: 'updateName'
-          },
-          {
             title: '备注',
             align: "center",
             width: 250,
-            dataIndex: 'remank',
+            dataIndex: 'remarks',
             scopedSlots: {customRender: 'description'},
           },
           {
@@ -181,12 +172,13 @@
           column: 'createTime',
           order: 'desc',
         },
-        shopName:"",
+        shopId:"",
         selectedRowKeys: [],
         selectedRows: [],
         url: {
-          list: "/kunze/page/queryPage",
+          list: "/kunze/homeShop/queryHomeShop",
           imgerver: window._CONFIG['staticDomainURL'],
+          delete: "/kunze/homeShop/delHomeShop"
         },
       }
     },
@@ -212,12 +204,54 @@
         })
       },
       handleAdd(){
-        this.$refs.HomePageModel.add();
-        this.$refs.HomePageModel.title = "新增分类专区";
+        this.$refs.ShopHomePageModel.add();
+        this.$refs.ShopHomePageModel.title = "新增分类专区";
       },
       handleEdit(record){
-        this.$refs.HomePageModel.edit(record);
-        this.$refs.HomePageModel.title = "修改分类专区";
+        this.$refs.ShopHomePageModel.edit(record);
+        this.$refs.ShopHomePageModel.title = "修改分类专区";
+      },
+      //批量删除
+      batchDel:function(){
+        if (this.selectedRowKeys.length <= 0) {
+          this.$message.warning('请选择一条记录！');
+          return;
+        }else {
+          var ids = "";
+          var content = "是否确认删除选中数据，删除以后首页将不再显示！";
+          for (var a = 0; a < this.selectedRowKeys.length; a++) {
+            ids += this.selectionRows[a].id + ",";
+          }
+          let that = this;
+          this.$confirm({
+            title:"确认删除",
+            content:content,
+            onOk:function () {
+              deleteAction(that.url.delete,{ids:ids}).then((res) =>{
+                if(res.success){
+                  that.$message.success(res.message);
+                  that.loadData();
+                  that.onClearSelected();
+                }else {
+                  that.$message.warning(res.message);
+                }
+              })
+            }
+          })
+        }
+
+      },
+      handleDelete(record){
+        let that = this;
+        deleteAction(that.url.delete,{ids:record.id}).then((res)=>{
+          if(res.success){
+            that.$message.success(res.message);
+            that.loadData();
+            that.onClearSelected();
+          }else {
+            that.$message.warning(res.message);
+          }
+        })
       },
       modalFormOk() {
         // 新增/修改 成功时，重载列表
@@ -234,6 +268,7 @@
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
+        param.shopId = this.shopId;
         return filterObj(param);
       },
       getQueryField() {
