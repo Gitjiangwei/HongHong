@@ -155,7 +155,9 @@
         this.loadData(1);
       },
       handleCategory(){
-        getAction(this.url.categorylist,{id:'',pid:''}).then((res)=>{
+        let param = new URLSearchParams()
+        param.append('cateId','')
+        postAction(this.url.categorylist,param).then((res)=>{
           this.options=res.result
         })
       },
