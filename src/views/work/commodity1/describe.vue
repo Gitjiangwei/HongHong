@@ -832,7 +832,9 @@
         })
       },
       hqfle(){
-        getAction('/kunze/category/qryList',{id:'',pid:''}).then((res)=>{
+        let param = new URLSearchParams()
+        param.append('cateId','')
+        postAction('/kunze/category/qryList', param).then((res)=>{
           this.treeData=res.result
         })
       },

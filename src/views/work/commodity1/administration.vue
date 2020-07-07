@@ -429,7 +429,10 @@
           },
           // 获取全部分类
           getAllCategories(){
-            getAction('/kunze/category/qryList',{pid:'0'}).then((res)=>{
+            let param = new URLSearchParams()
+            param.append('cateId','')
+            postAction('/kunze/category/qryList',param).then((res)=>{
+              console.log(res)
               this.data=res.result
               let key=0
               this.data.forEach(e=>{

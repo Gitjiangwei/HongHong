@@ -185,7 +185,9 @@
     methods: {
       //获取所有分类
       getAllCid(){
-        getAction('/kunze/category/qryList',{id:'',pid:''}).then((res)=>{
+        let param = new URLSearchParams()
+        param.append('cateId','')
+        postAction('/kunze/category/qryList',param).then((res)=>{
           this.options=res.result
         })
       },

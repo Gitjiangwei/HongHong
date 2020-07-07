@@ -777,7 +777,10 @@
               that.brand=res.result.list
             })
           })
-          getAction('/kunze/category/qryList',{id:'',pid:''}).then((res)=>{
+
+          let param = new URLSearchParams()
+          param.append('cateId','')
+          postAction('/kunze/category/qryList',param).then((res)=>{
             that.options=res.result
           })
         },
