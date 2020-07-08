@@ -35,7 +35,6 @@
       }
     },
     created() {
-      debugger;
       let shopId=this.$store.state.shopId;
       if(shopId!=null && shopId!="" && shopId != undefined){
         this.indexStyle = 4;
