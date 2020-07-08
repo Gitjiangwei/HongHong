@@ -36,8 +36,11 @@
     },
     created() {
       let shopId=localStorage.getItem('shopId');
-      if(shopId!=null && shopId!="" && shopId != undefined){
+      debugger
+      if(shopId!="null" && shopId!=null && shopId!="" && shopId != undefined){
         this.indexStyle = 4;
+      }else {
+        this.indexStyle = 1;
       }
     },
     methods: {
