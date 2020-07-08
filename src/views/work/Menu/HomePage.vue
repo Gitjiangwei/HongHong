@@ -187,6 +187,8 @@
         url: {
           list: "/kunze/page/queryPage",
           imgerver: window._CONFIG['staticDomainURL'],
+          queryNotPage:"/kunze/page/queryNotPage",
+          delete: "/kunze/page/delPage",
         },
       }
     },
@@ -218,6 +220,60 @@
       handleEdit(record){
         this.$refs.HomePageModel.edit(record);
         this.$refs.HomePageModel.title = "修改分类专区";
+      },
+      handleDelete(id){
+        let param = {
+          homePageId:id
+        }
+        postAction(this.url.queryNotPage,param).then((res)=>{
+          if(res.success){
+            deleteAction(this.url.delete,{ids:id}).then((res)=>{
+              if(res.success){
+                this.$message.success(res.message);
+                this.loadData();
+                this.onClearSelected();
+              }
+            })
+          }else {
+            this.$message.warning(res.message);
+          }
+        })
+      },
+      //批量删除
+      batchDel:function(){
+        if (this.selectedRowKeys.length <= 0) {
+          this.$message.warning('请选择一条记录！');
+          return;
+        }else {
+          var ids = "";
+          var content = "是否确认删除选中数据，删除以后将不再恢复！";
+          for (var a = 0; a < this.selectedRowKeys.length; a++) {
+            ids += this.selectionRows[a].id + ",";
+          }
+          let that = this;
+          this.$confirm({
+            title:"确认删除",
+            content:content,
+            onOk:function () {
+              postAction(that.url.queryNotPage,{homePageId:ids}).then((res)=> {
+                if(res.success){
+                  deleteAction(that.url.delete, {ids: ids}).then((res) => {
+                    if (res.success) {
+                      that.$message.success(res.message);
+                      that.loadData();
+                      that.onClearSelected();
+                    } else {
+                      that.$message.warning(res.message);
+                    }
+                  })
+                }else {
+                  that.$message.warning(res.message);
+                }
+              })
+            }
+          })
+        }
+
       },
       modalFormOk() {
         // 新增/修改 成功时，重载列表

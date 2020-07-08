@@ -161,8 +161,7 @@
         return window._CONFIG['staticDomainURL']+"/"+this.avatar()
       },
       handleLogout() {
-        const that = this
-
+        const that = this;
         this.$confirm({
           title: '提示',
           content: '真的要注销登录吗 ?',
