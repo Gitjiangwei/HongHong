@@ -93,8 +93,8 @@
         :wrapperCol="{ span: 24 }"
         style="text-align: center"
       >
-        <a-button htmlType="submit" type="primary">提交</a-button>
-        <a-button style="margin-left: 8px">保存</a-button>
+
+        <a-button style="margin-left: 8px" @click="handleSubmit">保存</a-button>
       </a-form-item>
     </a-form>
   </a-card>
@@ -266,15 +266,42 @@
         }
       },
       // handler
-      handleSubmit (e) {
-        e.preventDefault()
+      handleSubmit() {
+        const that = this;
+        // 触发表单验证
         this.form.validateFields((err, values) => {
+
           if (!err) {
-            // eslint-disable-next-line no-console
-            console.log('Received values of form: ', values)
+            that.confirmLoading = true;
+            let httpurl = '';
+            let method = '';
+
+            let formData = Object.assign(this.model, values);
+            console.log(formData)
+            formData.image = that.fileList;
+            formData.province = that.city[0];
+            formData.city = that.city[1];
+            formData.area = that.city[2];
+            // debugger;
+            //时间格式化
+            formData.startBusiness = formData.startBusiness ? formData.startBusiness.format('HH:mm') : null;
+            formData.endBusiness = formData.endBusiness ? formData.endBusiness.format('HH:mm') : null;
+            httpAction(this.url.edit, formData, 'post').then((res) => {
+              if (res.success) {
+                that.$message.success(res.message);
+                that.loadData()
+              } else {
+                that.$message.warning(res.message);
+              }
+            }).finally(() => {
+              that.confirmLoading = false;
+
+            })
+
+
           }
         })
-      }
+      },
     }
   }
 </script>
