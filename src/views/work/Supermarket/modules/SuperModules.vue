@@ -64,6 +64,15 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
+          label="售后电话"
+          hasFeedback
+        >
+          <a-input placeholder="请输入售后电话" maxlength="11" :disabled="isDisabledAuth('user:form:afterSale')"
+                   v-decorator="['afterSale', {rules: [{ required: true, message: '请输入售后电话', }]}]"/>
+        </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
           label="身份证号码"
           hasFeedback
         >
@@ -168,8 +177,6 @@
     created() {
       const token = Vue.ls.get(ACCESS_TOKEN);
       this.headers = {"X-Access-Token": token};
-
-
     },
     mounted () {
       this.getRegionInfo()
@@ -220,7 +227,7 @@
           this.model.endBusiness = time[1];
         }
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model, 'shopName', 'shopAddress','personCharge','telphone','idenitiy', 'startBusiness', 'endBusiness','isFlag'))
+          this.form.setFieldsValue(pick(this.model, 'shopName', 'shopAddress','personCharge','telphone','afterSale','idenitiy', 'startBusiness', 'endBusiness','isFlag'))
           //时间格式化
           this.form.setFieldsValue({startBusiness: this.model.startBusiness ? moment(this.model.startBusiness, 'HH:mm') : null});
           this.form.setFieldsValue({endBusiness: this.model.endBusiness ? moment(this.model.endBusiness, 'HH:mm') : null});

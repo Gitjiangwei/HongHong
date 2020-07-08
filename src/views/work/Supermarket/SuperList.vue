@@ -158,6 +158,11 @@
             dataIndex:'telphone'
           },
           {
+            title:'售后电话',
+            align:"center",
+            dataIndex:'afterSale'
+          },
+          {
             title:'身份证号码',
             align:"center",
             dataIndex:'idenitiy'
