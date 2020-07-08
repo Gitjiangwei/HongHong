@@ -276,7 +276,7 @@
       setTimeout(() => {
         this.loading = !this.loading
       }, 1000);
-      let shopId=this.$store.state.shopId;
+      let shopId=localStorage.getItem('shopId');
       this.shopId = shopId;
       setTimeout(() => {
         this.loaders(shopId);

@@ -35,7 +35,7 @@
       }
     },
     created() {
-      let shopId=this.$store.state.shopId;
+      let shopId=localStorage.getItem('shopId');
       if(shopId!=null && shopId!="" && shopId != undefined){
         this.indexStyle = 4;
       }

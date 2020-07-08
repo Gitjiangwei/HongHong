@@ -123,7 +123,7 @@
      }
     },
     created() {
-      this.shopId = this.$store.state.shopId;
+      this.shopId = localStorage.getItem('shopId');
     },
     methods:{
       skuList(spuId){

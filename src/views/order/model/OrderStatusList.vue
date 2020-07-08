@@ -217,7 +217,6 @@
           column: 'createTime',
           order: 'desc',
         },
-        shopId:"",
         selectedRowKeys: [],
         selectedRows: [],
         url: {
@@ -228,7 +227,7 @@
       }
     },
     created(){
-      this.shopId=this.$store.state.shopId
+      this.shopId=localStorage.getItem('shopId')
     },
     methods:{
       loadData(arg) {
@@ -240,7 +239,7 @@
 
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
-            debugger;
+
             this.dataSource = res.result.list;
             this.ipagination.total = res.result.total;
           }
@@ -353,6 +352,7 @@
         });
 
       },
+
       onSelectChange(selectedRowKeys, selectionRows) {
         this.selectedRowKeys = selectedRowKeys;
         this.selectionRows = selectionRows;

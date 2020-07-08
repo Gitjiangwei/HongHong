@@ -93,7 +93,7 @@
       }
     },
     created() {
-      this.shopId=this.$store.state.shopId;
+      this.shopId=localStorage.getItem('shopId');
 
     },
     methods:{
@@ -146,7 +146,7 @@
         // 触发表单验证
         this.form.validateFields((err, values) => {
           if (!err) {
-            debugger;
+
             that.confirmLoading = true;
             let httpurl = '';
             let method = '';
@@ -159,7 +159,7 @@
             }
             let formData = Object.assign(this.model, values);
             formData.shopId = this.shopId;
-            // debugger;
+
             //时间格式化
             /*            formData.startBusiness = formData.startBusiness ? formData.startBusiness.format('HH:mm') : null;
                         formData.endBusiness = formData.endBusiness ? formData.endBusiness.format('HH:mm') : null;*/

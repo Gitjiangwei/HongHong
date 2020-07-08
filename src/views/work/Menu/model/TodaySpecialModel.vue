@@ -146,7 +146,7 @@
     created() {
       const token = Vue.ls.get(ACCESS_TOKEN);
       this.headers = {"X-Access-Token": token};
-      this.shopId=this.$store.state.shopId;
+      this.shopId=localStorage.getItem('shopId');
     },
     methods:{
       loadShopList(wheelId){
@@ -215,7 +215,7 @@
         // 触发表单验证
         this.form.validateFields((err, values) => {
           if (!err) {
-            debugger;
+
             that.confirmLoading = true;
             let httpurl = '';
             let method = '';
@@ -227,10 +227,10 @@
               method = 'post';
             }
             let formData = Object.assign(this.model, values);
-            formData.shopId = this.$store.state.shopId;
+            formData.shopId = localStorage.getItem('shopId');
             formData.featuresFlag = "1";
             //时间格式化
-            debugger;
+
 
             formData.specialstartTime = formData.specialstartTime ? formData.specialstartTime.format('YYYY-MM-DD') : null;
             formData.specialendTime = formData.specialstartTime;
@@ -282,7 +282,7 @@
               skuId:this.skuId,
               featuresTime: value.format('YYYY-MM-DD'),
             };
-            debugger;
+
             postAction(this.url.identical,param).then((res)=>{
               if(res.success){
                 callback();

@@ -184,7 +184,7 @@
       }
     },
     created(){
-      this.shopId=this.$store.state.shopId
+      this.shopId=localStorage.getItem('shopId')
     },
     methods:{
       getAvatarView: function (avatar) {
@@ -199,7 +199,7 @@
 
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
-            debugger;
+
             this.dataSource = res.result.list;
             this.ipagination.total = res.result.total;
           }
