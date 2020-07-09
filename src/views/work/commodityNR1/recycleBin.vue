@@ -256,7 +256,7 @@
         return{
           columns:[
             { title: '*', dataIndex: '',  key: 'rowIndex', width: 60, align: "center", customRender: function (t, r, index) {return parseInt(index) + 1;}},
-            { title: '品牌名称', dataIndex: 'bname', key: 'bname' },
+           /* { title: '品牌名称', dataIndex: 'bname', key: 'bname' },*/
             { title: '图片', dataIndex: 'image', key: 'image',scopedSlots: { customRender: 'image' } },
             { title: '所属分类', dataIndex: 'cname', key: 'cname' },
             { title: '商品名称', dataIndex: 'title', key: 'title' },
