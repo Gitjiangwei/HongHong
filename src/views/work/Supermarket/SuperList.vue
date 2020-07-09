@@ -56,7 +56,10 @@
             <a-avatar shape="square" :src="getAvatarView(record.image)" icon="user"/>
           </div>
         </template>
-
+        <!-- 字符串超长截取省略号显示-->
+        <span slot="description" slot-scope="text">
+          <j-ellipsis :value="text" :length="20" />
+        </span>
         <!-- 状态渲染模板 -->
         <template slot="customRenderStatus" slot-scope="isFlag">
           <a-tag v-if="isFlag==0" color="green">已下架</a-tag>
@@ -99,13 +102,15 @@
   import {deleteAction, getAction, postAction,getFileAccessHttpUrl} from '@/api/manage';
   import {filterObj,timeFix} from '@/utils/util';
   import SuperModules from  "./modules/SuperModules";
+  import JEllipsis from "@/components/jeecg/JEllipsis";
 
   export default {
     name:"SuperList",
     mixins:[JeecgListMixin],
     components:{
       ARow,
-      SuperModules
+      SuperModules,
+      JEllipsis
     },
     data(){
       return{
@@ -128,13 +133,16 @@
           {
             title: '超市名称',
             align:"center",
-            dataIndex: 'shopName'
+            width: 100,
+            dataIndex: 'shopName',
+            scopedSlots: {customRender: 'description'},
           },
           {
             title: '超市地址',
             width: 300,
             align:"center",
-            dataIndex: 'addressTotal'
+            dataIndex: 'addressTotal',
+            scopedSlots: {customRender: 'description'},
           },
           {
             title: '图片',

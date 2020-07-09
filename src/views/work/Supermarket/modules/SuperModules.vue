@@ -40,7 +40,7 @@
           label="超市详细地址"
           hasFeedback
         >
-          <a-input placeholder="请输入详细地址" maxlength="10"
+          <a-input placeholder="请输入详细地址" maxlength="50"
                    v-decorator="['shopAddress', {rules: [{ required: true, message: '请输入详细地址', }]}]"/>
         </a-form-item>
         <a-form-item
