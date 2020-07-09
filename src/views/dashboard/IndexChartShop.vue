@@ -166,13 +166,21 @@
       <a-col  :xl="4" :lg="12" :md="12" :sm="24" :xs="24" style="height: 100%;margin-top: 20px">
 
         <span style="font-weight: bold; font-size: 16px;display: inline-block;margin: 0 0 0 10px">设置配送费</span>
-        <a-card style="width: 100%;height: 184px" :loading="loading">
-          <div style="margin-bottom: 20px;font-size: 16px;font-weight: bold">当前配送费： {{deliveryFee}}￥</div>
+        <a-card style="width: 100%;height: 224px" :loading="loading">
+          <div style="margin-bottom: 20px;font-size: 16px;font-weight: bold">当前配送费： ￥{{deliveryFee}}</div>
+          <div style="margin-bottom: 20px;font-size: 16px;font-weight: bold">当前最低起送价格： ￥{{starting}}</div>
           <a-input-search
             placeholder="请输入配送费"
             enter-button="确认"
             size="large"
             @search="onSearch"
+            style="margin-bottom: 10px"
+          />
+          <a-input-search
+            placeholder="请输入最低起送价格"
+            enter-button="确认"
+            size="large"
+            @search="onstarting"
           />
         </a-card>
         <div style="font-weight: bold; font-size: 16px;display: inline-block;margin: 32px 0 10px 10px">最新消息</div>
@@ -195,7 +203,7 @@
   import ChartCard from '@/components/ChartCard'
   import ACol from "ant-design-vue/es/grid/Col"
   import ATooltip from "ant-design-vue/es/tooltip/Tooltip"
-  import {getAction,postAction} from '@/api/manage'
+  import {getAction,postAction,deleteAction} from '@/api/manage'
   import LineChartMultid from '@/components/chart/LineChartMultid'
   import OrderStatusList from "../order/model/OrderStatusList"
   import SpuStockModel from "../work/commodity1/model/SpuStockModel"
@@ -244,6 +252,7 @@
         notsheif:"0",
         shopId:"",
         deliveryFee:"",
+        starting:'',
         visitFields:['成交量'],
         visitInfo:[
           {成交量: 2,
@@ -300,14 +309,21 @@
       //查询配送费
       queryonSearch(){
         let param = new URLSearchParams()
-        param.append('id',this.shopId)
-        param.append('pageNo' , 1)
-        param.append('pageSize' , 1)
-        postAction('/kunze/shop/queryShops',param).then((res)=>{
+        param.append('shopId',this.shopId)
+        deleteAction('/kunze/shop/selectShopInfoById',param).then((res)=>{
+          console.log(res)
           if(res.success){
-            this.deliveryFee=((res.result.list[0].postFree)/100).toFixed(2)
+            this.deliveryFee=((res.result[0].postFree)/100).toFixed(2)
+            if(res.result[0].minPrice && res.result[0].minPrice!=null){
+              this.starting=((res.result[0].minPrice)/100).toFixed(2)
+            }else {
+              this.starting=0
+            }
+
           }
         })
+
+
       },
       //查询最新消息
       loadDateNews(shopId){
@@ -329,6 +345,22 @@
             this.$message.success('配送费修改成功');
           }else {
             this.$message.error('配送费修改失败');
+          }
+
+        })
+      },
+      //点击设置最低起送价格
+      onstarting(e){
+        let updateShop={
+          minPrice:e,
+          id:this.shopId
+        }
+        postAction('/kunze/shop/updateShop',updateShop).then((res)=>{
+          if(res.success){
+            this.queryonSearch()
+            this.$message.success('最低起送价格修改成功');
+          }else {
+            this.$message.error('最低起送价格修改失败');
           }
 
         })
