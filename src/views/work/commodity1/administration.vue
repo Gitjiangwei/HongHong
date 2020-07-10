@@ -104,6 +104,7 @@
   import {getAction,postAction,deleteAction} from '../../../api/manage'
   import JImageUpload from '../../../components/jeecg/JImageUpload'
   import pick from 'lodash.pick'
+  import 'url-search-params-polyfill'
 
 
   export default {
