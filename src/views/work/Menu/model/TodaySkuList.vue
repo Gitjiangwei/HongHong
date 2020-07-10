@@ -127,6 +127,8 @@
     },
     methods:{
       skuList(spuId){
+        this.dataSource = [];
+        this.ipagination.total = 0;
         this.visible = true;
         this.spuId = spuId;
         this.loadData(1);

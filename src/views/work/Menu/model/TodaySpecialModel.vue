@@ -270,7 +270,18 @@
         if(!value){
           callback("特卖日期不能为空！")
         }else{
-          var myDate = new Date();
+          let  param = {
+            skuId:this.skuId,
+            featuresTime: value.format('YYYY-MM-DD'),
+          };
+          postAction(this.url.identical,param).then((res)=>{
+            if(res.success){
+              callback();
+            }else {
+              callback(res.message);
+            }
+          })
+ /*         var myDate = new Date();
           var mytime = myDate.toLocaleDateString();
           var valtime = value ? value.format('YYYY/MM/DD') : null;
           valtime = new Date(Date.parse(valtime));
@@ -278,20 +289,7 @@
           if(mytime >= valtime){
             callback("特卖日期只能大于当天日期！")
           }else {
-            let  param = {
-              skuId:this.skuId,
-              featuresTime: value.format('YYYY-MM-DD'),
-            };
-
-            postAction(this.url.identical,param).then((res)=>{
-              if(res.success){
-                callback();
-              }else {
-                callback(res.message);
-              }
-            })
-
-          }
+          }*/
         }
       },
       checkStock(rule, value, callback){

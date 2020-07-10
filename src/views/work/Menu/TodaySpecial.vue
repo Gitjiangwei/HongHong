@@ -192,11 +192,6 @@
             dataIndex: 'createTime'
           },
           {
-            title: '创建人',
-            align: "center",
-            dataIndex: 'createName'
-          },
-          {
             title: '备注',
             align: "center",
             width: 250,
