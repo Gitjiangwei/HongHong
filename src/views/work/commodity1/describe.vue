@@ -234,6 +234,8 @@
 <script>
   import {getAction,postAction,deleteAction} from '../../../api/manage'
   import pick from 'lodash.pick'
+  import 'url-search-params-polyfill'
+
   const columns = [
     {
       title: '参数名',

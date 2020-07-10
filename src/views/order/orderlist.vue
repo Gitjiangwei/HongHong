@@ -110,7 +110,7 @@
   import $ from 'jquery';
   import OrderDetail from "./model/OrderDetail"
   import Utils from "../../assets/js/util"
-
+  import 'url-search-params-polyfill'
 
   export default {
       name: "orderlist",

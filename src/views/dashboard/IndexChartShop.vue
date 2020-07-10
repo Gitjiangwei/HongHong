@@ -211,7 +211,7 @@
   import Utils from "../../assets/js/util"
   import TurnOverList from "../work/Menu/model/TurnOverList"
   import qs from 'qs'
-
+  import 'url-search-params-polyfill'
   export default {
     name:"IndexChartShop",
     components:{

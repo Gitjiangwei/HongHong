@@ -65,6 +65,7 @@
   import ARow from "ant-design-vue/es/grid/Row";
   import {deleteAction, getAction, postAction,getFileAccessHttpUrl} from '@/api/manage';
   import {filterObj} from '@/utils/util';
+  import 'url-search-params-polyfill'
 
   export default {
     name:"TodaySpuList",
