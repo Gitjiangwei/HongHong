@@ -245,6 +245,7 @@
   import Vue from 'vue'
   import pick from 'lodash.pick'
   import qs from 'qs'
+  import 'url-search-params-polyfill'
 
   export default {
     components: {

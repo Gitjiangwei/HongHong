@@ -192,6 +192,7 @@
   import Vue from 'vue'
   import pick from 'lodash.pick'
   import moment from 'moment'
+  import 'url-search-params-polyfill'
   import ATextarea from "ant-design-vue/es/input/TextArea";
   export default {
     name: 'addcommodity',

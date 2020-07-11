@@ -21,7 +21,7 @@
           :options="options"
           :default-value=options
           placeholder="选择地址"
-          v-decorator="['options', {rules: [{ required: true, message: '请选择地址', }]}]"
+          v-decorator="['options', {initialValue:optionss,rules: [{ required: true, message: '请选择地址', }]}]"
           @change="onChange"
         />
       </a-form-item>
@@ -172,7 +172,7 @@
       loadData(){
         deleteAction(this.url.query,{shopId:this.shopId}).then((res) =>{
           if(res.success){
-            debugger;
+            // debugger;
               let record ={
                 id:res.result[0].id,
                 province:res.result[0].province,
@@ -188,6 +188,11 @@
                 endBusiness:res.result[0].endBusiness,
                 image:res.result[0].image,
               };
+            this.optionss[0] = record.province;
+            this.optionss[1] = record.city;
+            this.optionss[2] = record.area;
+            console.log(this.optionss)
+            this.model.optionss = this.optionss;
               this.edit(record);
           }
         })
@@ -201,10 +206,10 @@
             this.fileList = record.image;
           }, 5)
         }
-        this.options[0] = record.province;
-        this.options[1] = record.city;
-        this.options[2] = record.area;
-        this.model.options = this.options;
+        // this.options[0] = record.province;
+        // this.options[1] = record.city;
+        // this.options[2] = record.area;
+        // this.model.options = this.options;
         console.log(this.options)
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model, 'shopName','options', 'shopAddress','personCharge','telphone','afterSale','idenitiy', 'startBusiness', 'endBusiness','isFlag'))
