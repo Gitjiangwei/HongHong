@@ -19,7 +19,7 @@
       <div class="ant-upload-text">{{ text }}</div>
     </div>
     <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel()">
-      <img alt="example" style="width: 100%" :src="previewImage"/>
+      <img alt="example" style="width: 100%" :src="previewImage" />
     </a-modal>
   </a-upload>
 </template>
@@ -126,7 +126,18 @@
       },
       handleChange(info) {
         this.picUrl = false;
-        let fileList = info.fileList
+        debugger;
+        let fileList = info.fileList;
+        let num = 0;
+        if(fileList.length>1){
+          num = 1;
+        }
+        let lastIndexOf = fileList[num].name.lastIndexOf(".");
+        let suffix =  fileList[num].name.substring(parseInt(lastIndexOf));
+        if(suffix!= '.jpg'&&suffix!='.png'){
+          this.$message.error(`图片上传失败，只能上传png或者jpg格式的图片！`);
+          return;
+        }
         if(info.file.status==='done'){
           if(info.file.response.success){
             this.picUrl = true;

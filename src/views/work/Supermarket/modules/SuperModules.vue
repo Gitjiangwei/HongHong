@@ -96,7 +96,7 @@
           <a-time-picker :default-value="moment('00:00', 'HH:mm')" format="HH:mm" v-decorator="['endBusiness', {rules: [{ required: true, message: '请输入打烊时间', }]}]"/>
         </a-form-item>
         <a-form-item label="超市图片" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-image-upload class="avatar-uploader" text="上传" v-model="fileList" v-decorator="['image', validatorRules.image]" ></j-image-upload>
+          <j-image-upload class="avatar-uploader" text="上传" v-model="fileList" ></j-image-upload>
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
@@ -164,9 +164,6 @@
           idenitiy: {
             rules: [{required: true,validator: this.validateidenitiy}]
           },
-          image:{
-            rules:[{required:true, message: '请上传超市图片'}]
-          }
         },
         url: {
           add:"kunze/shop/insertShop",
@@ -245,6 +242,10 @@
       },
       handleSubmit() {
         const that = this;
+        if(that.fileList.length == 0){
+          that.$message.warning("请上传超市图片");
+          return;
+        }
         // 触发表单验证
         this.form.validateFields((err, values) => {
 

@@ -234,7 +234,7 @@
             message: '订单消息',
             description: `您有一条新的订单，请注意查收`,
           });
-          this.voicePrompt('您有一条新的哄哄到家订单，请注意查收');
+          this.voicePrompt('您有一条新的叿叿订单，请注意查收');
           // let audio = new Audio();
           // audio.src = "../../assets/ordderyy.acc";
           // audio.play();

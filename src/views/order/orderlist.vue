@@ -270,8 +270,8 @@
           postAction('/kunze/order/selectOrderById',param).then((res)=>{
             let amount=res.result.amountPayment - (- res.result.postFree)
             let params = new URLSearchParams()
-            params.append('orderNo',res.result.orderId)
-            params.append('amount' , amount)
+            params.append('orderNo',res.result.orderId);
+            params.append('amount' , amount);
             postAction('/kunze/wechatpay/doRefund',params).then((res)=>{
               console.log(res)
               if(res.success==true){
