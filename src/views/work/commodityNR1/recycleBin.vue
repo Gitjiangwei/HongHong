@@ -348,10 +348,14 @@
           let that=this
           this.formTranslate.validateFields((err, values) => {
             if(values.subTitle && values.title ){
+              console.log(values.description)
               that.form.spuimage=values.spuimage
               that.form.spuimage1=values.spuimage1
               that.form.spuimage2=values.spuimage2
               that.form.spuimage3=values.spuimage3
+             this.form.afterService=values.afterService
+              this.form.packingList=values.packingList
+              this.form.description=values.description
               let spuBo = {
                 'brandId': this.form.brand,
                 'cid1': this.cids[0],
@@ -367,9 +371,10 @@
                   'packingList': this.form.packingList,
                   "specifications":JSON.stringify(this.specifications),
                 },
-                'subTitle': this.form.subTitle,
-                'title': this.form.title
+                'subTitle': values.subTitle,
+                'title': values.title
               }
+              console.log(spuBo)
               httpAction('/kunze/spu/updateSpu', spuBo, 'post').then((res) => {
                 console.log(res)
                 if (res.success == true) {
