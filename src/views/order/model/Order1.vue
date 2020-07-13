@@ -106,7 +106,7 @@
         <a-col :span="8">
         </a-col>
         <a-col :span="8">
-        <a-button type="dashed" v-show="status==2" @click="nextStep">拒接接单</a-button>
+        <a-button type="dashed" v-show="status==2" @click="handleDelete">拒接接单</a-button>
         &nbsp;
         <a-button type="primary" v-show="status==2"  @click="nextStep(2)">确认接单</a-button>
           <a-button type="dashed" v-show="status!=2"  @click="nextStops">下一步</a-button>
@@ -390,6 +390,29 @@
             }
           });
 
+      },
+      //拒接接单
+      handleDelete(){
+        let param = new URLSearchParams();
+        param.append('shopID',this.shopId);
+        param.append('orderId',this.orderId);
+        param.append('userID' , "");
+        postAction('/kunze/order/selectOrderById',param).then((res)=>{
+          let amount=res.result.amountPayment - (- res.result.postFree)
+          let params = new URLSearchParams();
+          params.append('orderNo',res.result.orderId);
+          params.append('amount' , amount);
+          postAction('/kunze/wechatpay/doRefund',params).then((res)=>{
+            console.log(res);
+            if(res.success==true){
+              this.$message.success('退款成功');
+              this.loadData();
+            }else {
+              this.$message.warning('退款失败');
+              this.loadData();
+            }
+          })
+        })
       },
       callback: function(key){
           this.defaultActiveKey = key;
