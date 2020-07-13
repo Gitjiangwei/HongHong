@@ -640,7 +640,7 @@
             pageSize : that.ipagination.pageSize,
             shopId : e
           }).then((res)=>{
-            // console.log(res)
+            console.log(res)
             that.data=res.result.list
 
             let key=0
