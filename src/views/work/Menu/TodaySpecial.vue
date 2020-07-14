@@ -78,9 +78,9 @@
 
 
         <span slot="action" slot-scope="text, record">
-<!--          <a @click="handleEdit(record)">编辑</a>
+         <a @click="handleEdit(record)">编辑</a>
 
-          <a-divider type="vertical" />-->
+          <a-divider type="vertical" />
           <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
@@ -96,6 +96,7 @@
       </a-table>
     </div>
     <today-special-model ref="TodaySpecialModel" @ok="modalFormOk"></today-special-model>
+    <today-special-edit-model ref="TodaySpecialEditModel" @ok="modalFormOk"></today-special-edit-model>
   </a-card>
 </template>
 <script>
@@ -106,6 +107,7 @@
   import {filterObj,timeFix} from '@/utils/util';
   import TodaySpecialModel from './model/TodaySpecialModel';
   import JEllipsis from "@/components/jeecg/JEllipsis";
+  import TodaySpecialEditModel from './model/ToDaySpecialEditModel';
 
   export default {
     name:"TodaySpecial",
@@ -113,11 +115,12 @@
     components: {
       ARow,
       TodaySpecialModel,
-      JEllipsis
+      JEllipsis,
+      TodaySpecialEditModel
     },
     data(){
       return{
-        description: '轮播图管理页面',
+        description: '特卖管理页面',
         loading: false,
         // 查询条件
         queryParam: {},
@@ -253,14 +256,18 @@
           }
         })
       },
+      handleEdit(record){
+        this.$refs.TodaySpecialEditModel.edit(record);
+        this.$refs.TodaySpecialEditModel.title="修改特卖商品";
+      },
       handleAdd(){
         this.$refs.TodaySpecialModel.add();
         this.$refs.TodaySpecialModel.title="添加特卖商品";
       },
       handleDelete:function(record){
         let that = this;
-        let status = record.status;
-        if(status ==1){
+        let status = record.featuresStatus;
+        if(status == 1){
           this.$message.warning("只能删除未开始或者已结束的特卖商品");
           return;
         }else {
@@ -284,7 +291,7 @@
           var content = "是否确认删除选中数据！";
           for (var a = 0; a < this.selectedRowKeys.length; a++) {
             ids += this.selectionRows[a].featuresId + ",";
-            if (this.selectionRows[a].status == 2) {
+            if (this.selectionRows[a].featuresStatus == 1) {
               this.$message.warning('包含正在售卖的商品，只能删除已经结束的特卖商品！');
               return;
             }
@@ -294,7 +301,7 @@
             title: "确认删除",
             content: content,
             onOk: function () {
-              deleteAction(that.url.deletes, {ids: ids}).then((res) => {
+              deleteAction(that.url.delete, {ids: ids}).then((res) => {
                 if (res.success) {
                   that.$message.success(res.message);
                   that.loadData();
