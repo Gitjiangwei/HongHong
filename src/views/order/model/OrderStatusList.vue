@@ -256,13 +256,14 @@
           let params = new URLSearchParams();
           params.append('orderNo',res.result.orderId);
           params.append('amount' , amount);
+          params.append('orderStatus',"8");
           postAction('/kunze/wechatpay/doRefund',params).then((res)=>{
             console.log(res);
             if(res.success==true){
-              this.$message.success('退款成功');
+              this.$message.success('订单成功拒绝');
               this.loadData();
             }else {
-              this.$message.warning('退款失败');
+              this.$message.warning('订单拒绝失败');
               this.loadData();
             }
           })
