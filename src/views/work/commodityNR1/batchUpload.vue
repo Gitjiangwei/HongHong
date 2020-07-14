@@ -28,7 +28,7 @@
 
           @change="handleTableChange">
          <span slot="image" slot-scope="text,record">
-           <img :src=record.image alt="">
+           <img :src=record.images alt="" style="height: 100px;width: 100px">
         </span>
         </a-table>
 
@@ -51,7 +51,7 @@
         columns:[
           { title: '*', dataIndex: '',  key: 'rowIndex', width: 60, align: "center", customRender: function (t, r, index) {return parseInt(index) + 1;}},
           /* { title: '品牌名称', dataIndex: 'bname', key: 'bname' },*/
-          { title: '图片', dataIndex: 'image', key: 'image',scopedSlots: { customRender: 'image' } },
+          { title: '图片', dataIndex: 'images', key: 'images',scopedSlots: { customRender: 'image' } },
           { title: '商品名称', dataIndex: 'title', key: 'title' },
         ],
 
@@ -146,7 +146,7 @@
           let key=0
           that.data.forEach(e=>{
             // e.spuimage=e.image
-            e.image=window._CONFIG['domianURL']+'/'+e.image
+            e.images=window._CONFIG['domianURL']+'/'+e.image
 
             e.key=key++
           })
