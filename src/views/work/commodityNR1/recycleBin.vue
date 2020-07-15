@@ -181,7 +181,7 @@
 
 
         <a-tab-pane key="2"  tab="规格">
-          <a-table :columns="skucolumns" :data-source="skudata"  >
+          <a-table :columns="skucolumns" :data-source="skudata"  v-if="isyousku==false">
          <span slot="images" slot-scope="text,record">
            <img :src=record.images alt="">
         </span>
@@ -190,6 +190,90 @@
           <a-button type="primary" @click="deleteskuBrandBtn(record)">删除</a-button>
         </span>
           </a-table>
+
+<template  v-if="isyousku==true">
+
+
+
+            <a-form
+              :form="formTranslate"
+              :label-col="labelCol"
+              :wrapper-col="wrapperCol"
+            >
+
+
+              <!--          //参数选择-->
+              <a-form-item label="分类" hasFeedback >
+                <a-input v-model="fenl"  type="hidden" />
+                <a-cascader
+                  :field-names="{ label: 'name', value: 'id', children: 'childrenList' }"
+                  :options="options"
+                  placeholder="选择所属分类"
+                  @change="onChange"
+                />
+              </a-form-item>
+              <template v-if="dxuandatas.length!=0">
+                <a-form-item label="选择参数" >
+                  <template v-for="(v,e) in dxuandatas">
+                    <template v-for="(x,i) in v.params">
+                      <template v-if="x.options!='' && x.global=='false'">
+                        <a-row>
+                          <a-col :span="4">
+                            <span class="fenzu">{{x.k}}:</span>
+                          </a-col>
+                          <a-col :span="20">
+                            <a-radio-group  :name=x.k :v-model=x.value :options="x.options" :default-value="x.options[0]" @change="onChange2" />
+<!--                            <a-button type="primary">-->
+<!--                              自定义规格-->
+<!--                            </a-button>-->
+                          </a-col>
+                        </a-row>
+                        <br />
+                      </template>
+                    </template>
+                  </template>
+                  <template v-for="(v,e) in specifications">
+                    <template v-for="(x,i) in v.params">
+                      <a-row>
+                        <a-col :span="4">
+                          <span class="fenzu">{{x .k}}:</span>
+                        </a-col>
+                        <a-col :span="20">
+                          <!--                            <a-input  v-model="x.v" />-->
+                          <a-input ref="userNameInput" v-model="x.v" >
+                            <a-tooltip slot="suffix" title="删除该属性">
+                              <a-icon type="delete" style="color: rgba(0,0,0,.45)" @click="deleteSpec(e,i) " />
+                            </a-tooltip>
+                          </a-input>
+                        </a-col>
+                      </a-row>
+                    </template>
+                  </template>
+                </a-form-item>
+              </template>
+
+
+
+
+              <a-form-item label="销售价格"  hasFeedback>
+                <a-input  placeholder="单位为元"  v-decorator="['price', {rules: [{ required: true, message: '请输入商品价格', }]}]"  />
+                <!--            v-decorator="['price', validatorRules.spuPrice]"-->
+              </a-form-item>
+              <a-form-item label="优惠价格"  hasFeedback>
+                <a-input  placeholder="单位为元"  v-decorator="['newPrice', {rules: [{ required: false, message: '请输入优惠价格', }]}]"  />
+                <!--            v-decorator="['price', validatorRules.spuPrice]"-->
+              </a-form-item>
+              <a-form-item label="商品库存"    hasFeedback>
+                <a-input type="number"  v-decorator="['stock', {rules: [{ required: true, message: '请输入商品库存', }]}]" />
+                <!--            v-decorator="['stock', validatorRules.Stock]"-->
+              </a-form-item>
+              <a-form-item label="商品图片" hasFeedback>
+                <j-image-upload class="avatar-uploader" text="上传"  v-decorator="['skuimage', {rules: [{ required: true, message: '请输入商品图片', }]}]" ></j-image-upload>
+              </a-form-item>
+            </a-form>
+
+</template>
+
         </a-tab-pane>
       </a-tabs>
 
@@ -307,6 +391,7 @@
             spuimage3:""
           },
           skuVos:[],
+          isyousku:false,
           formTranslate: this.$form.createForm(this),
           xiuBrandvisible:false,
           delspuvisible:false,
@@ -343,6 +428,122 @@
         }
       },
       methods:{
+
+
+
+
+        //点击参数单选框
+        onChange2(e){
+          let val=e.target.value
+          let key=e.target.name
+          let that=this
+          for(let i in that.ownSpec){
+            if(key==i){
+              that.ownSpec[i]=val
+            }
+          }
+          that.index.forEach((e,y)=>{
+            if(e==key){
+              for(let i in that.specTemplate){
+                if(key==i){
+                  that.specTemplate[i].forEach((e,l)=>{
+                    if(e==val){
+                      that.indexes[y]=l
+                    }
+                  })
+                }
+              }
+            }
+          })
+        },
+        onChange(value){
+          this.fenl=1
+          this.cids=value
+          let that=this
+          that.indexes=[]
+          that.ownSpec={}
+          that.index=[]
+          that.specTemplate={}
+          this.specifications=[]
+          that.dxuandatas=[]
+
+          getAction('/kunze/spec/specList',{categoryId:value[2]}).then((res)=>{
+            console.log(JSON.parse(res.result.specifications))
+            if(res.result==null){
+              that.dxuandatas=[]
+            }else {
+              that.dxuandatas=JSON.parse(res.result.specifications)
+              // JSON.parse(res.result.specifications).forEach(e=>{
+              //
+              //     if(e.params[0].global=='false'){
+              //       that.dxuandatas.push(e)
+              //     }
+              //
+              // })
+              // console.log(that.dxuandatas)
+              that.dxuandatas.forEach(e=>{
+                e.params.forEach((y,i)=>{
+                  y.value=''
+
+                  let nn= {
+                    k:y.k,
+                    global: true,
+                    searchable: true,
+                    v:''
+                  }
+                  let nm=[]
+                  nm.push(nn)
+
+                  if(y.global=='true'){
+                    that.specifications.push({
+                      group:e.group,
+                      params:nm
+                    })
+                  }
+
+                  // if(y.global=='true'){
+                  //   that.specifications.push({
+                  //       k:y.k,
+                  //       val:''
+                  //
+                  //   })
+                  //
+                  // }
+
+
+                  if(typeof y.options=='string' ){
+                    y.options=y.options.split(',');
+                    if(y.options[0]==''){
+                    }else {
+                      if(y.global=='false') {
+                        Vue.set(that.ownSpec, y.k, y.options[0])
+                      }
+                      if(y.global=='false'){
+                        Vue.set(that.specTemplate,y.k,y.options)
+                      }
+                      that.indexes.push(0)
+                      that.index.push(y.k)
+                    }
+                  }
+                })
+              })
+            }
+          })
+          // console.log(that.specifications)
+
+        },
+
+      //获取分类
+        getBrand(){
+          let that=this
+          let param = new URLSearchParams()
+          param.append('cateId','')
+          postAction('/kunze/category/qryList',param).then((res)=>{
+            that.options=res.result
+
+          })
+        },
+
       //确定修改基本信息
         modifyBasic(){
           let that=this
@@ -413,18 +614,35 @@
           this.delspuvisible=false
         },
         delspuhandleOk(){
+          // /kunze/spu/template/deletes
           this.delspuvisible=false
-          postAction('/kunze/spu/deleteSpu',this.ids).then((res)=>{
-            if(res.success==true){
-              this.getAllProducts(this.shopId)
-              this.$message.success('删除商品成功');
-              this.ids=[]
-            }else {
-              this.getAllProducts(this.shopId)
-              this.$message.error('删除商品失败');
-              this.ids=[]
-            }
-          })
+          console.log(this.ids)
+          if (this.isyousku==false){
+            postAction('/kunze/spu/deleteSpu',this.ids).then((res)=>{
+              if(res.success==true){
+                this.getAllProducts(this.shopId)
+                this.$message.success('删除商品成功');
+                this.ids=[]
+              }else {
+                this.getAllProducts(this.shopId)
+                this.$message.error('删除商品失败');
+                this.ids=[]
+              }
+            })
+          } else {
+            postAction('/kunze/spu/template/deletes ',this.ids).then((res)=>{
+              if(res.success==true){
+                this.getAllProducts(this.shopId)
+                this.$message.success('删除商品成功');
+                this.ids=[]
+              }else {
+                this.getAllProducts(this.shopId)
+                this.$message.error('删除商品失败');
+                this.ids=[]
+              }
+            })
+          }
+
         },
       //批量上架
         updataAllsable(){
@@ -551,7 +769,69 @@
           this.visible=false
         },
         handleOk(){
+          let that=this
           this.visible=false
+          if(that.isyousku==true){
+            this.formTranslate.validateFields((err, values) => {
+                if(values.price && values.stock &&values.skuimage){
+                  if(this.indexes.length==0 && this.specifications.length==0){
+                    this.$message.warning('请选择所属分类');
+                  }else {
+                    if(this.specifications.length!=0){
+                    }
+                    if (this.indexes.length != 0) {
+                      let nn = 0
+                      this.specifications.forEach(e => {
+                        e.params.forEach(e=>{
+                          if(e.v==''){
+                            this.$message.error('请填写'+e.k);
+                          }else {
+                            nn+=1
+                          }
+                        })
+                      })
+                      if (nn == this.specifications.length) {
+                        if(values.newPrice==undefined){
+                          values.newPrice = "";
+                        }
+                        debugger
+                          let skuVo={
+                          spuId:that.spu.id,
+                          title:that.spu.title,
+                          indexes:JSON.stringify(that.indexes),
+                          ownSpec:JSON.stringify(that.ownSpec),
+                          price: values.price,
+                          newPrice: values.newPrice,
+                          stock: values.stock,
+                          images: values.skuimage,
+                          enable:'1',
+                          shopId:that.shopId
+                        }
+                        httpAction('kunze/sku/saveSku',skuVo,'post').then(res=>{
+                          console.log(res)
+                          if(res.success==true){
+                            that.$message.success('修改成功');
+                            this.getAllProducts(this.shopId)
+                            this.isyousku=false
+                            this.specifications=[]
+                            this.dxuandatas=[]
+                          }else {
+                            that.$message.error('修改失败');
+                            this.getAllProducts(this.shopId)
+                            this.isyousku=false
+                            this.specifications=[]
+                            this.dxuandatas=[]
+                          }
+                        })
+
+                      }
+
+                    }}
+
+
+                }
+            })
+          }
         },
         xiuBrandConfirm(){
           this.xiuBrandvisible=false
@@ -566,6 +846,16 @@
           this.delspuvisible=true
           this.ids=[]
           this.ids.push(e.id)
+          let param = new URLSearchParams()
+          param.append('spuId',e.id)
+          postAction('/kunze/sku/qrySkuBySpuId',param).then((res)=> {
+            console.log(res)
+            if(res.result==null){
+              this.isyousku=true
+            }else {
+              this.isyousku=false
+            }
+          })
 
         },
         //批量删除
@@ -575,6 +865,7 @@
         },
         //点击查看按钮
         xiuBrandBtn(e){
+          // debugger/
           // this.form.banimage1=e.images
           // console.log(e)
           this.spu=[]
@@ -583,10 +874,12 @@
           let param = new URLSearchParams()
           param.append('spuId',e.id)
           postAction('/kunze/sku/qrySkuBySpuId',param).then((res)=>{
-            // console.log(res)
-            if(res.success==true){
-              this.specifications=[]
-              this.specifications=JSON.parse(res.result[0].specifications)
+            console.log(res)
+            if(res.success==true && res.result!=null && res.result!='null'){
+              if(res.result[0].specifications!=null){
+                this.specifications=[]
+                this.specifications=JSON.parse(res.result[0].specifications)
+              }
               // console.log(this.specifications)
               that.skudata=res.result
               that.skudata.forEach(e=>{
@@ -597,28 +890,32 @@
               this.form.packingList= that.skudata[0].packingList
               this.form.afterService=that.skudata[0].afterService
               this.form.description=that.skudata[0].description
-              that.spu=e
-              if(that.spu.images && typeof that.spu.images == 'string'){
-                that.spu.images=that.spu.images.split(",")
-              }
 
-              this.form.title=this.spu.title
-              this.form.subTitle=this.spu.subTitle
-              this.brand.forEach(e=>{
-                if(e.bname==this.spu.bname){
-                  this.form.brand=e.bid
-                }
-              })
-              this.form.spuimage= this.spu.spuimage
-              this.form.spuimage1=this.spu.images[0]
-              this.form.spuimage2=this.spu.images[1]
-              this.form.spuimage3=this.spu.images[2]
-              this.$nextTick(() => {
-                this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','newPrice','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description'))
-              });
-              this.visible=true
+            }else {
+              that.isyousku=true
             }
 
+            //
+            that.spu=e
+            if(that.spu.images && typeof that.spu.images == 'string'){
+              that.spu.images=that.spu.images.split(",")
+            }
+
+            this.form.title=this.spu.title
+            this.form.subTitle=this.spu.subTitle
+            this.brand.forEach(e=>{
+              if(e.bname==this.spu.bname){
+                this.form.brand=e.bid
+              }
+            })
+            this.form.spuimage= this.spu.spuimage
+            this.form.spuimage1=this.spu.images[0]
+            this.form.spuimage2=this.spu.images[1]
+            this.form.spuimage3=this.spu.images[2]
+            this.$nextTick(() => {
+              this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','newPrice','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description'))
+            });
+            this.visible=true
           })
 
 
@@ -658,6 +955,7 @@
           this.$nextTick(() => {
             this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','newPrice','stock','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description'))
           });
+
         },
 
         //点击修改sku取消按钮
@@ -703,7 +1001,7 @@
             that.form.newprice=values.newPrice
             that.form.skuimage=values.skuimage
             // console.log(values.price, values.stock, values.skuimage, values.newPrice)
-            debugger;
+
             if (that.form.stock=='0'){
               this.$message.warning('库存不能为0');
               return;
@@ -772,29 +1070,13 @@
 
 
         resetForm(){},
-        getBrand(){
-          let that=this
-          getAction('/kunze/brand/qryBrandList',{pageSize:1}).then((res)=>{
-            getAction('/kunze/brand/qryBrandList',{pageSize:res.result.pages}).then((res)=>{
-              let key=0
-              res.result.list.forEach(e=>{
-                e. keys=key++
-              })
-              that.brand=res.result.list
-            })
-          })
 
-          let param = new URLSearchParams()
-          param.append('cateId','')
-          postAction('/kunze/category/qryList',param).then((res)=>{
-            that.options=res.result
-          })
-        },
       },
       mounted() {
         this.shopId=localStorage.getItem('shopId')
       this.getAllProducts(this.shopId)
         this.getBrand()
+
       }
   }
 </script>
