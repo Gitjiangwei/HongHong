@@ -294,6 +294,44 @@
           :label-col="labelCol"
           :wrapper-col="wrapperCol"
         >
+
+          <a-form-item label="分类" hasFeedback >
+            <a-input v-model="fenl"  type="hidden" />
+            <a-cascader
+              :field-names="{ label: 'name', value: 'id', children: 'childrenList' }"
+              :options="options"
+              :default-value="xiucids"
+              placeholder="选择所属分类"
+              @change="onChange"
+            />
+          </a-form-item>
+          <template v-if="dxuandatas.length!=0">
+            <a-form-item label="选择参数" >
+              <template v-for="(v,e) in dxuandatas">
+                <template v-for="(x,i) in v.params">
+                  <template v-if="x.options!='' && x.global=='false'">
+                    <a-row>
+                      <a-col :span="4">
+                        <span class="fenzu">{{x.k}}:</span>
+                      </a-col>
+                      <a-col :span="20">
+                        <a-radio-group  :name=x.k :v-model=x.value :options="x.options" :default-value="x.options[0]" @change="onChange2" />
+<!--                                                    <a-button type="primary">-->
+<!--                                                      自定义规格-->
+<!--                                                    </a-button>-->
+                      </a-col>
+                    </a-row>
+                    <br />
+                  </template>
+                </template>
+              </template>
+
+            </a-form-item>
+          </template>
+
+
+
+
           <a-form-item label="销售价格"  hasFeedback>
             <a-input  placeholder="单位为元"  v-decorator="['price', {rules: [{ required: true, message: '请输入商品价格', }]}]"  />
 <!--            v-decorator="['price', validatorRules.spuPrice]"-->
@@ -391,6 +429,7 @@
             spuimage3:""
           },
           skuVos:[],
+          xiucids:[],
           isyousku:false,
           formTranslate: this.$form.createForm(this),
           xiuBrandvisible:false,
@@ -763,14 +802,78 @@
             this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description','newPrice'))
           });
 
+
+
+
+          this.fenl=1
+          that.indexes=[]
+          that.ownSpec={}
+          that.index=[]
+          that.specTemplate={}
+          this.specifications=[]
+          that.dxuandatas=[]
+
+          getAction('/kunze/spec/specList',{categoryId:that.xiucids[2]}).then((res)=>{
+            console.log(JSON.parse(res.result.specifications))
+            if(res.result==null){
+              that.dxuandatas=[]
+            }else {
+              that.dxuandatas=JSON.parse(res.result.specifications)
+              that.dxuandatas.forEach(e=>{
+                e.params.forEach((y,i)=>{
+                  y.value=''
+
+                  let nn= {
+                    k:y.k,
+                    global: true,
+                    searchable: true,
+                    v:''
+                  }
+                  let nm=[]
+                  nm.push(nn)
+
+                  if(y.global=='true'){
+                    that.specifications.push({
+                      group:e.group,
+                      params:nm
+                    })
+                  }
+
+                  if(typeof y.options=='string' ){
+                    y.options=y.options.split(',');
+                    if(y.options[0]==''){
+                    }else {
+                      if(y.global=='false') {
+                        Vue.set(that.ownSpec, y.k, y.options[0])
+                      }
+                      if(y.global=='false'){
+                        Vue.set(that.specTemplate,y.k,y.options)
+                      }
+                      that.indexes.push(0)
+                      that.index.push(y.k)
+                    }
+                  }
+                })
+              })
+            }
+          })
+
+
+
+
+
+
         },
         deleteskuBrandBtn(e){},
         handleCancel(){
           this.visible=false
+          this.isyousku=false
         },
         handleOk(){
           let that=this
           this.visible=false
+          this.isyousku=false
+
           if(that.isyousku==true){
             this.formTranslate.validateFields((err, values) => {
                 if(values.price && values.stock &&values.skuimage){
@@ -881,6 +984,9 @@
                 this.specifications=JSON.parse(res.result[0].specifications)
               }
               // console.log(this.specifications)
+              that.xiucids.push(res.result[0].cid1)
+              that.xiucids.push(res.result[0].cid2)
+              that.xiucids.push(res.result[0].cid3)
               that.skudata=res.result
               that.skudata.forEach(e=>{
                 e.skuimage=e.images
@@ -1042,7 +1148,9 @@
                       price: values.price,
                       stock: values.stock,
                       images:values.skuimage,
-                      newPrice:values.newPrice
+                      newPrice:values.newPrice,
+                      indexes: JSON.stringify(that.indexes),
+                      ownSpec:JSON.stringify(that.ownSpec)
 
                     });
                     let spuBo = {
@@ -1051,13 +1159,17 @@
                       'skuVos': this.skuVos,
                     }
                   httpAction('/kunze/spu/updateSpu', spuBo, 'post').then((res) => {
-                      if (res.success == true) {
+                    console.log(res)
+                    if (res.success == true) {
                         that.skuVos = []
                         that.xiuBrandvisible = false
                         that.visible = false
                         that.$message.success('修改成功');
                         this.getAllProducts(this.shopId)
-                      }
+                      }else {
+                      that.$message.error('修改失败');
+                      this.getAllProducts(this.shopId)
+                    }
                     })
 
               }
