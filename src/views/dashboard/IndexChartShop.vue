@@ -166,15 +166,21 @@
       <a-col  :xl="4" :lg="12" :md="12" :sm="24" :xs="24" style="height: 100%;margin-top: 20px">
 
         <span style="font-weight: bold; font-size: 16px;display: inline-block;margin: 0 0 0 10px">设置配送费</span>
-        <a-card style="width: 100%;height: 224px" :loading="loading">
-          <div style="margin-bottom: 20px;font-size: 16px;font-weight: bold">当前配送费： ￥{{deliveryFee}}</div>
-          <div style="margin-bottom: 20px;font-size: 16px;font-weight: bold">当前最低起送价格： ￥{{starting}}</div>
+        <a-card style="width: 100%;" :loading="loading">
+          <a-radio-group buttonStyle="solid" v-decorator="[ 'isps', {'initialValue':'1'}]" @change="isswitch">
+            <a-radio-button :value="'1'">商家配送</a-radio-button>
+            <a-radio-button :value="'2'">骑手配送</a-radio-button>
+          </a-radio-group>
+          <div style="margin: 10px 0;font-size: 16px;font-weight: bold;display: inline-block" v-if="isps==1">当前配送费:￥{{deliveryFee}}</div>
+<!--          <a-switch checked-children="自己送" un-checked-children="平台" default-checked style="display: inline-block;margin-left:5px" @change="isswitch" :checked="true" />-->
+          <div style="margin-bottom: 20px;font-size: 16px;font-weight: bold">当前最低起送价格:￥{{starting}}</div>
           <a-input-search
             placeholder="请输入配送费"
             enter-button="确认"
             size="large"
             @search="onSearch"
             style="margin-bottom: 10px"
+            v-if="isps==1"
           />
           <a-input-search
             placeholder="请输入最低起送价格"
@@ -269,6 +275,7 @@
             },
         ],
         mesdata:[],
+        isps:'',
         url:{
           selectInfo:"/kunze/menu/selectInfo",
           selectOrder:"/kunze/menu/selectOrderstatistics",
@@ -277,6 +284,7 @@
           selectNews:"/kunze/menu/queryOrderRecordTotal",
         },
         indicator: <a-icon type="loading" style="font-size: 24px" spin />
+
 
       }
     },
@@ -306,6 +314,36 @@
       });
     },
     methods:{
+      isswitch(e){
+
+        this.isps=e.target.value
+        let jsonObject={}
+        if(this.isps==1){
+          jsonObject ={
+            shopId:localStorage.getItem('shopId'),
+            postFee:0,
+            distModel:this.isps
+          }
+        }else {
+          jsonObject ={
+            shopId:localStorage.getItem('shopId'),
+            postFee:"",
+            distModel:this.isps
+          }
+        }
+
+        postAction('/kunze/shop/editShopDist',jsonObject).then((res)=>{
+          console.log(res)
+          if(res.success){
+            this.queryonSearch()
+            this.$message.success('配送方式修改成功');
+          }else {
+            this.$message.error('配送方式修改失败');
+          }
+
+        })
+
+      },
       //查询配送费
       queryonSearch(){
         let param = new URLSearchParams()
@@ -313,6 +351,7 @@
         deleteAction('/kunze/shop/selectShopInfoById',param).then((res)=>{
           console.log(res)
           if(res.success){
+            this.isps=res.result[0].distributionModel
             this.deliveryFee=((res.result[0].postFree)/100).toFixed(2)
             if(res.result[0].minPrice && res.result[0].minPrice!=null){
               this.starting=((res.result[0].minPrice)/100).toFixed(2)
@@ -335,11 +374,15 @@
       },
       //点击设置配送费
       onSearch(e){
-        let updateShop={
-          postFree:e,
-          id:this.shopId
+        console.log(e)
+        let jsonObject ={
+          shopId:localStorage.getItem('shopId'),
+          postFee:e,
+          distModel:this.isps
         }
-        postAction('/kunze/shop/updateShop',updateShop).then((res)=>{
+        console.log(jsonObject)
+        postAction('/kunze/shop/editShopDist',jsonObject).then((res)=>{
+          console.log(res)
           if(res.success){
             this.queryonSearch()
             this.$message.success('配送费修改成功');

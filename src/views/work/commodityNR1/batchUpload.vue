@@ -23,13 +23,12 @@
         <a-table
           :columns="columns"
           :data-source="data"
-          :row-selection="{  onChange: onSelectChange }"
+          :row-selection="{ selectedRowKeys: selectedRowKeys,  onChange: onSelectChange }"
           :pagination="ipagination"
-
           @change="handleTableChange">
-         <span slot="image" slot-scope="text,record">
-           <img :src=record.images alt="" style="height: 100px;width: 100px">
-        </span>
+          <span slot="image" slot-scope="text,record">
+            <img :src=record.images alt="" style="height: 50px;width: 50px">
+          </span>
         </a-table>
 
       </a-modal>
@@ -40,7 +39,6 @@
 <script>
   import {getAction,postAction} from '../../../api/manage'
   import 'url-search-params-polyfill'
-  import JSearchSelectTag from '../../../components/dict/JSearchSelectTag'
 
 
 
@@ -48,6 +46,7 @@
     data(){
       return {
         data:[],
+        selectedRowKeys:[],
         columns:[
           { title: '*', dataIndex: '',  key: 'rowIndex', width: 60, align: "center", customRender: function (t, r, index) {return parseInt(index) + 1;}},
           /* { title: '品牌名称', dataIndex: 'bname', key: 'bname' },*/
@@ -97,7 +96,9 @@
         this.getAllProducts(this.cid);
       },
       onSelectChange(selectedRowKeys, selectedRows){
+        this.selectedRowKeys=selectedRowKeys
         let that=this
+        that.ids=[]
         selectedRows.forEach(e=>{
           // console.log(e)
           delete e.key
@@ -109,10 +110,18 @@
         this.visible=false
       },
       handleOk(){
-        this.visible=false
         console.log(this.ids)
         postAction('/kunze/spu/template/add',this.ids).then((res)=>{
-          console.log(res)
+          // console.log(res)
+          if(res.success==true){
+            this.visible=false
+            this.selectedRowKeys=[]
+            this.$message.success('批量上传成功');
+          }else {
+            this.visible=false
+            this.selectedRowKeys=[]
+            this.$message.error('批量上传失败');
+          }
         })
       },
 
