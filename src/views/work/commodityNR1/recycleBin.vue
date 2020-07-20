@@ -62,7 +62,7 @@
     <a-table
       :columns="columns"
       :data-source="data"
-      :row-selection="{  onChange: onSelectChange }"
+      :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
       :pagination="ipagination"
 
       @change="handleTableChange">
@@ -316,9 +316,6 @@
                       </a-col>
                       <a-col :span="20">
                         <a-radio-group  :name=x.k :v-model=x.value :options="x.options" :default-value="x.options[0]" @change="onChange2" />
-<!--                                                    <a-button type="primary">-->
-<!--                                                      自定义规格-->
-<!--                                                    </a-button>-->
                       </a-col>
                     </a-row>
                     <br />
@@ -334,15 +331,12 @@
 
           <a-form-item label="销售价格"  hasFeedback>
             <a-input  placeholder="单位为元"  v-decorator="['price', {rules: [{ required: true, message: '请输入商品价格', }]}]"  />
-<!--            v-decorator="['price', validatorRules.spuPrice]"-->
           </a-form-item>
           <a-form-item label="优惠价格"  hasFeedback>
             <a-input  placeholder="单位为元"  v-decorator="['newPrice', {rules: [{ required: false, message: '请输入优惠价格', }]}]"  />
-            <!--            v-decorator="['price', validatorRules.spuPrice]"-->
           </a-form-item>
           <a-form-item label="商品库存"    hasFeedback>
             <a-input type="number"  v-decorator="['stock', {rules: [{ required: true, message: '请输入商品库存', }]}]" />
-<!--            v-decorator="['stock', validatorRules.Stock]"-->
           </a-form-item>
           <a-form-item label="商品图片" hasFeedback>
             <j-image-upload class="avatar-uploader" text="上传"  v-decorator="['skuimage', {rules: [{ required: true, message: '请输入商品图片', }]}]" ></j-image-upload>
@@ -377,6 +371,7 @@
     name: 'recycleBin',
       data(){
         return{
+          selectedRowKeys:[],
           columns:[
             { title: '*', dataIndex: '',  key: 'rowIndex', width: 60, align: "center", customRender: function (t, r, index) {return parseInt(index) + 1;}},
            /* { title: '品牌名称', dataIndex: 'bname', key: 'bname' },*/
@@ -662,10 +657,12 @@
                 this.getAllProducts(this.shopId)
                 this.$message.success('删除商品成功');
                 this.ids=[]
+                this.selectedRowKeys=[]
               }else {
                 this.getAllProducts(this.shopId)
                 this.$message.error('删除商品失败');
                 this.ids=[]
+                this.selectedRowKeys=[]
               }
             })
           } else {
@@ -673,10 +670,12 @@
               if(res.success==true){
                 this.getAllProducts(this.shopId)
                 this.$message.success('删除商品成功');
+                this.selectedRowKeys=[]
                 this.ids=[]
               }else {
                 this.getAllProducts(this.shopId)
                 this.$message.error('删除商品失败');
+                this.selectedRowKeys=[]
                 this.ids=[]
               }
             })
@@ -1029,7 +1028,10 @@
 
         },
         onSelectChange(selectedRowKeys, selectedRows){
+          // console.log(selectedRowKeys, selectedRows)
+          this.selectedRowKeys=selectedRowKeys
           let that=this
+          that.ids=[]
           selectedRows.forEach(e=>{
             that.ids.push(e.id)
           })
