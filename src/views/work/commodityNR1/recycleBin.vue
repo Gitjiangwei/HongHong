@@ -326,9 +326,6 @@
             </a-form-item>
           </template>
 
-
-
-
           <a-form-item label="销售价格"  hasFeedback>
             <a-input  placeholder="单位为元"  v-decorator="['price', {rules: [{ required: true, message: '请输入商品价格', }]}]"  />
           </a-form-item>
