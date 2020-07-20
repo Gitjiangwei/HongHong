@@ -20,6 +20,7 @@
                 <a-select-option value="5">交易成功</a-select-option>
                 <a-select-option value="6">交易关闭</a-select-option>
                 <a-select-option value="7">已退款</a-select-option>
+                <a-select-option value="8">已拒绝</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -179,6 +180,8 @@
                   return "交易关闭";
                 }else if(text==7){
                   return "已退款";
+                }else if (text == 8) {
+                  return "已拒绝";
                 }else {
                   return text;
                 }

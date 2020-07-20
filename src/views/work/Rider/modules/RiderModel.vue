@@ -13,7 +13,7 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="图片名称"
+          label="骑手名称"
           hasFeedback
         >
           <a-input placeholder="请输入骑手名称" maxlength="10"
