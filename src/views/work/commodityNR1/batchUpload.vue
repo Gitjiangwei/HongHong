@@ -110,7 +110,6 @@
         this.visible=false
       },
       handleOk(){
-
         console.log(this.ids)
         postAction('/kunze/spu/template/add',this.ids).then((res)=>{
           // console.log(res)
