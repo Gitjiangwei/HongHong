@@ -107,6 +107,21 @@
             <a-radio-button :value="'1'">上架</a-radio-button>
           </a-radio-group>
         </a-form-item>
+
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="商铺类型"
+          hasFeedback>
+              <a-select  style="width: 120px" v-decorator="['shopType',{ rules: [{ required: true, message: '请选择商铺类型' }] },]" @change="handleSelectChange">
+                <a-select-option value="1">
+                  超市
+                </a-select-option>
+                <a-select-option value="2">
+                  饭店
+                </a-select-option>
+              </a-select>
+        </a-form-item>
       </a-form>
     </a-spin>
     <div class="drawer-bootom-button" v-show="!disableSubmit">
@@ -134,6 +149,7 @@
     },
     data(){
       return{
+        shopType:'请选择商铺类型',
         title: "操作",
         options:[],   //地址级联下啦数据
         optionss:[],   //地址级联下啦数据
@@ -224,7 +240,7 @@
           this.model.endBusiness = time[1];
         }
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model, 'shopName', 'shopAddress','personCharge','telphone','afterSale','idenitiy', 'startBusiness', 'endBusiness','isFlag'))
+          this.form.setFieldsValue(pick(this.model, 'shopName', 'shopAddress','shopType','personCharge','telphone','afterSale','idenitiy', 'startBusiness', 'endBusiness','isFlag'))
           //时间格式化
           this.form.setFieldsValue({startBusiness: this.model.startBusiness ? moment(this.model.startBusiness, 'HH:mm') : null});
           this.form.setFieldsValue({endBusiness: this.model.endBusiness ? moment(this.model.endBusiness, 'HH:mm') : null});
@@ -239,6 +255,9 @@
       },
       isDisabledAuth(code){
         return disabledAuthFilter(code);
+      },
+      handleSelectChange(e){
+        // console.log(e)
       },
       handleSubmit() {
         const that = this;
@@ -270,6 +289,12 @@
             //时间格式化
             formData.startBusiness = formData.startBusiness ? formData.startBusiness.format('HH:mm') : null;
             formData.endBusiness = formData.endBusiness ? formData.endBusiness.format('HH:mm') : null;
+            console.log(formData.shopType)
+            if(formData.shopType=='超市' || formData.shopType==1){
+              formData.shopType=1
+            }else {
+              formData.shopType=2
+            }
             httpAction(httpurl, formData, method).then((res) => {
               if (res.success) {
                 that.$message.success(res.message);
@@ -281,8 +306,6 @@
               that.confirmLoading = false;
               that.close();
             })
-
-
           }
         })
       },

@@ -81,9 +81,7 @@
                               <span class="fenzu">{{x.k}}:</span>
                             </a-col>
                             <a-col :span="20">
-
                               <a-radio-group  :name=x.k :v-model=x.value :options="x.options" :default-value="x.options[0]" @change="onChange2" />
-<!--                              <a-button  shape="circle" icon="delete" @click="deleteDxuandatas(e,i,x.k )"/>-->
                             </a-col>
                           </a-row>
                           <br />

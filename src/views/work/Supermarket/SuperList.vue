@@ -259,6 +259,12 @@
       },
       handleEdit:function(record){
         let opens=[]
+        console.log(record.shopType)
+        if(record.shopType==2){
+          record.shopType='饭店'
+        }else {
+          record.shopType='超市'
+        }
         opens.push(record.province)
         opens.push(record.city)
         opens.push(record.area)

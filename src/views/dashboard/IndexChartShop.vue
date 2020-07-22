@@ -167,13 +167,13 @@
 
         <span style="font-weight: bold; font-size: 16px;display: inline-block;margin: 0 0 0 10px">设置配送费</span>
         <a-card style="width: 100%;" :loading="loading">
-          <a-radio-group buttonStyle="solid" v-decorator="[ 'isps', {'initialValue':'1'}]" @change="isswitch">
-            <a-radio-button :value="'1'">商家配送</a-radio-button>
-            <a-radio-button :value="'2'">骑手配送</a-radio-button>
+          <a-radio-group buttonStyle="solid" :default-value='isps' @change="isswitch">
+            <a-radio-button :value="1">商家配送</a-radio-button>
+            <a-radio-button :value="2">骑手配送</a-radio-button>
           </a-radio-group>
-          <div style="margin: 10px 0;font-size: 16px;font-weight: bold;display: inline-block" v-if="isps==1">当前配送费:￥{{deliveryFee}}</div>
+          <div style="margin-top: 10px;font-size: 16px;font-weight: bold;display: inline-block" v-if="isps==1">当前配送费:￥{{deliveryFee}}</div>
 <!--          <a-switch checked-children="自己送" un-checked-children="平台" default-checked style="display: inline-block;margin-left:5px" @change="isswitch" :checked="true" />-->
-          <div style="margin-bottom: 20px;font-size: 16px;font-weight: bold">当前最低起送价格:￥{{starting}}</div>
+          <div style="margin: 10px 0;font-size: 16px;font-weight: bold">当前最低起送价格:￥{{starting}}</div>
           <a-input-search
             placeholder="请输入配送费"
             enter-button="确认"

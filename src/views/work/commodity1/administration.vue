@@ -4,7 +4,7 @@
     <a-card title="分类管理" >
       <a-button type="primary" class="modifyBtn1" @click="deleteAllCategories()">批量删除</a-button>
       <a-button type="primary" class="modifyBtn1" @click="adddjfl()">添加顶级分类</a-button>
-      <a-table :columns="columns" :data-source="data" :row-selection="{  onChange: onSelectChange }" :pagination="false" >
+      <a-table :columns="columns" :data-source="data" :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }" :pagination="false" >
 <!--        <span slot="sort" slot-scope="text,record" >-->
 <!--            <a @click="addCategories(record)">排序</a>-->
 <!--        </span>-->
@@ -113,6 +113,7 @@
     },
         data() {
             return {
+              selectedRowKeys:[],
               columns:[
                 { title: '分类名称', dataIndex: 'name', key: 'name' },
                 // { title: '排序', dataIndex: 'sort', key: 'sort', scopedSlots: { customRender: 'sort' } },
@@ -191,6 +192,13 @@
                       '删除成功'
                     );
                     that.getAllCategories()
+                    that.selectedRowKeys=[]
+                  }else {
+                    that.$message.error(
+                      '删除失败'
+                    );
+                    that.getAllCategories()
+                    that.selectedRowKeys=[]
                   }
                 })
               },
