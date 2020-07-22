@@ -59,6 +59,8 @@
         :loading="loading"
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
+
+
         <span slot="action" slot-scope="text, record">
           <a @click="handleDetail(record)">查看</a>
           <span v-if="record.status==2">
@@ -157,6 +159,14 @@
               dataIndex: 'telphone'
             },
             {
+              title: '取货码',
+              align: "center",
+              dataIndex: 'pickNo',
+             customRender: (text) => {
+               return <span style='color: green; font-weight:bold'>{text}</span>;
+              }
+            },
+            {
               title: '下单时间',
               align: "center",
               dataIndex: 'createTime'
@@ -206,7 +216,7 @@
             },
             {
               title: '备注',
-              width:400,
+              width:300,
               align: "center",
               dataIndex: 'buyerMessage'
             },
