@@ -448,20 +448,27 @@
                 e.key=key++
                 e.children=JSON.parse(JSON.stringify(e.childrenList))
                 e.childrenList=[]
-                e.children.forEach(e=>{
-                  e.key=key++
-                  if(e.image!=null){
-                    e.image= window._CONFIG['staticDomainURL']+'/'+ e.image
-                  }
-
-                  e.children=JSON.parse(JSON.stringify(e.childrenList))
-                  e.childrenList=[]
+                if(e.children!=null){
                   e.children.forEach(e=>{
+
                     e.key=key++
+                    if(e.image!=null){
+                      e.image= window._CONFIG['staticDomainURL']+'/'+ e.image
+                    }
+
+                    e.children=JSON.parse(JSON.stringify(e.childrenList))
+                    e.childrenList=[]
+                    if(e.children!=null){
+                      e.children.forEach(e=>{
+                        e.key=key++
+                      })
+                    }
+
                   })
-                })
+                }
+
               })
-              console.log(this.data)
+
             })
           }
         },
