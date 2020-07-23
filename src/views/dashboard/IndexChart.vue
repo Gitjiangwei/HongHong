@@ -90,7 +90,8 @@
           <div class="extra-wrapper" slot="tabBarExtraContent">
             <div class="extra-item">
               <a @click="loaderboard(0,0)">总排行</a>
-              <a @click="loaderboard(0,1)">今日</a>
+              <a @click="loaderboard(0,1)">今天</a>
+              <a @click="loaderboard(0,5)">昨天</a>
               <a @click="loaderboard(0,2)">本周</a>
               <a @click="loaderboard(0,3)">本月</a>
               <a @click="loaderboard(0,4)">本年</a>
