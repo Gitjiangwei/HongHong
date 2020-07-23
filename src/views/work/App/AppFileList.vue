@@ -154,6 +154,18 @@
             dataIndex: 'updateTime'
           },
           {
+            title: '是否强制更新',
+            align:"center",
+            dataIndex: 'isFlag',
+            customRender: (text) => {
+              if(text==1){
+                return "是";
+              }else if(text==2) {
+                return "否";
+              }
+            }
+          },
+          {
             title: '操作',
             dataIndex: 'action',
             align:"center",

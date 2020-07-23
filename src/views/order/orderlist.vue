@@ -29,6 +29,11 @@
               <a-input placeholder="请输入联系方式" maxlength="11" v-model="queryParam.telphone"></a-input>
             </a-form-item>
           </a-col>
+          <a-col :md="6" :sm="24" v-if="isFlag==2">
+            <a-form-item label="超市">
+              <a-input placeholder="请选择超市"  :value ="shopName"  @click="handleShopList" />
+            </a-form-item>
+          </a-col>
           <a-col :md="6" :sm="24" >
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
@@ -102,6 +107,7 @@
       </a-table>
     </div>
     <order-detail ref="OrderDetail" @ok = "modalFormOk"></order-detail>
+    <shop-list-model ref="ShopListModel" @func="modalFormOkShop"></shop-list-model>
   </a-card>
 </template>
 
@@ -114,6 +120,7 @@
   import OrderDetail from "./model/OrderDetail"
   import Utils from "../../assets/js/util"
   import 'url-search-params-polyfill'
+  import ShopListModel from '../work/Supermarket/modules/ShopListModel'
 
   export default {
       name: "orderlist",
@@ -121,6 +128,7 @@
       components:{
         ARow,
         OrderDetail,
+        ShopListModel,
         Utils
       },
       data() {
@@ -137,6 +145,11 @@
               customRender: function (t, r, index) {
                 return parseInt(index) + 1;
               }
+            },
+            {
+              title: '超市',
+              align: "center",
+              dataIndex: 'shopName'
             },
             {
               title: '订单编号',
@@ -245,7 +258,9 @@
             column: 'createTime',
             order: 'desc',
           },
+          isFlag:"1",
           shopId:"",
+          shopName:"",
           selectedRowKeys: [],
           selectedRows: [],
           url: {
@@ -257,9 +272,11 @@
         }
       },
       created(){
-
-        this.shopId=localStorage.getItem('shopId');
-
+        let shopId =localStorage.getItem('shopId');
+        if (shopId == undefined || shopId == "" || shopId == null || shopId == "null"){
+          this.isFlag = 2;
+        }
+        this.shopId = shopId;
         this.loadData();
       },
       mounted(){
@@ -453,6 +470,15 @@
           this.$emit('ok');
           this.visible = false;
         },
+        handleShopList(){
+          this.$refs.ShopListModel.title = "选择超市";
+          this.$refs.ShopListModel.shopList();
+        },
+        modalFormOkShop(data){
+          this.shopId = data.id;
+          //this.model.shopName = data.id;
+          this.shopName = data.shopName;
+        },
         loadData(arg) {
           //加载数据 若传入参数1则加载第一页的内容
           if (arg === 1) {
@@ -498,7 +524,7 @@
           var param = Object.assign({}, this.queryParam, this.isorter);
           param.pageNo = this.ipagination.current;
           param.pageSize = this.ipagination.pageSize;
-          param.shopId = localStorage.getItem('shopId');
+          param.shopId = this.shopId;
           console.log(localStorage.getItem('shopId'))
           return filterObj(param);
         },
