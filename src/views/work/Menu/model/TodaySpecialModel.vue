@@ -24,6 +24,7 @@
           :wrapperCol="wrapperCol"
           label="商品规格"
           hasFeedback
+          v-if="shopType==1"
         >
           <a-input @click="handleSku" placeholder="请选择商品规格" maxlength="30" readonly
                    v-decorator="['skuName', {rules: [{ required: true, message: '请选择商品规格', }]}]"/>
@@ -42,6 +43,7 @@
           :wrapperCol="wrapperCol"
           label="商品特卖库存"
           hasFeedback
+          v-if="shopType==1"
         >
           <a-input placeholder="请输入商品特卖库存" maxlength="10"
                    v-decorator="['featuresStock', validatorRules.Stock]"/>
@@ -141,12 +143,17 @@
           add:"/kunze/features/saveSpuFeatures",
           identical:"/kunze/features/identical",
         },
+        shopType:""
       }
     },
     created() {
       const token = Vue.ls.get(ACCESS_TOKEN);
       this.headers = {"X-Access-Token": token};
       this.shopId=localStorage.getItem('shopId');
+
+    },
+    mounted () {
+      this.shopType = localStorage.getItem('shopType')
     },
     methods:{
       loadShopList(wheelId){
@@ -203,6 +210,9 @@
       modalFormOkSpu(data) {
         this.spuId = data.id;
         this.model.spuId = data.id;
+        if(this.shopType==2){
+          this.model.skuId = data.id;
+        }
         this.form.setFieldsValue({spuName:data.title});
       },
       modalFormOkSku(data) {
@@ -267,13 +277,24 @@
         this.close()
       },
       specialstartTime(rule, value, callback){
+        let that=this
         if(!value){
           callback("特卖日期不能为空！")
         }else{
-          let  param = {
-            skuId:this.skuId,
-            featuresTime: value.format('YYYY-MM-DD'),
-          };
+          // debugger
+          let  param = {};
+          if(that.shopType==2){
+            param = {
+              skuId:that.spuId,
+              featuresTime: value.format('YYYY-MM-DD'),
+            };
+          }else {
+            param = {
+              skuId:that.skuId,
+              featuresTime: value.format('YYYY-MM-DD'),
+            };
+          }
+          console.log(param,this.spuId)
           postAction(this.url.identical,param).then((res)=>{
             if(res.success){
               callback();

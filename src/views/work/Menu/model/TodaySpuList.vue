@@ -141,12 +141,17 @@
           imgerver: window._CONFIG['staticDomainURL'],
           categorylist:"/kunze/category/qryList",
         },
+        shopType:""
       }
     },
     created() {
       this.shopId = localStorage.getItem('shopId');
+      this.shopType = localStorage.getItem('shopType')
     },
     methods:{
+      handleChange(e){
+        console.log(e)
+      },
       getAvatarView: function (avatar) {
         return getFileAccessHttpUrl(avatar,this.url.imgerver,"http")
       },
@@ -156,29 +161,87 @@
         this.loadData(1);
       },
       handleCategory(){
-        let param = new URLSearchParams()
-        param.append('cateId','')
-        postAction(this.url.categorylist,param).then((res)=>{
-          this.options=res.result
-        })
+        if(localStorage.getItem('shopType')==2){
+          let param = new FormData()
+          param.append('shopId',localStorage.getItem('shopId'))
+          param.append('isShow ',false)
+          postAction('/kunze/category/getHotelMenu',param).then((res)=>{
+            this.options=res.result
+            // console.log(this.residences)
+          })
+        }else {
+          let param = new URLSearchParams()
+          param.append('cateId','')
+          postAction(this.url.categorylist,param).then((res)=>{
+            this.options=res.result
+          })
+        }
+
       },
       //选择分类
       onChangeShop(e){
-        this.cids=e
-        this.search.cid3=e[2]
+        if(this.shopType==2){
+          this.cids=e[0]
+        }else {
+          this.cids=e
+          this.search.cid3=e[2]
+        }
+
       },
-      loadData(arg) {
+      loadData(arg,cid) {
+        // debugger
         //加载数据 若传入参数1则加载第一页的内容
         if (arg === 1) {
           this.ipagination.current = 1;
         }
-        var params = this.getQueryParams();//查询条件
-        getAction(this.url.list, params).then((res) => {
-          if (res.success) {
-            this.dataSource = res.result.list;
-            this.ipagination.total = res.result.total;
+        console.log(cid)
+
+        if(localStorage.getItem('shopType')==2){
+          if(cid==undefined){
+            // console.log('11212')
+            let param = new URLSearchParams()
+            param.append('shopId',this.shopId)
+            param.append('pageNo',this.ipagination.current)
+            param.append('pageSize',this.ipagination.pageSize)
+            postAction('/kunze/sku/queryHotelSku',param).then((res)=>{
+              // console.log(res)
+              if (res.success) {
+                res.result.list.forEach(e=>{
+                  e.image=e.images
+                })
+                this.dataSource = res.result.list;
+                this.ipagination.total = res.result.total;
+              }
+            })
+          }else {
+            // let param = new URLSearchParams()
+            // param.append('cid ',cid)
+            // param.append('shopId',this.shopId)
+            // param.append('saleable','1')
+            let param = new  FormData()
+            param.append('cid ',cid)
+            param.append('shopId',this.shopId)
+            param.append('saleable','1')
+            postAction('/kunze/sku/queryHotelSkuByCid',param).then((res)=>{
+              // console.log(res)
+              res.result.list.forEach(e=>{
+                e.image=e.images
+              })
+
+              this.dataSource = res.result;
+            })
           }
-        })
+
+        }else {
+          var params = this.getQueryParams();//查询条件
+          getAction(this.url.list, params).then((res) => {
+            if (res.success) {
+              this.dataSource = res.result.list;
+              this.ipagination.total = res.result.total;
+            }
+          })
+        }
+
       },
       handleCancel() {
         this.close();
@@ -199,6 +262,7 @@
           this.$message.warning('请选择一条数据！');
           return;
         } else {
+          // console.log(this.selectionRows,"21244")
           this.$emit('func',this.selectionRows[0]);
           this.close();
         }
@@ -229,7 +293,11 @@
         this.selectionRows = [];
       },
       searchQuery(){
-        this.loadData(1);
+        if(this.shopType){
+          this.loadData(1,this.cids);
+        }
+
+        this.loadData(1,this.cids);
       },
       handleTableChange(pagination, filters, sorter) {
         //分页、排序、筛选变化时触发

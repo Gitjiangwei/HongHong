@@ -170,6 +170,7 @@
 
           console.log(this.selectionRows[0]);
           this.$emit('func',this.selectionRows[0]);
+          // console.log(this.selectionRows,'3241213321')
           this.close();
         }
       },

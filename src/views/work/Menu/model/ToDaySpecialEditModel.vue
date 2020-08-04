@@ -24,6 +24,7 @@
           :wrapperCol="wrapperCol"
           label="商品特卖库存"
           hasFeedback
+          v-if="shopType==1"
         >
           <a-input placeholder="请输入商品特卖库存" maxlength="10"
                    v-decorator="['featuresStock', validatorRules.Stock]"/>
@@ -89,9 +90,11 @@
         url: {
           edit:"/kunze/features/updateFeat",
         },
+        shopType:""
       }
     },
     created() {
+      this.shopType = localStorage.getItem('shopType')
     },
     methods:{
       add() {

@@ -329,6 +329,7 @@
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
         param.shopId = this.shopId;
+        param.shopType = localStorage.getItem('shopType');
         return filterObj(param);
       },
       getQueryField() {
