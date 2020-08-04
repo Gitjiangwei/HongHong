@@ -1,186 +1,229 @@
 <template>
 <!--    新增商品-->
   <div>
-  <a-card title="新增商品">
-    <div style="width: 65%">
-      <template>
-        <a-steps :current="current" class="jdt">
-          <a-step>
-            <!-- <span slot="title">Finished</span> -->
-            <template slot="title">
-              基本信息
-            </template>
-          </a-step>
-          <a-step>
-            <template slot="title">
-              参数规格
-            </template>
-          </a-step>
-          <a-step>
-            <template slot="title">
-              商品描述
-            </template>
-          </a-step>
-        </a-steps>
-      </template>
-<!--第一步-->
-    <template v-if="current==0">
-      <a-form
-        :form="formTranslate"
-        :label-col="labelCol"
-        :wrapper-col="wrapperCol"
-      >
+    <template v-if="shopType==1">
+      <a-card title="新增商品">
+        <div style="width: 65%">
+          <template>
+            <a-steps :current="current" class="jdt">
+              <a-step>
+                <!-- <span slot="title">Finished</span> -->
+                <template slot="title">
+                  基本信息
+                </template>
+              </a-step>
+              <a-step>
+                <template slot="title">
+                  参数规格
+                </template>
+              </a-step>
+              <a-step>
+                <template slot="title">
+                  商品描述
+                </template>
+              </a-step>
+            </a-steps>
+          </template>
+    <!--第一步-->
+        <template v-if="current==0">
+          <a-form
+            :form="formTranslate"
+            :label-col="labelCol"
+            :wrapper-col="wrapperCol"
+          >
+            <a-form-item label="标题"  hasFeedback>
+              <a-input  maxlength="150" v-decorator="['title', {rules: [{ required: true, message: '请输入商品名称', }]}]" />
+            </a-form-item>
+            <a-form-item label="子标题" hasFeedback>
+              <a-input  maxlength="200" v-decorator="['subTitle', {rules: [{ required: true, message: '请输入子标题', }]}]" />
+            </a-form-item>
+    <!--        <a-form-item label="品牌" hasFeedback>-->
+    <!--          <a-select  placeholder="选择品牌"  v-decorator="['brand', {rules: [{ required: true, message: '请选择选择品牌', }]}]"  >-->
+    <!--          <a-select-option  v-for="v in brand" :value=v.bid :key="v.keys">-->
+    <!--            {{v.bname}}-->
+    <!--          </a-select-option>-->
+    <!--        </a-select>-->
+    <!--        </a-form-item>-->
+          </a-form>
+          <div style="margin-left: 35%">
+            <a-button type="primary" disabled style="margin-right: 20px">
+              上一步
+            </a-button>
+            <a-button type="primary" @click="nextStep" >
+              下一步
+            </a-button>
+          </div>
+
+        </template>
+
+    <!--第二步-->
+          <template v-if="current==1">
+            <a-form
+              :form="formTranslate"
+              :label-col="labelCol"
+              :wrapper-col="wrapperCol"
+            >
+                    <a-form-item label="分类" hasFeedback >
+                      <a-input v-model="fenl"  type="hidden" />
+                      <a-cascader
+                        :field-names="{ label: 'name', value: 'id', children: 'childrenList' }"
+                        :options="options"
+                        placeholder="选择所属分类"
+                        @change="onChange"
+                      />
+                    </a-form-item>
+                    <template v-if="dxuandatas.length!=0">
+                      <a-form-item label="选择参数" >
+                        <template v-for="(v,e) in dxuandatas">
+                          <template v-for="(x,i) in v.params">
+                            <template v-if="x.options!='' && x.global=='false'">
+                              <a-row>
+                                <a-col :span="4">
+                                  <span class="fenzu">{{x.k}}:</span>
+                                </a-col>
+                                <a-col :span="20">
+                                  <a-radio-group  :name=x.k :v-model=x.value :options="x.options" :default-value="x.options[0]" @change="onChange2" />
+                                </a-col>
+                              </a-row>
+                              <br />
+                            </template>
+                          </template>
+                        </template>
+                        <template v-for="(v,e) in specifications">
+                          <template v-for="(x,i) in v.params">
+                            <a-row>
+                              <a-col :span="4">
+                                <span class="fenzu">{{x .k}}:</span>
+                              </a-col>
+                              <a-col :span="20">
+    <!--                            <a-input  v-model="x.v" />-->
+                                <a-input ref="userNameInput" v-model="x.v" >
+                                  <a-tooltip slot="suffix" title="删除该属性">
+                                    <a-icon type="delete" style="color: rgba(0,0,0,.45)" @click="deleteSpec(e,i) " />
+                                  </a-tooltip>
+                                </a-input>
+                              </a-col>
+                            </a-row>
+                          </template>
+                        </template>
+                      </a-form-item>
+                    </template>
+                    <a-form-item label="销售价格" hasFeedback>
+                      <a-input  placeholder="单位为元" maxlength="10" v-decorator="['price', validatorRules.spuPrice]" />
+                    </a-form-item>
+                    <a-form-item label="优惠价格" hasFeedback>
+                      <a-input  placeholder="单位为元" maxlength="10" v-decorator="['newPrice', validatorRules.spuNewPrice]" />
+                    </a-form-item>
+                    <a-form-item label="商品库存" maxlength="10"  hasFeedback>
+                      <a-input   v-decorator="['stock', validatorRules.Stock]"  />
+                    </a-form-item>
+                    <a-form-item label="商品图片" hasFeedback>
+                      <j-image-upload class="avatar-uploader" text="上传"  v-decorator="['image', {rules: [{ required: true, message: '请上传商品图片', }]}]" ></j-image-upload>
+                    </a-form-item>
+
+            </a-form>
+            <div style="margin-left: 35%">
+              <a-button type="primary"  style="margin-right: 20px" @click="nextStep1">
+                上一步
+              </a-button>
+              <a-button type="primary" @click="determine" style="margin-right: 20px">
+                保存并再次添加
+              </a-button>
+              <a-button type="primary" @click="nextStep2">
+                下一步
+              </a-button>
+            </div>
+
+          </template>
+
+          <!--第三步-->
+          <template v-if="current==2">
+            <a-form
+              :model="form"
+              :label-col="labelCol"
+              :wrapper-col="wrapperCol"
+            >
+                    <a-form-item label="商品图片" >
+                      <j-image-upload class="avatar-uploader" text="上传" v-model="fileList" ></j-image-upload>
+                    </a-form-item>
+                    <a-form-item label="商品轮播图片" >
+                      <j-image-upload class="avatar-uploader" text="上传" v-model="bannerImg1" style="width: 104px;margin-right: 30px;float: left"></j-image-upload>
+                      <j-image-upload class="avatar-uploader" text="上传" v-model="bannerImg2" style="width: 104px;margin-right: 30px;float: left"></j-image-upload>
+                      <j-image-upload class="avatar-uploader" text="上传" v-model="bannerImg3" style="width: 104px;float: left "></j-image-upload>
+                    </a-form-item>
+                    <a-form-item label="包装清单"  >
+                      <!--<a-input v-model="form.packingList" />-->
+                        <a-textarea placeholder="请输入包装清单" maxlength="500" v-model="form.packingList" />
+                    </a-form-item>
+                    <a-form-item label="售后服务"   >
+                      <!--<a-input v-model="form.afterService" />-->
+                      <a-textarea placeholder="请输入售后服务" maxlength="500" v-model="form.afterService" />
+                    </a-form-item>
+                    <a-form-item label="商品描述" >
+                      <j-editor v-model="form.description"/>
+                    </a-form-item>
+
+            </a-form>
+            <div style="margin-left: 35%">
+              <a-button type="primary"  style="margin-right: 20px" @click="nextStep3">
+                上一步
+              </a-button>
+              <a-button type="primary" @click="onSubmit">
+                确定添加
+              </a-button>
+            </div>
+
+          </template>
+
+
+        </div>
+      </a-card>
+    </template>
+
+<!--    //饭店添加商品-->
+    <template v-if="shopType==2">
+      <a-card title="新增商品">
+
+      <a-form   :form="hotelFormdata"  :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }" >
+
         <a-form-item label="标题"  hasFeedback>
           <a-input  maxlength="150" v-decorator="['title', {rules: [{ required: true, message: '请输入商品名称', }]}]" />
         </a-form-item>
-        <a-form-item label="子标题" hasFeedback>
-          <a-input  maxlength="200" v-decorator="['subTitle', {rules: [{ required: true, message: '请输入子标题', }]}]" />
+        <a-form-item label="商品介绍" hasFeedback>
+          <a-input  maxlength="200" v-decorator="['skuInfo', {rules: [{ required: true, message: '请输入商品介绍', }]}]" />
         </a-form-item>
-<!--        <a-form-item label="品牌" hasFeedback>-->
-<!--          <a-select  placeholder="选择品牌"  v-decorator="['brand', {rules: [{ required: true, message: '请选择选择品牌', }]}]"  >-->
-<!--          <a-select-option  v-for="v in brand" :value=v.bid :key="v.keys">-->
-<!--            {{v.bname}}-->
-<!--          </a-select-option>-->
-<!--        </a-select>-->
-<!--        </a-form-item>-->
+        <a-form-item label="价格"  hasFeedback>
+          <a-input  maxlength="150" v-decorator="['price', {rules: [{ required: true, message: '请输入商品价格', }]}]" />
+        </a-form-item>
+        <a-form-item label="优惠价格"  hasFeedback>
+          <a-input  maxlength="150" v-decorator="['newPrice', {rules: [{ required: false, message: '请输入商品名称', }]}]" />
+        </a-form-item>
+
+
+        <a-form-item label="所属分类" hasFeedback>
+          <a-select  placeholder="选择分类"  v-decorator="['residence', {rules: [{ required: true, message: '请选择选择分类', }]}]"  >
+            <a-select-option  v-for="v in residences" :value=v.id :key="v.name">
+              {{v.name}}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+
+
+        <a-form-item label="商品图片" hasFeedback>
+          <j-image-upload class="avatar-uploader" text="上传"  v-decorator="['images', {rules: [{ required: true, message: '请上传商品图片', }]}]" ></j-image-upload>
+        </a-form-item>
+        <a-form-item :wrapper-col="{ span: 12, offset: 5 }">
+          <a-button type="primary" html-type="submit" @click="handleSubmit()">
+            提交
+          </a-button>
+        </a-form-item>
       </a-form>
-      <div style="margin-left: 35%">
-        <a-button type="primary" disabled style="margin-right: 20px">
-          上一步
-        </a-button>
-        <a-button type="primary" @click="nextStep" >
-          下一步
-        </a-button>
-      </div>
-
+      </a-card>
     </template>
-
-<!--第二步-->
-      <template v-if="current==1">
-        <a-form
-          :form="formTranslate"
-          :label-col="labelCol"
-          :wrapper-col="wrapperCol"
-        >
-                <a-form-item label="分类" hasFeedback >
-                  <a-input v-model="fenl"  type="hidden" />
-                  <a-cascader
-                    :field-names="{ label: 'name', value: 'id', children: 'childrenList' }"
-                    :options="options"
-                    placeholder="选择所属分类"
-                    @change="onChange"
-                  />
-                </a-form-item>
-                <template v-if="dxuandatas.length!=0">
-                  <a-form-item label="选择参数" >
-                    <template v-for="(v,e) in dxuandatas">
-                      <template v-for="(x,i) in v.params">
-                        <template v-if="x.options!='' && x.global=='false'">
-                          <a-row>
-                            <a-col :span="4">
-                              <span class="fenzu">{{x.k}}:</span>
-                            </a-col>
-                            <a-col :span="20">
-                              <a-radio-group  :name=x.k :v-model=x.value :options="x.options" :default-value="x.options[0]" @change="onChange2" />
-                            </a-col>
-                          </a-row>
-                          <br />
-                        </template>
-                      </template>
-                    </template>
-                    <template v-for="(v,e) in specifications">
-                      <template v-for="(x,i) in v.params">
-                        <a-row>
-                          <a-col :span="4">
-                            <span class="fenzu">{{x .k}}:</span>
-                          </a-col>
-                          <a-col :span="20">
-<!--                            <a-input  v-model="x.v" />-->
-                            <a-input ref="userNameInput" v-model="x.v" >
-                              <a-tooltip slot="suffix" title="删除该属性">
-                                <a-icon type="delete" style="color: rgba(0,0,0,.45)" @click="deleteSpec(e,i) " />
-                              </a-tooltip>
-                            </a-input>
-                          </a-col>
-                        </a-row>
-                      </template>
-                    </template>
-                  </a-form-item>
-                </template>
-                <a-form-item label="销售价格" hasFeedback>
-                  <a-input  placeholder="单位为元" maxlength="10" v-decorator="['price', validatorRules.spuPrice]" />
-                </a-form-item>
-                <a-form-item label="优惠价格" hasFeedback>
-                  <a-input  placeholder="单位为元" maxlength="10" v-decorator="['newPrice', validatorRules.spuNewPrice]" />
-                </a-form-item>
-                <a-form-item label="商品库存" maxlength="10"  hasFeedback>
-                  <a-input   v-decorator="['stock', validatorRules.Stock]"  />
-                </a-form-item>
-                <a-form-item label="商品图片" hasFeedback>
-                  <j-image-upload class="avatar-uploader" text="上传"  v-decorator="['image', {rules: [{ required: true, message: '请上传商品图片', }]}]" ></j-image-upload>
-                </a-form-item>
-
-        </a-form>
-        <div style="margin-left: 35%">
-          <a-button type="primary"  style="margin-right: 20px" @click="nextStep1">
-            上一步
-          </a-button>
-          <a-button type="primary" @click="determine" style="margin-right: 20px">
-            保存并再次添加
-          </a-button>
-          <a-button type="primary" @click="nextStep2">
-            下一步
-          </a-button>
-        </div>
-
-      </template>
-
-      <!--第三步-->
-      <template v-if="current==2">
-        <a-form
-          :model="form"
-          :label-col="labelCol"
-          :wrapper-col="wrapperCol"
-        >
-                <a-form-item label="商品图片" >
-                  <j-image-upload class="avatar-uploader" text="上传" v-model="fileList" ></j-image-upload>
-                </a-form-item>
-                <a-form-item label="商品轮播图片" >
-                  <j-image-upload class="avatar-uploader" text="上传" v-model="bannerImg1" style="width: 104px;margin-right: 30px;float: left"></j-image-upload>
-                  <j-image-upload class="avatar-uploader" text="上传" v-model="bannerImg2" style="width: 104px;margin-right: 30px;float: left"></j-image-upload>
-                  <j-image-upload class="avatar-uploader" text="上传" v-model="bannerImg3" style="width: 104px;float: left "></j-image-upload>
-                </a-form-item>
-                <a-form-item label="包装清单"  >
-                  <!--<a-input v-model="form.packingList" />-->
-                    <a-textarea placeholder="请输入包装清单" maxlength="500" v-model="form.packingList" />
-                </a-form-item>
-                <a-form-item label="售后服务"   >
-                  <!--<a-input v-model="form.afterService" />-->
-                  <a-textarea placeholder="请输入售后服务" maxlength="500" v-model="form.afterService" />
-                </a-form-item>
-                <a-form-item label="商品描述" >
-                  <j-editor v-model="form.description"/>
-                </a-form-item>
-
-        </a-form>
-        <div style="margin-left: 35%">
-          <a-button type="primary"  style="margin-right: 20px" @click="nextStep3">
-            上一步
-          </a-button>
-          <a-button type="primary" @click="onSubmit">
-            确定添加
-          </a-button>
-        </div>
-
-      </template>
-
-
-    </div>
-  </a-card>
-
 
 
   </div>
+
 </template>
 
 <script>
@@ -202,6 +245,7 @@
       data(){
         return{
           bb:'',
+          shopType:"",
           fenl:'',
           labelCol: { span: 4 },
           wrapperCol: { span: 14 },
@@ -221,6 +265,8 @@
             image:'',
             newPrice:''
           },
+          residences:[],
+          hotelForm:{},
           brand:[],  //品牌的集合
           options:[],  //分类级联下拉
           dxuandatas:[],  //参数集合
@@ -247,9 +293,42 @@
             },
           },
           formTranslate: this.$form.createForm(this),
+          hotelFormdata: this.$form.createForm(this),
         }
       },
       methods:{
+      //饭店
+        handleSubmit(){
+          let that=this
+          this.hotelFormdata.validateFields((err, values) => {
+            if(values.title && values.skuInfo &&values.images && values.price && values.residence){
+              let hotelSku ={
+                "cid":values.residence,
+                "images": values.images,
+                "newPrice": values.newPrice,
+                "price": values.price,
+                "shopId": this.shopId,
+                "skuInfo": values.skuInfo,
+                "title": values.title,
+              }
+              console.log(hotelSku)
+              postAction('/kunze/sku/addHotelSku',hotelSku).then((res)=>{
+                console.log(res)
+                if(res.success==true){
+                  that.$message.success('添加成功')
+                  this.hotelFormdata.resetFields()
+                }
+              })
+            }
+          })
+
+        },
+
+
+
+
+
+
 
       //点击删除专属属性
         deleteDxuandatas(e,i,t){
@@ -281,6 +360,7 @@
         edit(record) {
           this.$nextTick(() => {
             this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','brand','price','stock','image','newPrice'))
+            this.hotelFormdata.setFieldsValue(pick(this.hotelForm, 'title', 'skuInfo','images','price','newPrice','residence'))
           });
         },
       // 点击下一步
@@ -590,21 +670,25 @@
         },
         resetForm(){},
         getBrand(){
+
           let that=this
-          getAction('/kunze/brand/qryBrandList',{pageSize:1}).then((res)=>{
-            getAction('/kunze/brand/qryBrandList',{pageSize:res.result.pages}).then((res)=>{
-              let key=0
-              res.result.list.forEach(e=>{
-                e. keys=key++
-              })
-              that.brand=res.result.list
-            })
-          })
-          let param = new URLSearchParams()
-          param.append('cateId','')
-          postAction('/kunze/category/qryList',param).then((res)=>{
-            that.options=res.result
-          })
+         if(that.shopType==1){
+           let param = new URLSearchParams()
+           param.append('cateId','')
+           postAction('/kunze/category/qryList',param).then((res)=>{
+             that.options=res.result
+           })
+         }
+         if(that.shopType==2){
+           let param = new FormData()
+           param.append('shopId',localStorage.getItem('shopId'))
+           param.append('isShow ',false)
+           postAction('/kunze/category/getHotelMenu',param).then((res)=>{
+             this.residences=res.result
+             // console.log(this.residences)
+           })
+         }
+
         },
         checkSpuPrice(rule, value, callback){
           if(!value||value=="0"){
@@ -655,7 +739,11 @@
       },
       mounted() {
         this.shopId=localStorage.getItem('shopId')
-        this.getBrand()
+        this.shopType=localStorage.getItem('shopType')
+
+          this.getBrand()
+
+
       }
   }
 </script>

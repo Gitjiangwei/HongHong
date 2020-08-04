@@ -223,6 +223,16 @@
       this.loadData();
     },
     methods:{
+      //结算
+      handleEdit(e){
+        console.log(e)
+
+
+        deleteAction('/kunze/dist/editDist',{ids:e.id}).then(res=>{
+          console.log(res)
+        })
+      },
+
       handleShopList(){
         this.$refs.ShopListModel.title = "选择超市";
         this.$refs.ShopListModel.shopList();

@@ -319,7 +319,8 @@
           console.log(e)
           let orderStatus={
             status:5,
-            orderId:e
+            orderId:e,
+            distModel:localStorage.getItem('distributionModel')
           }
           postAction("kunze/order/updateStatus", orderStatus).then((res)=>{
             console.log(res)

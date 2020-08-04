@@ -258,8 +258,9 @@
         this.$refs.SuperModules.title = "新增超市信息";
       },
       handleEdit:function(record){
+
         let opens=[]
-        console.log(record.shopType)
+        console.log(record)
         if(record.shopType==2){
           record.shopType='饭店'
         }else {

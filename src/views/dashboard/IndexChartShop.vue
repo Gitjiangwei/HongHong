@@ -324,24 +324,43 @@
             postFee:0,
             distModel:this.isps
           }
+          postAction('/kunze/shop/editShopDist',jsonObject).then((res)=>{
+            console.log(res)
+            if(res.success){
+              this.queryonSearch()
+              this.$message.success('配送方式修改成功');
+              localStorage.setItem('distributionModel','1')
+            }else {
+              this.$message.error('配送方式修改失败');
+            }
+
+          })
         }else {
+          if(localStorage.getItem('area')=='140428'){
+
+
           jsonObject ={
             shopId:localStorage.getItem('shopId'),
             postFee:"",
             distModel:this.isps
           }
+          postAction('/kunze/shop/editShopDist',jsonObject).then((res)=>{
+            console.log(res)
+            if(res.success){
+              this.queryonSearch()
+              localStorage.setItem('distributionModel','2')
+              this.$message.success('配送方式修改成功');
+            }else {
+              this.$message.error('配送方式修改失败');
+            }
+
+          })
+          }else {
+            this.$message.error('暂未开通骑手服务');
+          }
         }
 
-        postAction('/kunze/shop/editShopDist',jsonObject).then((res)=>{
-          console.log(res)
-          if(res.success){
-            this.queryonSearch()
-            this.$message.success('配送方式修改成功');
-          }else {
-            this.$message.error('配送方式修改失败');
-          }
 
-        })
 
       },
       //查询配送费

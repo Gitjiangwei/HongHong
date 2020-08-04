@@ -1,6 +1,7 @@
 <template>
 <!--    管理分类-->
   <div>
+    <div v-if="shopType==1">
     <a-card title="分类管理" >
       <a-button type="primary" class="modifyBtn1" @click="deleteAllCategories()">批量删除</a-button>
       <a-button type="primary" class="modifyBtn1" @click="adddjfl()">添加顶级分类</a-button>
@@ -98,6 +99,8 @@
     </a-modal>
 
   </div>
+    <classification v-if="shopType==2"></classification>
+  </div>
 </template>
 
 <script>
@@ -105,7 +108,7 @@
   import JImageUpload from '../../../components/jeecg/JImageUpload'
   import pick from 'lodash.pick'
   import 'url-search-params-polyfill'
-
+  import classification from "./classification"
 
   export default {
     components: {
@@ -113,6 +116,7 @@
     },
         data() {
             return {
+              shopType:"",
               selectedRowKeys:[],
               columns:[
                 { title: '分类名称', dataIndex: 'name', key: 'name' },
@@ -473,6 +477,7 @@
           }
         },
         mounted(){
+          this.shopType=localStorage.getItem('shopType')
           this.getAllCategories()
         }
     };

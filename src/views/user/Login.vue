@@ -265,12 +265,14 @@
               // update-begin- --- author:scott ------ date:20190805 ---- for:密码加密逻辑暂时注释掉，有点问题
               loginParams.captcha = that.inputCodeContent
               loginParams.checkKey = that.currdatetime
-              console.log("登录参数",loginParams)
+              // console.log("登录参数",loginParams)
               that.Login(loginParams).then((res) => {
-                console.log(res)
+                console.log(res,"登录参数")
                 res.result.userInfo.shopId = res.result.shopId;
                 this.$store.commit('gaishopid',res.result.shopId);
-                localStorage.setItem('shopId',res.result.shopId )
+                localStorage.setItem('shopId',res.result.shopId)
+                localStorage.setItem('shopType',res.result.shopType)
+                localStorage.setItem('distributionModel',res.result.distributionModel)
                 this.departConfirm(res)
               }).catch((err) => {
                 that.requestFailed(err);
