@@ -1422,6 +1422,7 @@
             this.hotelFormdata.setFieldsValue(pick(this.hotelForm, 'title', 'skuInfo','images','price','newPrice','residence'))
           });
 
+
           // postAction('/kunze/sku/updateHotelSku',)
         },
         //获取饭店所有商品
