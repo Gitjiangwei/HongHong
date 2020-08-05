@@ -349,6 +349,45 @@
     </template>
     <template v-if="shopType==2">
         <a-card title="商品展示" >
+          <a-form :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }" >
+            <a-row>
+              <a-col :span="6">
+                <a-form-item label="商品名称">
+                  <a-input placeholder="商品名称" v-model="search.title"></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :span="6">
+                <a-form-item label="是否上架">
+                  <a-select v-model="search.saleable"  >
+                    <a-select-option value=''>全部</a-select-option>
+                    <a-select-option value='1'>已上架</a-select-option>
+                    <a-select-option value='0'>已下架</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+            </a-row>
+            <a-row>
+              <a-col :span="6">
+                <a-form-item label="商品分类">
+                  <a-select  placeholder="选择分类"   v-model="serchfenl"  >
+                    <a-select-option  v-for="v in residences" :value=v.id :key="v.name">
+                      {{v.name}}
+                    </a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :span="2">
+              </a-col>
+              <a-col :span="4">
+                <a-button type="primary" icon="search" @click="hotelsearchShop" style="margin-right: 10px">
+                  搜索
+                </a-button>
+                <a-button type="primary" icon="redo" @click="getAllsp">
+                  重置
+                </a-button>
+              </a-col>
+            </a-row>
+          </a-form>
           <a-table
             :columns="hotelColumns"
             :data-source="hoteldata"
@@ -439,6 +478,7 @@
       data(){
         return{
           shopType:"",
+          serchfenl:"",
           residences:[],
           hoteldelspuvisible:false,
           selectedRowKeys:[],
@@ -455,7 +495,7 @@
             { title: '*', dataIndex: '',  key: 'rowIndex', width: 60, align: "center", customRender: function (t, r, index) {return parseInt(index) + 1;}},
            /* { title: '品牌名称', dataIndex: 'bname', key: 'bname' },*/
             { title: '图片', dataIndex: 'image', key: 'image',scopedSlots: { customRender: 'image' } },
-            { title: '所属分类', dataIndex: 'cname', key: 'cname' },
+            { title: '所属分类', dataIndex: 'cidname', key: 'cidname' },
             { title: '商品名称', dataIndex: 'title', key: 'title' },
             { title: '商品介绍', dataIndex: 'skuInfo', key: 'skuInfo' },
             { title: '销售价格', dataIndex: 'price', key: 'price' },
@@ -1430,6 +1470,36 @@
           // debugger
           let param = new URLSearchParams()
           param.append('shopId',this.shopId)
+          param.append('pageNo',this.ipagination.current)
+          param.append('pageSize',this.ipagination.pageSize)
+          postAction('/kunze/sku/queryHotelSku',param).then((res)=>{
+            console.log(res)
+            this.hoteldata=res.result.list
+
+            let key=0
+            this.hoteldata.forEach(e=>{
+              console.log(e)
+              if(e.newPrice!="" || e.newPrice!=null){
+                e.newPrice=e.newPrice/100
+              }
+              if(e.price!="" || e.price!=null){
+                e.price=e.price/100
+              }
+              e.image=window._CONFIG['domianURL']+'/'+e.images
+
+              e.key=key++
+            })
+          })
+        },
+
+        //搜索
+        hotelsearchShop(){
+          let that=this
+          let param = new URLSearchParams()
+          param.append('shopId',this.shopId)
+          param.append('title',that.search.title)
+          param.append('saleable',that.search.saleable)
+          param.append('cid',that.serchfenl)
           param.append('pageNo',this.ipagination.current)
           param.append('pageSize',this.ipagination.pageSize)
           postAction('/kunze/sku/queryHotelSku',param).then((res)=>{
