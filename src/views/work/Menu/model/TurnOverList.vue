@@ -9,11 +9,21 @@
   >
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
-      <a-form layout="inline">
+      <a-form layout="inline" v-if="dateFlag==1" >
         <a-row :gutter="24">
           <a-col :md="8" :sm="24">
-            <a-form-item label="超市名称">
-              <a-input placeholder="请输入超市名称" v-model="queryParam.shopName"></a-input>
+            <a-form-item label="时间区间">
+              <!--<a-input placeholder="请输入超市名称" v-model="queryParam.shopName"></a-input>-->
+              <a-range-picker @change="onChange" />
+<!--              <a-range-picker
+                v-if="dateFlag==0"
+                :placeholder="['起始月份', '结束月份']"
+                format="YYYY-MM"
+                :value="value"
+                :mode="mode2"
+                @panelChange="handlePanelChange2"
+                @change="onChange"
+              />-->
             </a-form-item>
           </a-col>
 
@@ -136,8 +146,13 @@
         },
         dateFlag:"0",
         shopId:"",
+        mode1: 'time',
+        mode2: ['month', 'month'],
+        value: [],
         selectedRowKeys: [],
         selectedRows: [],
+        startTime:"",
+        endTime:"",
         url: {
           loaderboard:"/kunze/deal/queryDeal",
         },
@@ -146,6 +161,21 @@
     created() {
     },
     methods:{
+      onChange(date, dateString) {
+        this.startTime = dateString[0];
+        this.endTime = dateString[1];
+      },
+/*      handleChange(value,dateString) {
+        debugger;
+        this.value = value;
+        this.startTime = dateString[0];
+        this.endTime = dateString[1];
+      },
+      handlePanelChange2(value, mode) {
+        debugger;
+        this.value = value;
+        this.mode2 = [mode[0] === 'date' ? 'month' : mode[0], mode[1] === 'date' ? 'month' : mode[1]];
+      },*/
       loadData(arg){
       //加载数据 若传入参数1则加载第一页的内容
         if (arg === 1) {
@@ -164,6 +194,8 @@
         this.visible = true;
         this.dateFlag = dateFlag;
         this.shopId = shopId;
+        this.startTime = "";
+        this.endTime = "";
         this.loadData()
       },
       getQueryParams() {
@@ -172,6 +204,8 @@
         param.pageSize = this.ipagination.pageSize;
         param.shopId = this.shopId;
         param.dateFlag = this.dateFlag;
+        param.startTime = this.startTime;
+        param.endTime = this.endTime;
         return filterObj(param);
       },
       searchReset() {
