@@ -88,7 +88,7 @@
           @cancel="handleCancel"
           width="60%">
 
-          <a-tabs default-active-key="1">
+          <a-tabs :default-active-key=activeKey>
             <a-tab-pane key="1" tab="基本信息">
               <a-form
                 :form="formTranslate"
@@ -230,23 +230,23 @@
                           </template>
                         </template>
                       </template>
-                      <template v-for="(v,e) in specifications">
-                        <template v-for="(x,i) in v.params">
-                          <a-row>
-                            <a-col :span="4">
-                              <span class="fenzu">{{x .k}}:</span>
-                            </a-col>
-                            <a-col :span="20">
-                              <!--                            <a-input  v-model="x.v" />-->
-                              <a-input ref="userNameInput" v-model="x.v" >
-                                <a-tooltip slot="suffix" title="删除该属性">
-                                  <a-icon type="delete" style="color: rgba(0,0,0,.45)" @click="deleteSpec(e,i) " />
-                                </a-tooltip>
-                              </a-input>
-                            </a-col>
-                          </a-row>
-                        </template>
-                      </template>
+<!--                      <template v-for="(v,e) in specifications">-->
+<!--                        <template v-for="(x,i) in v.params">-->
+<!--                          <a-row>-->
+<!--                            <a-col :span="4">-->
+<!--                              <span class="fenzu">{{x .k}}:</span>-->
+<!--                            </a-col>-->
+<!--                            <a-col :span="20">-->
+<!--                              &lt;!&ndash;                            <a-input  v-model="x.v" />&ndash;&gt;-->
+<!--                              <a-input ref="userNameInput" v-model="x.v" >-->
+<!--                                <a-tooltip slot="suffix" title="删除该属性">-->
+<!--                                  <a-icon type="delete" style="color: rgba(0,0,0,.45)" @click="deleteSpec(e,i) " />-->
+<!--                                </a-tooltip>-->
+<!--                              </a-input>-->
+<!--                            </a-col>-->
+<!--                          </a-row>-->
+<!--                        </template>-->
+<!--                      </template>-->
                     </a-form-item>
                   </template>
 
@@ -297,8 +297,10 @@
                 <a-cascader
                   :field-names="{ label: 'name', value: 'id', children: 'childrenList' }"
                   :options="options"
-                  :default-value="xiucids"
+                  :value="xiucids"
+                  allowClear="true"
                   placeholder="选择所属分类"
+
                   @change="onChange"
                 />
               </a-form-item>
@@ -347,6 +349,8 @@
           <p>确定要删除该商品吗</p>
         </a-modal>
     </template>
+
+
     <template v-if="shopType==2">
         <a-card title="商品展示" >
           <a-form :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }" >
@@ -478,10 +482,12 @@
       data(){
         return{
           shopType:"",
+          activeKey:"1",
           serchfenl:"",
           residences:[],
           hoteldelspuvisible:false,
           selectedRowKeys:[],
+          optionss:[],
           columns:[
             { title: '*', dataIndex: '',  key: 'rowIndex', width: 60, align: "center", customRender: function (t, r, index) {return parseInt(index) + 1;}},
            /* { title: '品牌名称', dataIndex: 'bname', key: 'bname' },*/
@@ -934,10 +940,11 @@
 
         },
         xiuskuBrandBtn(e){
-          console.log(e)
+          console.log(this.dxuandatas)
           this.sku=e
           let that=this
 
+          console.log(this.xiucids)
           this.xiuBrandvisible=true
           this.form.price=e.price
           this.form.stock=e.stock
@@ -961,7 +968,8 @@
           that.dxuandatas=[]
 
           getAction('/kunze/spec/specList',{categoryId:that.xiucids[2]}).then((res)=>{
-            console.log(JSON.parse(res.result.specifications))
+
+            console.log((res))
             if(res.result==null){
               that.dxuandatas=[]
             }else {
@@ -1004,17 +1012,14 @@
               })
             }
           })
-
-
-
-
-
-
         },
         deleteskuBrandBtn(e){},
         handleCancel(){
           this.visible=false
           this.isyousku=false
+          this.activeKey=1
+          this.optionss=[]
+          this.xiucids=[]
         },
         handleOk(){
           let that=this
@@ -1064,6 +1069,9 @@
                             this.dxuandatas=[]
                             this.visible=false
                             this.isyousku=false
+                            this.optionss=[]
+                            this.xiucids=[]
+                            this.activeKey=1
                           }else {
                             that.$message.error('修改失败');
                             this.getAllProducts(this.shopId)
@@ -1071,7 +1079,10 @@
                             this.specifications=[]
                             this.dxuandatas=[]
                             this.visible=false
+                            this.xiucids=[]
                             this.isyousku=false
+                            this.activeKey=1
+                            this.optionss=[]
                           }
                         })
 
@@ -1121,6 +1132,7 @@
           // console.log(e)
           this.spu=[]
           this.skudata=[]
+
           let that=this
           let param = new URLSearchParams()
           param.append('spuId',e.id)
@@ -1131,10 +1143,33 @@
                 this.specifications=[]
                 this.specifications=JSON.parse(res.result[0].specifications)
               }
+              // res.result.forEach(e=>{
+              //   e.indexes
+              // })
+              // that.getBrand()
+              that.xiucids=null
+              // that.indexes=res.result.indexes
+              let arr=[]
+              that.xiucids=JSON.parse(JSON.stringify(arr))
               // console.log(this.specifications)
-              that.xiucids.push(res.result[0].cid1)
-              that.xiucids.push(res.result[0].cid2)
-              that.xiucids.push(res.result[0].cid3)
+              // that.xiucids.push(res.result[0].cid1)
+              // that.xiucids.push(res.result[0].cid2)
+              // that.xiucids.push(res.result[0].cid3)
+
+              Vue.set(that.xiucids,0,res.result[0].cid1)
+              Vue.set(that.xiucids,1,res.result[0].cid2)
+              Vue.set(that.xiucids,2,res.result[0].cid3)
+
+
+              let param = new URLSearchParams()
+              param.append('cateId','')
+              postAction('/kunze/category/qryList',param).then((res)=>{
+                that.options=res.result
+                that.optionss=res.result
+
+              })
+
+
               that.skudata=res.result
               that.skudata.forEach(e=>{
                 console.log(e)
@@ -1223,6 +1258,17 @@
         //点击修改sku取消按钮
         xiuhandleCancel(){
           this.xiuBrandvisible=false
+          this.xiucids=[]
+          this.dxuandatas=[]
+          this.form.price=""
+          this.form.stock=""
+          this.form.newPrice=""
+          this.form.skuimage=""
+          this.$nextTick(() => {
+
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description','newPrice'))
+
+          });
         },
         //表单验证
         checkSpuPrice(rule, value, callback){
@@ -1309,6 +1355,7 @@
                       ownSpec:JSON.stringify(that.ownSpec)
 
                     });
+
                     let spuBo = {
                       'shopId': this.shopId,
                       "id": this.spu.id,
@@ -1320,11 +1367,34 @@
                         that.skuVos = []
                         that.xiuBrandvisible = false
                         that.visible = false
+                      that.xiucids=[]
                         that.$message.success('修改成功');
-                        this.getAllProducts(this.shopId)
+                      that.getAllProducts(this.shopId)
+                      that.form.price=""
+                      that.form.stock=""
+                      that.form.newPrice=""
+                      that.form.skuimage=""
+                      that.dxuandatas=[]
+                      that.$nextTick(() => {
+
+                        that.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description','newPrice'))
+
+                      });
                       }else {
+                      that.form.price=""
+                      that.form.stock=""
+                      that.form.newPrice=""
+                      that.form.skuimage=""
+                      that.$nextTick(() => {
+
+                        that.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description','newPrice'))
+
+                      });
                       that.$message.error('修改失败');
-                      this.getAllProducts(this.shopId)
+                      that.xiucids=[]
+                      that.dxuandatas=[]
+
+                      that.getAllProducts(this.shopId)
                     }
                     })
 
