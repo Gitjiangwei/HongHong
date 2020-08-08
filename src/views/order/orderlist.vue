@@ -65,7 +65,11 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
-
+        <!-- 状态渲染模板 -->
+        <template slot="customRenderStatus" slot-scope="payType">
+          <a-tag v-if="payType==0" color="green">微信</a-tag>
+          <a-tag v-if="payType==1" color="blue">支付宝</a-tag>
+        </template>
         <span slot="action" slot-scope="text, record">
           <a @click="handleDetail(record)">查看</a>
           <span v-if="record.status==2">
@@ -164,6 +168,7 @@
             {
               title: '收货人',
               align: "center",
+              width:100,
               dataIndex: 'consigneeSex',
             },
             {
@@ -228,8 +233,19 @@
               }
             },
             {
+              title: '付款方式',
+              align: "center",
+              dataIndex: 'payType',
+              scopedSlots: { customRender: 'customRenderStatus' },
+              filterMultiple: false,
+              filters: [
+                { text: '微信', value: '0' },
+                { text: '支付宝', value: '1' },
+              ]
+            },
+            {
               title: '备注',
-              width:300,
+              width:100,
               align: "center",
               dataIndex: 'buyerMessage'
             },
