@@ -111,8 +111,8 @@
       }
     },
     created() {
-      const token = Vue.ls.get(ACCESS_TOKEN);
-      this.headers = {"X-Access-Token": token};
+      // const token = Vue.ls.get(ACCESS_TOKEN);
+      // this.headers = {"X-Access-Token": token};
     },
     methods:{
       async detail(record){

@@ -208,6 +208,8 @@
                   return "交易关闭";
                 }else if(text==7){
                   return "已退款";
+                }else if(text==8){
+                  return "拒绝接单";
                 }else {
                   return text;
                 }

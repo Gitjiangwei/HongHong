@@ -66,7 +66,8 @@
       handleComplete(){
         let orderStatus={
           status:5,
-          orderId:this.orderId
+          orderId:this.orderId,
+          distModel:localStorage.getItem('distributionModel')
         }
         if(this.status==4) {
           postAction(this.url.edit, orderStatus).then((res) => {

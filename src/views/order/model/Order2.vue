@@ -160,6 +160,7 @@
         let params = {
            status:"4",
           orderId:this.orderId,
+          distModel:localStorage.getItem('distributionModel')
         }
         postAction(this.url.edit,params).then((res) =>{
           if(res.success){
