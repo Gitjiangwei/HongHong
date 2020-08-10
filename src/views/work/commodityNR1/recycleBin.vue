@@ -80,6 +80,92 @@
           </span>
         </a-table>
       </a-card>
+
+<!--      添加sku-->
+      <a-modal
+        v-model="skuvisible"
+        title="添加规格"
+        @ok="skuhandleOk"
+        @cancel="skuhandleCancel"
+        width="60%">
+        <a-form
+          :form="formTranslate"
+          :label-col="labelCol"
+          :wrapper-col="wrapperCol"
+        >
+
+          <!--          //参数选择-->
+          <a-form-item label="分类" hasFeedback >
+            <a-input v-model="fenl"  type="hidden" />
+            <a-cascader
+              :field-names="{ label: 'name', value: 'id', children: 'childrenList' }"
+              :options="options"
+              placeholder="选择所属分类"
+              @change="onChange"
+            />
+          </a-form-item>
+          <template v-if="dxuandatas.length!=0">
+            <a-form-item label="选择参数" >
+              <template v-for="(v,e) in dxuandatas">
+                <template v-for="(x,i) in v.params">
+                  <template v-if="x.options!='' && x.global=='false'">
+                    <a-row>
+                      <a-col :span="4">
+                        <span class="fenzu">{{x.k}}:</span>
+                      </a-col>
+                      <a-col :span="20">
+                        <a-radio-group  :name=x.k :v-model=x.value :options="x.options" :default-value="x.options[0]" @change="onChange2" />
+                        <!--                            <a-button type="primary">-->
+                        <!--                              自定义规格-->
+                        <!--                            </a-button>-->
+                      </a-col>
+                    </a-row>
+                    <br />
+                  </template>
+                </template>
+              </template>
+              <!--                      <template v-for="(v,e) in specifications">-->
+              <!--                        <template v-for="(x,i) in v.params">-->
+              <!--                          <a-row>-->
+              <!--                            <a-col :span="4">-->
+              <!--                              <span class="fenzu">{{x .k}}:</span>-->
+              <!--                            </a-col>-->
+              <!--                            <a-col :span="20">-->
+              <!--                              &lt;!&ndash;                            <a-input  v-model="x.v" />&ndash;&gt;-->
+              <!--                              <a-input ref="userNameInput" v-model="x.v" >-->
+              <!--                                <a-tooltip slot="suffix" title="删除该属性">-->
+              <!--                                  <a-icon type="delete" style="color: rgba(0,0,0,.45)" @click="deleteSpec(e,i) " />-->
+              <!--                                </a-tooltip>-->
+              <!--                              </a-input>-->
+              <!--                            </a-col>-->
+              <!--                          </a-row>-->
+              <!--                        </template>-->
+              <!--                      </template>-->
+            </a-form-item>
+          </template>
+
+
+
+
+          <a-form-item label="销售价格"  hasFeedback>
+            <a-input  placeholder="单位为元"  v-decorator="['price', {rules: [{ required: true, message: '请输入商品价格', }]}]"  />
+            <!--            v-decorator="['price', validatorRules.spuPrice]"-->
+          </a-form-item>
+          <a-form-item label="优惠价格"  hasFeedback>
+            <a-input  placeholder="单位为元"  v-decorator="['newPrice', {rules: [{ required: false, message: '请输入优惠价格', }]}]"  />
+            <!--            v-decorator="['price', validatorRules.spuPrice]"-->
+          </a-form-item>
+          <a-form-item label="商品库存"    hasFeedback>
+            <a-input type="number"  v-decorator="['stock', {rules: [{ required: true, message: '请输入商品库存', }]}]" />
+            <!--            v-decorator="['stock', validatorRules.Stock]"-->
+          </a-form-item>
+          <a-form-item label="商品图片" hasFeedback>
+            <j-image-upload class="avatar-uploader" text="上传"  v-decorator="['skuimage', {rules: [{ required: true, message: '请输入商品图片', }]}]" ></j-image-upload>
+          </a-form-item>
+        </a-form>
+      </a-modal>
+
+
         <!--    sku弹出窗-->
         <a-modal
           v-model="visible"
@@ -179,6 +265,7 @@
 
 
             <a-tab-pane key="2"  tab="规格">
+              <a-button type="primary" class="modifyBtn1" @click="addsku()">添加规格</a-button>
               <a-table :columns="skucolumns" :data-source="skudata"  v-if="isyousku==false">
              <span slot="images" slot-scope="text,record">
                <img :src=record.images alt="">
@@ -314,7 +401,8 @@
                             <span class="fenzu">{{x.k}}:</span>
                           </a-col>
                           <a-col :span="20">
-                            <a-radio-group  :name=x.k :v-model=x.value :options="x.options" :default-value="x.options[0]" @change="onChange2" />
+                            <a-radio-group  :name=x.k :v-model=x.value :options="x.options" :default-value="x.options[indexes[i]]" @change="onChange2" />
+<!--                            {{indexes[i]}}{{i}}{{indexes}}-->
                           </a-col>
                         </a-row>
                         <br />
@@ -329,7 +417,7 @@
                 <a-input  placeholder="单位为元"  v-decorator="['price', {rules: [{ required: true, message: '请输入商品价格', }]}]"  />
               </a-form-item>
               <a-form-item label="优惠价格"  hasFeedback>
-                <a-input  placeholder="单位为元"  v-decorator="['newPrice', {rules: [{ required: false, message: '请输入优惠价格', }]}]"  />
+                <a-input  placeholder="单位为元"  v-decorator="['newPrice', {rules: [{ required: false, message: '请输入优惠价格', }]}]"/>
               </a-form-item>
               <a-form-item label="商品库存"    hasFeedback>
                 <a-input type="number"  v-decorator="['stock', {rules: [{ required: true, message: '请输入商品库存', }]}]" />
@@ -348,6 +436,16 @@
         >
           <p>确定要删除该商品吗</p>
         </a-modal>
+
+      <!--    删除sku提示框-->
+      <a-modal
+        title="删除"
+        :visible="skudelspuvisible"
+        @ok="skudelspuhandleOk"
+        @cancel="skudelspuhandleCancel"
+      >
+        <p>确定要删除该商品吗</p>
+      </a-modal>
     </template>
 
 
@@ -424,6 +522,8 @@
         <p>确定要删除该商品吗</p>
       </a-modal>
 
+
+
 <!--      商品修改弹出页面-->
       <a-modal
         v-model="hotelXiuBrandvisible"
@@ -486,6 +586,7 @@
           serchfenl:"",
           residences:[],
           hoteldelspuvisible:false,
+          skuvisible:false,
           selectedRowKeys:[],
           optionss:[],
           columns:[
@@ -529,6 +630,7 @@
           },
           shopId:'',
           ids:[],
+          idss:"",
 
           fenl:'',
           labelCol: { span: 4 },
@@ -567,6 +669,7 @@
           hotelFormdata: this.$form.createForm(this),
           xiuBrandvisible:false,
           delspuvisible:false,
+          skudelspuvisible:false,
           hotelXiuBrandvisible:false,
           visible:false,
           id:'',
@@ -601,7 +704,104 @@
         }
       },
       methods:{
+        skuhandleOk(){
 
+          let that=this
+
+            this.formTranslate.validateFields((err, values) => {
+              if(values.price && values.stock &&values.skuimage){
+                if(this.indexes.length==0 && this.specifications.length==0){
+                  this.$message.warning('请选择所属分类');
+                }else {
+                  if(this.specifications.length!=0){
+                  }
+                  if (this.indexes.length != 0) {
+
+
+                    if(values.newPrice==undefined){
+                      values.newPrice = "";
+                    }
+                    debugger
+                    let skuVo={
+                      spuId:that.spu.id,
+                      title:that.spu.title,
+                      indexes:JSON.stringify(that.indexes),
+                      ownSpec:JSON.stringify(that.ownSpec),
+                      price: values.price,
+                      newPrice: values.newPrice,
+                      stock: values.stock,
+                      images: values.skuimage,
+                      enable:'1',
+                      shopId:that.shopId
+                    }
+                    httpAction('kunze/sku/saveSku',skuVo,'post').then(res=>{
+                      console.log(res)
+                      if(res.success==true){
+                        that.$message.success('添加成功');
+                        this.getAllProducts(this.shopId)
+                        // this.xiuBrandBtn()
+                        // this.isyousku=false
+                        this.specifications=[]
+                        this.dxuandatas=[]
+                        this.skuvisible=false
+                        this.visible=false
+                        this.isyousku=false
+                        // this.optionss=[]
+                        // this.xiucids=[]
+                        this.activeKey=1
+                      }else {
+                        that.$message.error('添加失败');
+                        this.getAllProducts(this.shopId)
+                        // this.isyousku=false
+                        this.specifications=[]
+                        this.dxuandatas=[]
+                        this.skuvisible=false
+                        // this.xiucids=[]
+                        this.isyousku=false
+                        this.activeKey=1
+                        this.visible=false
+                        // this.optionss=[]
+                      }
+                    })
+
+
+
+                  }}
+
+
+              }
+            })
+
+        },
+        skuhandleCancel(){
+          this.skuvisible=false
+        },
+      // 添加sku
+        addsku(){
+          this.skuvisible=true
+        },
+
+      // 删除sku
+
+        skudelspuhandleOk(){
+          let param = new URLSearchParams()
+          param.append('id',this.idss)
+          postAction('/kunze/sku/delSkuById',param).then(res=>{
+            if(res.success=true){
+              this.skudelspuvisible=false
+              this.$message.success('删除成功');
+              this.xiuBrandBtn()
+            }else {
+              this.skudelspuvisible=false
+              this.$message.error('删除失败');
+            }
+            // console.log(res)
+          })
+        },
+        skudelspuhandleCancel(){
+          this.skudelspuvisible=false
+          this.$message.error('删除失败');
+        },
         //点击删除全局属性
         deleteSpec(e,i){
           this.specifications[e].params.splice(i,1)
@@ -649,6 +849,7 @@
           that.dxuandatas=[]
 
           getAction('/kunze/spec/specList',{categoryId:value[2]}).then((res)=>{
+            // console.log(res)
             console.log(JSON.parse(res.result.specifications))
             if(res.result==null){
               that.dxuandatas=[]
@@ -960,7 +1161,7 @@
 
 
           this.fenl=1
-          that.indexes=[]
+          // that.indexes=[]
           that.ownSpec={}
           that.index=[]
           that.specTemplate={}
@@ -969,7 +1170,7 @@
 
           getAction('/kunze/spec/specList',{categoryId:that.xiucids[2]}).then((res)=>{
 
-            console.log((res))
+            // console.log(JSON.parse(res.result.specifications))
             if(res.result==null){
               that.dxuandatas=[]
             }else {
@@ -1004,7 +1205,7 @@
                       if(y.global=='false'){
                         Vue.set(that.specTemplate,y.k,y.options)
                       }
-                      that.indexes.push(0)
+                      // that.indexes.push(0)
                       that.index.push(y.k)
                     }
                   }
@@ -1013,7 +1214,10 @@
             }
           })
         },
-        deleteskuBrandBtn(e){},
+        deleteskuBrandBtn(e){
+          this.skudelspuvisible=true
+          this.idss=e.id
+        },
         handleCancel(){
           this.visible=false
           this.isyousku=false
@@ -1032,21 +1236,12 @@
                     if(this.specifications.length!=0){
                     }
                     if (this.indexes.length != 0) {
-                      let nn = 0
-                      this.specifications.forEach(e => {
-                        e.params.forEach(e=>{
-                          if(e.v==''){
-                            this.$message.error('请填写'+e.k);
-                          }else {
-                            nn+=1
-                          }
-                        })
-                      })
-                      if (nn == this.specifications.length) {
+
+
                         if(values.newPrice==undefined){
                           values.newPrice = "";
                         }
-                        // debugger
+                        debugger
                           let skuVo={
                           spuId:that.spu.id,
                           title:that.spu.title,
@@ -1069,8 +1264,8 @@
                             this.dxuandatas=[]
                             this.visible=false
                             this.isyousku=false
-                            this.optionss=[]
-                            this.xiucids=[]
+                            // this.optionss=[]
+                            // this.xiucids=[]
                             this.activeKey=1
                           }else {
                             that.$message.error('修改失败');
@@ -1079,14 +1274,14 @@
                             this.specifications=[]
                             this.dxuandatas=[]
                             this.visible=false
-                            this.xiucids=[]
+                            // this.xiucids=[]
                             this.isyousku=false
                             this.activeKey=1
-                            this.optionss=[]
+                            // this.optionss=[]
                           }
                         })
 
-                      }
+
 
                     }}
 
@@ -1129,7 +1324,7 @@
         xiuBrandBtn(e){
           // debugger/
           // this.form.banimage1=e.images
-          // console.log(e)
+          console.log(e)
           this.spu=[]
           this.skudata=[]
 
@@ -1137,6 +1332,7 @@
           let param = new URLSearchParams()
           param.append('spuId',e.id)
           postAction('/kunze/sku/qrySkuBySpuId',param).then((res)=>{
+            // debugger
             console.log(res)
             if(res.success==true && res.result!=null && res.result!='null'){
               if(res.result[0].specifications!=null){
@@ -1148,7 +1344,8 @@
               // })
               // that.getBrand()
               that.xiucids=null
-              // that.indexes=res.result.indexes
+              that.indexes=JSON.parse(res.result[0].indexes)
+              console.log(that.indexes)
               let arr=[]
               that.xiucids=JSON.parse(JSON.stringify(arr))
               // console.log(this.specifications)
@@ -1168,7 +1365,6 @@
                 that.optionss=res.result
 
               })
-
 
               that.skudata=res.result
               that.skudata.forEach(e=>{
@@ -1258,7 +1454,7 @@
         //点击修改sku取消按钮
         xiuhandleCancel(){
           this.xiuBrandvisible=false
-          this.xiucids=[]
+          // this.xiucids=[]
           this.dxuandatas=[]
           this.form.price=""
           this.form.stock=""
@@ -1367,7 +1563,7 @@
                         that.skuVos = []
                         that.xiuBrandvisible = false
                         that.visible = false
-                      that.xiucids=[]
+                      // that.xiucids=[]
                         that.$message.success('修改成功');
                       that.getAllProducts(this.shopId)
                       that.form.price=""
@@ -1391,7 +1587,7 @@
 
                       });
                       that.$message.error('修改失败');
-                      that.xiucids=[]
+                      // that.xiucids=[]
                       that.dxuandatas=[]
 
                       that.getAllProducts(this.shopId)
