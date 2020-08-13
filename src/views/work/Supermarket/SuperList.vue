@@ -51,7 +51,7 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
-        <template slot="avatarslot" slot-scope="text, record, index">
+        <template slot="avatarslot" slot-scope="text, record">
           <div class="anty-img-wrap">
             <a-avatar shape="square" :src="getAvatarView(record.image)" icon="user"/>
           </div>
@@ -244,6 +244,7 @@
           this.ipagination.current = 1;
         }
         var params = this.getQueryParams();//查询条件
+        debugger
         getAction(this.url.list, params).then((res) => {
           console.log(res)
           if (res.success) {
@@ -378,13 +379,17 @@
       },
       handleTableChange(pagination, filters, sorter) {
         //分页、排序、筛选变化时触发
+        debugger
         console.log(sorter);
         //TODO 筛选
         if (Object.keys(sorter).length > 0) {
           this.isorter.column = sorter.field;
           this.isorter.order = "ascend" == sorter.order ? "asc" : "desc"
         }
-        this.filters.isFlag = filters.isFlag[0];
+        if( filters.isFlag){
+          this.filters.isFlag = filters.isFlag[0];
+        }
+
         this.ipagination = pagination;
         this.loadData();
       },

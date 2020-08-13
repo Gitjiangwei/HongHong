@@ -1,7 +1,7 @@
 <template>
 <!--    管理分类-->
   <div>
-    <div v-if="shopType==1">
+    <div>
     <a-card title="分类管理" >
       <a-button type="primary" class="modifyBtn1" @click="deleteAllCategories()">批量删除</a-button>
       <a-button type="primary" class="modifyBtn1" @click="adddjfl()">添加顶级分类</a-button>
@@ -14,7 +14,7 @@
           <a @click="addCategories(record)" v-if="record.isParent==1">添加子分类</a>
           <img @click="addCategoriesImg(record)" v-if="record.parentId!=0 && record.children && record.image!=null" :src=record.image style="width: 40px;height: 40px;margin-left: 20px" />
           <a @click="addCategoriesImg(record)" v-if="record.parentId!=0 && record.children && record.image==null" style="margin-left: 20px">添加图片</a>
-          <a @click="addCategoriesImg('no')" v-if="!record.children" style="margin-left: 20px" >添加子分类</a>
+<!--          <a @click="addCategoriesImg('no')" v-if="!record.children" style="margin-left: 20px" >添加子分类</a>-->
         </span>
         <span slot="bianji" slot-scope="text,record">
           <a-button type="primary" class="modifyBtn" @click="modifyCategories(record)">修改</a-button>
@@ -99,7 +99,6 @@
     </a-modal>
 
   </div>
-    <classification v-if="shopType==2"></classification>
   </div>
 </template>
 
@@ -125,6 +124,7 @@
                 { title: '编辑', dataIndex: 'isflag', key: 'isflag', scopedSlots: { customRender: 'bianji' } },
               ],
               data:[],
+              parentId:"",
               addvisible: false, //控制添加弹出框
               addvisibleImg:false, //控制添加图片弹出框
               adddjvisible: false, //控制添加弹出框
@@ -311,12 +311,18 @@
                         this.$message.success(
                           '添加成功'
                         );
+                        this.adddjvisible=false
                         this.getAllCategories()
+                        this.adddjform.name=''
+                        this.adddjform.sort=''
                       }else {
                         this.$message.error('添加失败');
+                        this.adddjvisible=false
+                        this.getAllCategories()
+                        this.adddjform.name=''
+                        this.adddjform.sort=''
                       }
-                      this.adddjform.name=''
-                      this.adddjform.sort=''
+
                     })
 
                 }
@@ -341,17 +347,31 @@
                 that.form.name=values.name
                 that.form.sort=values.sort
                 // if(record.parentId!=0 && record.children && record.image==null)
-
+                debugger
                 this.addvisible=false
-                    let category={
-                      isParent: 1,
-                      name:values.name,
-                      parentId:that.pid,
-                      image: "string",
-                      index: "string",
-                      isflag: "string",
-                      sort:values.sort
-                    }
+                let category={}
+                if(that.parentId==0){
+                   category={
+                    isParent:1,
+                    name:values.name,
+                    parentId:that.pid,
+                    image: "string",
+                    index: "string",
+                    isflag: "string",
+                    sort:values.sort
+                  }
+                }else {
+                   category={
+                    isParent:0,
+                    name:values.name,
+                    parentId:that.pid,
+                    image: "string",
+                    index: "string",
+                    isflag: "string",
+                    sort:values.sort
+                  }
+                }
+
                     postAction('/kunze/category/categorySave',category).then((res)=>{
                       console.log(res)
                       if(res.success){
@@ -435,8 +455,10 @@
           },
           // 点击添加子集分类
           addCategories(e){
+            debugger
             // console.log(e)
             this.pid=e.id
+            this.parentId=e.parentId
             this.addvisible=true
 
           },
