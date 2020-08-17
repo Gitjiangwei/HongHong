@@ -786,6 +786,7 @@
         skudelspuhandleOk(){
           let param = new URLSearchParams()
           param.append('id',this.idss)
+          debugger
           postAction('/kunze/sku/delSkuById',param).then(res=>{
             if(res.success=true){
               this.skudelspuvisible=false
@@ -1128,6 +1129,7 @@
         handleTableChange(pagination, filters, sorter) {
           //分页、排序、筛选变化时触发
           //TODO 筛选
+          debugger
           if (Object.keys(sorter).length > 0) {
             this.isorter.column = sorter.field;
             this.isorter.order = "ascend" == sorter.order ? "asc" : "desc"
@@ -1396,12 +1398,10 @@
               }
             })
             this.form.spuimage= this.spu.spuimage
-
             this.form.spuimage1=this.spu.images[0]
             this.form.spuimage2=this.spu.images[1]
             this.form.spuimage3=this.spu.images[2]
             this.$nextTick(() => {
-
               this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','newPrice','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description'))
             });
             this.visible=true
@@ -1448,7 +1448,6 @@
             this.hotelFormdata.setFieldsValue(pick(this.hotelForm, 'title', 'skuInfo','images','price','newPrice','residence'))
             this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','newPrice','stock','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description'))
           });
-
         },
 
         //点击修改sku取消按钮
@@ -1461,9 +1460,7 @@
           this.form.newPrice=""
           this.form.skuimage=""
           this.$nextTick(() => {
-
             this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description','newPrice'))
-
           });
         },
         //表单验证

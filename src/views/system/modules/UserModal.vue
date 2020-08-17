@@ -682,8 +682,10 @@
         }
       },
       shopShowChange(e){
+        debugger
+        console.log(e)
         if(e!=null && e != "" && e != undefined) {
-          if (e[0] === "1258324827190714370") {
+          if (e[0] === "1258324827190714370" ||e[0] === "1295277712524460034") {
             this.shShow = true;
             this.shopShow = false;
           } else {
