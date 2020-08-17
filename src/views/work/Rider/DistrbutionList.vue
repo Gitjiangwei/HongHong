@@ -301,7 +301,11 @@
           this.isorter.column = sorter.field;
           this.isorter.order = "ascend" == sorter.order ? "asc" : "desc"
         }
-        this.filters.settlement = filters.settlement[0];
+
+        if(filters.settlement){
+          this.filters.settlement = filters.settlement[0];
+        }
+
         this.ipagination = pagination;
         this.loadData();
       },
