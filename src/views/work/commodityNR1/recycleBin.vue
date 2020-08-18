@@ -589,6 +589,7 @@
           skuvisible:false,
           selectedRowKeys:[],
           optionss:[],
+          ckid:"",
           columns:[
             { title: '*', dataIndex: '',  key: 'rowIndex', width: 60, align: "center", customRender: function (t, r, index) {return parseInt(index) + 1;}},
            /* { title: '品牌名称', dataIndex: 'bname', key: 'bname' },*/
@@ -739,12 +740,12 @@
                       if(res.success==true){
                         that.$message.success('添加成功');
                         this.getAllProducts(this.shopId)
-                        // this.xiuBrandBtn()
+                        this.xiuBrandBtn(this.ckid)
                         // this.isyousku=false
                         this.specifications=[]
                         this.dxuandatas=[]
                         this.skuvisible=false
-                        this.visible=false
+                        // this.visible=false
                         this.isyousku=false
                         // this.optionss=[]
                         // this.xiucids=[]
@@ -759,7 +760,7 @@
                         // this.xiucids=[]
                         this.isyousku=false
                         this.activeKey=1
-                        this.visible=false
+                        // this.visible=false
                         // this.optionss=[]
                       }
                     })
@@ -929,6 +930,7 @@
 
       //确定修改基本信息
         modifyBasic(){
+          debugger
           let that=this
           this.formTranslate.validateFields((err, values) => {
             if(values.subTitle && values.title ){
@@ -950,9 +952,9 @@
                 'shopId': this.shopId,
                 "id": this.spu.id,
                 'spuDetail': {
-                  'afterService': this.form.afterService,
-                  'description': this.form.description,
-                  'packingList': this.form.packingList,
+                  'afterService': values.afterService,
+                  'description': values.description,
+                  'packingList': values.packingList,
                   "specifications":JSON.stringify(this.specifications),
                 },
                 'subTitle': values.subTitle,
@@ -970,8 +972,8 @@
                   that.form.packingList = ''
                   that.form.subTitle = ''
                   that.form.title = ''
-                  that.xiuBrandvisible = false
-                  that.visible = false
+                  // that.xiuBrandvisible = false
+                  // that.visible = false
                   that.$message.success('修改成功');
                   this.getAllProducts(this.shopId)
                 }else {
@@ -983,8 +985,8 @@
                   that.form.packingList = ''
                   that.form.subTitle = ''
                   that.form.title = ''
-                  that.xiuBrandvisible = false
-                  that.visible = false
+                  // that.xiuBrandvisible = false
+                  // that.visible = false
                   that.$message.error('修改失败');
                 }
               })
@@ -1265,6 +1267,7 @@
                             this.specifications=[]
                             this.dxuandatas=[]
                             this.visible=false
+                            this.xiuBrandBtn(this.ckid)
                             this.isyousku=false
                             // this.optionss=[]
                             // this.xiucids=[]
@@ -1275,7 +1278,7 @@
                             this.isyousku=false
                             this.specifications=[]
                             this.dxuandatas=[]
-                            this.visible=false
+                            // this.visible=false
                             // this.xiucids=[]
                             this.isyousku=false
                             this.activeKey=1
@@ -1327,6 +1330,8 @@
           // debugger/
           // this.form.banimage1=e.images
           console.log(e)
+          // if(e==)
+          this.ckid=e
           this.spu=[]
           this.skudata=[]
 
@@ -1334,7 +1339,7 @@
           let param = new URLSearchParams()
           param.append('spuId',e.id)
           postAction('/kunze/sku/qrySkuBySpuId',param).then((res)=>{
-            // debugger
+            debugger
             console.log(res)
             if(res.success==true && res.result!=null && res.result!='null'){
               if(res.result[0].specifications!=null){
@@ -1559,7 +1564,8 @@
                     if (res.success == true) {
                         that.skuVos = []
                         that.xiuBrandvisible = false
-                        that.visible = false
+                        // that.visible = false
+                      that.xiuBrandBtn(this.ckid)
                       // that.xiucids=[]
                         that.$message.success('修改成功');
                       that.getAllProducts(this.shopId)
