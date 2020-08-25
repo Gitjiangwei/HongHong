@@ -268,9 +268,11 @@
               // console.log("登录参数",loginParams)
               that.Login(loginParams).then((res) => {
                 console.log(res,"登录参数")
+                debugger
                 res.result.userInfo.shopId = res.result.shopId;
                 this.$store.commit('gaishopid',res.result.shopId);
                 localStorage.setItem('shopId',res.result.shopId)
+                localStorage.setItem('area',res.result.area)
                 localStorage.setItem('shopType',res.result.shopType)
                 localStorage.setItem('distributionModel',res.result.distributionModel)
                 this.departConfirm(res)

@@ -934,7 +934,7 @@
           let that=this
           this.formTranslate.validateFields((err, values) => {
             if(values.subTitle && values.title ){
-              console.log(values.description)
+              console.log(values)
               that.form.spuimage=values.spuimage
               that.form.spuimage1=values.spuimage1
               that.form.spuimage2=values.spuimage2

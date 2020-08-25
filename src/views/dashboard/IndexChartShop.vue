@@ -167,10 +167,10 @@
 
         <span style="font-weight: bold; font-size: 16px;display: inline-block;margin: 0 0 0 10px">设置配送费</span>
         <a-card style="width: 100%;" :loading="loading">
-          <a-radio-group buttonStyle="solid" :default-value='isps' @change="isswitch">
-            <a-radio-button :value="1">商家配送</a-radio-button>
-            <a-radio-button :value="2">骑手配送</a-radio-button>
-          </a-radio-group>
+<!--          <a-radio-group buttonStyle="solid" :default-value='isps' @change="isswitch">-->
+            <a-button  v-if="isps==1" style="display: block">商家配送</a-button>
+            <a-button  v-if="isps==2" style="display: block">骑手配送</a-button>
+<!--          </a-radio-group>-->
           <div style="margin-top: 10px;font-size: 16px;font-weight: bold;display: inline-block" v-if="isps==1">当前配送费:￥{{deliveryFee}}</div>
 <!--          <a-switch checked-children="自己送" un-checked-children="平台" default-checked style="display: inline-block;margin-left:5px" @change="isswitch" :checked="true" />-->
           <div style="margin: 10px 0;font-size: 16px;font-weight: bold">当前最低起送价格:￥{{starting}}</div>
@@ -335,32 +335,27 @@
             }
 
           })
-        }else {
-          if(localStorage.getItem('area')=='140428'){
+        }else if (localStorage.getItem('area') == '140428') {
 
-
-          jsonObject ={
-            shopId:localStorage.getItem('shopId'),
-            postFee:"",
-            distModel:this.isps
+          jsonObject = {
+            shopId: localStorage.getItem('shopId'),
+            postFee: '',
+            distModel: this.isps
           }
-          postAction('/kunze/shop/editShopDist',jsonObject).then((res)=>{
+          postAction('/kunze/shop/editShopDist', jsonObject).then((res) => {
             console.log(res)
-            if(res.success){
+            if (res.success) {
               this.queryonSearch()
-              localStorage.setItem('distributionModel','2')
-              this.$message.success('配送方式修改成功');
-            }else {
-              this.$message.error('配送方式修改失败');
+              localStorage.setItem('distributionModel', '2')
+              this.$message.success('配送方式修改成功')
+            } else {
+              this.$message.error('配送方式修改失败')
             }
 
           })
-          }else {
-            this.$message.error('暂未开通骑手服务');
-          }
+        } else {
+          this.$message.error('暂未开通骑手服务')
         }
-
-
 
       },
       //查询配送费
@@ -369,6 +364,7 @@
         param.append('shopId',this.shopId)
         deleteAction('/kunze/shop/selectShopInfoById',param).then((res)=>{
           console.log(res)
+          // debugger
           if(res.success){
             this.isps=res.result[0].distributionModel
             this.deliveryFee=((res.result[0].postFree)/100).toFixed(2)
@@ -547,7 +543,7 @@
       }
     },
     mounted () {
-      this.queryonSearch()
+        this.queryonSearch()
     }
     // mounted () {
     //   let that = this

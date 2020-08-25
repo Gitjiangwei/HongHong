@@ -108,6 +108,17 @@
           </a-radio-group>
         </a-form-item>
 
+
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="配送方式">
+          <a-radio-group buttonStyle="solid" v-decorator="[ 'distributionModel', {'initialValue':'1'}]">
+            <a-radio-button :value="'1'">商家配送</a-radio-button>
+            <a-radio-button :value="'2'">骑手配送</a-radio-button>
+          </a-radio-group>
+        </a-form-item>
+
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
@@ -224,6 +235,7 @@
         this.edit({});
       },
       edit(record) {
+        debugger
         // console.log(record)
         this.resetScreenSize(); // 调用此方法,根据屏幕宽度自适应调整抽屉的宽度
         this.visible = true;
@@ -240,7 +252,7 @@
           this.model.endBusiness = time[1];
         }
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model, 'shopName', 'shopAddress','shopType','personCharge','telphone','afterSale','idenitiy', 'startBusiness', 'endBusiness','isFlag'))
+          this.form.setFieldsValue(pick(this.model, 'shopName', 'shopAddress','shopType','personCharge','telphone','afterSale','idenitiy', 'startBusiness', 'endBusiness','isFlag','distributionModel'))
           //时间格式化
           this.form.setFieldsValue({startBusiness: this.model.startBusiness ? moment(this.model.startBusiness, 'HH:mm') : null});
           this.form.setFieldsValue({endBusiness: this.model.endBusiness ? moment(this.model.endBusiness, 'HH:mm') : null});
@@ -295,6 +307,12 @@
             }else {
               formData.shopType=2
             }
+            if(formData.distributionModel==2){
+              formData.postFree=200
+            }
+            // console.log(formData)
+            // console.log(this.model)
+            debugger
             httpAction(httpurl, formData, method).then((res) => {
               if (res.success) {
                 that.$message.success(res.message);

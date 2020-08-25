@@ -163,9 +163,11 @@
           distModel:localStorage.getItem('distributionModel')
         }
         postAction(this.url.edit,params).then((res) =>{
-          if(res.success){
+          if(res.success==true){
             this.$message.success("开始配送！");
             this.$emit('nextStep',"4")
+          }else {
+            this.$message.error(res.message);
           }
         })
 

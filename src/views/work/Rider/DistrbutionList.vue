@@ -229,7 +229,13 @@
 
 
         deleteAction('/kunze/dist/editDist',{ids:e.id}).then(res=>{
-          console.log(res)
+          // console.log(res)
+          if(res.success==true){
+            this.$message.success('结算成功');
+            this.loadData();
+          }else {
+            this.$message.error('结算失败');
+          }
         })
       },
 
