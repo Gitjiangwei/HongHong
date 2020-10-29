@@ -3,19 +3,19 @@
   <div>
     <template v-if="shopType==1">
       <a-card title="商品展示" >
-        <a-form :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }" >
+        <a-form :label-col="{ span: 8}" :wrapper-col="{ span:16 }" >
           <a-row>
-            <a-col :span="6">
+            <a-col :span="8">
               <a-form-item label="商品ID">
                 <a-input placeholder="商品ID" v-model="search.shopId"></a-input>
               </a-form-item>
             </a-col>
-            <a-col :span="6">
+            <a-col :span="8">
               <a-form-item label="商品名称">
                 <a-input placeholder="商品名称" v-model="search.title"></a-input>
               </a-form-item>
             </a-col>
-            <a-col :span="6">
+            <a-col :span="8">
               <a-form-item label="是否上架">
                 <a-select v-model="search.saleable"  >
                   <a-select-option value=''>全部</a-select-option>
@@ -26,7 +26,7 @@
             </a-col>
           </a-row>
           <a-row>
-            <a-col :span="6">
+            <a-col :span="8">
               <a-form-item label="品牌" prop="brand" >
                 <a-select v-model="search.brandId" placeholder="选择品牌" :default-value=form.brand >
                   <a-select-option  v-for="v in brand" :value=v.bid :key="v.keys" >
@@ -35,7 +35,7 @@
                 </a-select>
               </a-form-item>
             </a-col>
-            <a-col :span="6">
+            <a-col :span="8">
               <a-form-item label="商品分类">
                 <a-cascader
                   :field-names="{ label: 'name', value: 'id', children: 'childrenList'}"
@@ -172,14 +172,14 @@
           title="商品"
           @ok="handleOk"
           @cancel="handleCancel"
-          width="60%">
+          width="70%">
 
           <a-tabs :default-active-key=activeKey>
             <a-tab-pane key="1" tab="基本信息">
               <a-form
                 :form="formTranslate"
-                :label-col="labelCol"
-                :wrapper-col="wrapperCol"
+                :label-col="{span:7}"
+                :wrapper-col="{span:17}"
               >
                 <a-row>
                   <a-col :span="12">
@@ -216,14 +216,14 @@
                 </a-row>
 
                 <a-row>
-                  <a-col :span="12">
+                  <a-col :span="15">
                     <a-form-item label="spu轮播图" hasFeedback>
                       <j-image-upload class="avatar-uploader" text="上传" style="float: left"  v-decorator="['spuimage1', {rules: [{ required: false, message: '请输入商品库存', }]}]" ></j-image-upload>
                       <j-image-upload class="avatar-uploader" text="上传" style="float: left"  v-decorator="['spuimage2', {rules: [{ required: false, message: '请输入商品库存', }]}]" ></j-image-upload>
                       <j-image-upload class="avatar-uploader" text="上传" style="float: left"  v-decorator="['spuimage3', {rules: [{ required: false, message: '请输入商品库存', }]}]" ></j-image-upload>
                     </a-form-item>
                   </a-col>
-                  <a-col :span="12">
+                  <a-col :span="9">
                     <a-form-item label="商品图片" hasFeedback>
                       <j-image-upload class="avatar-uploader" text="上传"   v-decorator="['spuimage', {rules: [{ required: false, message: '请输入商品库存', }]}]"></j-image-upload>
                     </a-form-item>
@@ -258,7 +258,7 @@
                 </a-row>
 
               </a-form>
-              <a-button type="primary" @click="modifyBasic" style="margin-left:70%">确定修改基本信息</a-button>
+              <a-button type="primary" @click="modifyBasic" style="margin-left:43%">确定修改基本信息</a-button>
             </a-tab-pane>
 
 

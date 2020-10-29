@@ -27,29 +27,29 @@
     <!--第一步-->
         <template v-if="current==0">
           <a-form
-            :form="formTranslate"
-            :label-col="labelCol"
-            :wrapper-col="wrapperCol"
-          >
-            <a-form-item label="标题"  hasFeedback>
-              <a-input  maxlength="150" v-decorator="['title', {rules: [{ required: true, message: '请输入商品名称', }]}]" />
-            </a-form-item>
-            <a-form-item label="子标题" hasFeedback>
-              <a-input  maxlength="200" v-decorator="['subTitle', {rules: [{ required: true, message: '请输入子标题', }]}]" />
-            </a-form-item>
-    <!--        <a-form-item label="品牌" hasFeedback>-->
-    <!--          <a-select  placeholder="选择品牌"  v-decorator="['brand', {rules: [{ required: true, message: '请选择选择品牌', }]}]"  >-->
-    <!--          <a-select-option  v-for="v in brand" :value=v.bid :key="v.keys">-->
-    <!--            {{v.bname}}-->
-    <!--          </a-select-option>-->
-    <!--        </a-select>-->
-    <!--        </a-form-item>-->
-          </a-form>
-          <div style="margin-left: 35%">
-            <a-button type="primary" disabled style="margin-right: 20px">
+                      :form="formTranslate"
+                      :label-col="{span:7}"
+                      :wrapper-col="{span:12}"
+                    >
+                      <a-form-item label="标题"  hasFeedback>
+                        <a-input  maxlength="150" v-decorator="['title', {rules: [{ required: true, message: '请输入商品名称', }]}]" />
+                      </a-form-item>
+                      <a-form-item label="子标题 " hasFeedback>
+                        <a-input  maxlength="200" v-decorator="['subTitle', {rules: [{ required: true, message: '请输入子标题', }]}]" />
+                      </a-form-item>
+              <!--        <a-form-item label="品牌" hasFeedback>-->
+              <!--          <a-select  placeholder="选择品牌"  v-decorator="['brand', {rules: [{ required: true, message: '请选择选择品牌', }]}]"  >-->
+              <!--          <a-select-option  v-for="v in brand" :value=v.bid :key="v.keys">-->
+              <!--            {{v.bname}}-->
+              <!--          </a-select-option>-->
+              <!--        </a-select>-->
+              <!--        </a-form-item>-->
+                    </a-form>
+          <div style="margin-left: 35%" >
+            <a-button type="primary" disabled style="margin-right: 20px" >
               上一步
             </a-button>
-            <a-button type="primary" @click="nextStep" >
+            <a-button type="primary" @click="nextStep">
               下一步
             </a-button>
           </div>
@@ -60,8 +60,8 @@
           <template v-if="current==1">
             <a-form
               :form="formTranslate"
-              :label-col="labelCol"
-              :wrapper-col="wrapperCol"
+              :label-col="{span:9}"
+              :wrapper-col="{span:15}"
             >
                     <a-form-item label="分类" hasFeedback >
                       <a-input v-model="fenl"  type="hidden" />
@@ -123,7 +123,7 @@
 
             </a-form>
             <div style="margin-left: 35%">
-              <a-button type="primary"  style="margin-right: 20px" @click="nextStep1">
+              <a-button type="primary"  style="margin-right: 20px" @click="nextStep1" >
                 上一步
               </a-button>
               <a-button type="primary" @click="determine" style="margin-right: 20px">
@@ -140,8 +140,8 @@
           <template v-if="current==2">
             <a-form
               :model="form"
-              :label-col="labelCol"
-              :wrapper-col="wrapperCol"
+              :label-col="{span:10}"
+              :wrapper-col="{span:14}"
             >
                     <a-form-item label="商品图片" >
                       <j-image-upload class="avatar-uploader" text="上传" v-model="fileList" ></j-image-upload>
@@ -164,7 +164,7 @@
                     </a-form-item>
 
             </a-form>
-            <div style="margin-left: 35%">
+            <div style="margin-left: 45%">
               <a-button type="primary"  style="margin-right: 20px" @click="nextStep3">
                 上一步
               </a-button>

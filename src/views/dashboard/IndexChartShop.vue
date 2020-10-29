@@ -26,7 +26,7 @@
                 </div>
               </a-col>
               <a-col  style="border-right:2px solid  rgba(246, 246, 246, 1) " :xl="6" :lg="12" :md="12" :sm="24" :xs="24">
-                <div class="card-item" >
+                <div class="card-item" style="float: none;">
                   <a-col>
                     <div class="img" @click="handleTurn('1')">
                       <img src="@/assets/toDay.png" alt="" @click="mmm">
@@ -170,7 +170,7 @@
           <a-radio-group buttonStyle="solid" :default-value='isps' @change="isswitch">
             <a-radio-button :value="1">商家配送</a-radio-button>
             <a-radio-button :value="2">骑手配送</a-radio-button>
-          </a-radio-group>
+          </a-radio-group></br>
           <div style="margin-top: 10px;font-size: 16px;font-weight: bold;display: inline-block" v-if="isps==1">当前配送费:￥{{deliveryFee}}</div>
 <!--          <a-switch checked-children="自己送" un-checked-children="平台" default-checked style="display: inline-block;margin-left:5px" @change="isswitch" :checked="true" />-->
           <div style="margin: 10px 0;font-size: 16px;font-weight: bold">当前最低起送价格:￥{{starting}}</div>

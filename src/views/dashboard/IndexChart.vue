@@ -30,18 +30,18 @@
           <template slot="footer">日订单量<span> {{ todaysOrder | NumberFormat }}</span></template>
         </chart-card>
       </a-col>
-      <a-col :sm="24" :md="12" :xl="8" :style="{ marginBottom: '24px' }">
-        <chart-card title="设置手续费" style="width: 100%;height: 184px" :loading="loading">
+      <a-col :sm="24" :md="12" :xl="8" :style="{ marginBottom: '24px'}" >
+        <chart-card title="设置手续费"  :loading="loading">
           <a-tooltip title="手续费说明" slot="action">
             <a-icon type="info-circle-o" />
           </a-tooltip>
-          <div style="margin-bottom: 20px;font-size: 16px;font-weight: bold">
+          <div style="margin-bottom: px; font-size: 16px;font-weight: bold">
             当前手续费：
-            <span style="color: #2eabff;margin-right: 2%">{{serviceCharge}} %</span>
-            选择超市：
+            <span style="color: #2eabff;margin-right: 2%">{{serviceCharge}} %</span></br>
+            选&nbsp;择&nbsp;超&nbsp;市：
             <a-input style="width: 50%;"  :value="value" placeholder="请选择超市" @click="handleShopList"  />
           </div>
-          <div style="line-height:32px; font-size: 16px;font-weight: bold">
+          <div style="line-height:30px; font-size: 16px;font-weight: bold">
             修改手续费：
             <a-input-search style="width: 50%;"
                             placeholder="请输入手续费"
@@ -85,8 +85,9 @@
     </a-row>
 
     <a-card :loading="loading" :bordered="false" :body-style="{padding: '0'}">
+      
       <div class="salesCard">
-        <a-tabs default-active-key="1" size="large" :tab-bar-style="{marginBottom: '24px', paddingLeft: '16px'}">
+        <a-tabs default-active-key="1" size="large" :tab-bar-style="{marginBottom: '24px' }" >
           <div class="extra-wrapper" slot="tabBarExtraContent">
             <div class="extra-item">
               <a @click="loaderboard(0,0)">总排行</a>
@@ -95,6 +96,7 @@
               <a @click="loaderboard(0,2)">本周</a>
               <a @click="loaderboard(0,3)">本月</a>
               <a @click="loaderboard(0,4)">本年</a>
+              
             </div>
             <!--<a-range-picker :style="{width: '256px'}" />-->
           </div>
@@ -108,6 +110,7 @@
               </a-col>
             </a-row>
           </a-tab-pane>
+          
          <!-- <a-tab-pane tab="销售趋势" key="2">
             <a-row>
               <a-col :xl="16" :lg="12" :md="12" :sm="24" :xs="24">
@@ -126,28 +129,28 @@
       <a-col :span="24">
         <a-card :loading="loading" :bordered="false" title="最近一周访问量统计" :style="{ marginTop: '24px' }">
           <a-row>
-            <a-col :span="6">
+            <a-col :span="7">
               <head-info title="今日IP" :content="loginfo.todayIp"></head-info>
             </a-col>
-            <a-col :span="2">
+            <a-col :span="1">
               <a-spin class='circle-cust'>
-                <a-icon slot="indicator" type="environment" style="font-size: 24px"  />
+                <a-icon slot="indicator" type="environment" style="font-size: 15px"  />
               </a-spin>
             </a-col>
-            <a-col :span="6">
+            <a-col :span="7">
               <head-info title="今日访问" :content="loginfo.todayVisitCount"></head-info>
             </a-col>
-            <a-col :span="2">
+            <a-col :span="1">
               <a-spin class='circle-cust'>
-                <a-icon slot="indicator" type="team" style="font-size: 24px"  />
+                <a-icon slot="indicator" type="team" style="font-size: 15px"  />
               </a-spin>
             </a-col>
-            <a-col :span="6">
+            <a-col :span="7">
               <head-info title="总访问量" :content="loginfo.totalVisitCount"></head-info>
             </a-col>
-            <a-col :span="2">
+            <a-col :span="1">
               <a-spin class='circle-cust'>
-                <a-icon slot="indicator" type="rise" style="font-size: 24px"  />
+                <a-icon slot="indicator" type="rise" style="font-size: 15px"  />
               </a-spin>
             </a-col>
           </a-row>
@@ -443,15 +446,15 @@
   .circle-cust{
     position: relative;
     top: 28px;
-    left: -100%;
+    left: -40%;
   }
   .extra-wrapper {
-    line-height: 55px;
-    padding-right: 24px;
+    line-height: 50px;
+    /*padding-right: 5px;*/
 
     .extra-item {
       display: inline-block;
-      margin-right: 24px;
+      /*margin-right: 20px;*/
 
       a {
         margin-left: 24px;
