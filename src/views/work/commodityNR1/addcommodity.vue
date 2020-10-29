@@ -37,6 +37,9 @@
             <a-form-item label="子标题" hasFeedback>
               <a-input  maxlength="200" v-decorator="['subTitle', {rules: [{ required: true, message: '请输入子标题', }]}]" />
             </a-form-item>
+            <a-form-item label="商品条码" hasFeedback>
+              <a-input  type="number"  placeholder="请填写国码或者自编码" maxlength="200" v-decorator="['barCode', {rules: [{ required: true, message: '请输入条码', }]}]" />
+            </a-form-item>
     <!--        <a-form-item label="品牌" hasFeedback>-->
     <!--          <a-select  placeholder="选择品牌"  v-decorator="['brand', {rules: [{ required: true, message: '请选择选择品牌', }]}]"  >-->
     <!--          <a-select-option  v-for="v in brand" :value=v.bid :key="v.keys">-->
@@ -263,7 +266,8 @@
             subTitle:'',
             title:'',
             image:'',
-            newPrice:''
+            newPrice:'',
+            barCode:""
           },
           residences:[],
           hotelForm:{},
@@ -359,7 +363,7 @@
         },
         edit(record) {
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','brand','price','stock','image','newPrice'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','brand','price','stock','image','newPrice','barCode'))
             this.hotelFormdata.setFieldsValue(pick(this.hotelForm, 'title', 'skuInfo','images','price','newPrice','residence'))
           });
         },
@@ -368,9 +372,14 @@
           let that = this
           // 触发表单验证
           this.formTranslate.validateFields((err, values) => {
-            if(values.title && values.subTitle){
+            if(values.title && values.subTitle && values.barCode){
+              if(values.barCode.length>16){
+                this.$message.warning('商品条码不得大于16位');
+                return;
+              }
               that.form.title=values.title
               that.form.subTitle=values.subTitle
+              that.form.barCode=values.barCode
               // that.form.brand=values.brand
               this.current=this.current-(-1)
             }
@@ -380,7 +389,7 @@
           this.current=this.current-1
 
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','brand','price','stock','image','newPrice'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','brand','price','stock','image','newPrice','barCode'))
           });
         },
         nextStep2(){
@@ -430,7 +439,7 @@
         nextStep3(){
           this.current=this.current-1
           this.$nextTick(() => {
-            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','brand','price','stock','image','newPrice'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','brand','price','stock','image','newPrice','barCode'))
           });
         },
         determine(){
@@ -616,6 +625,7 @@
                 'images': bannerImgs,
                 'shopId':this.shopId,
                 'skuVos':this.skuVos,
+                'barCode':this.form.barCode,
                 'spuDetail': {
                   'afterService': this.form.afterService,
                   'description': this.form.description,
@@ -648,7 +658,11 @@
                   that.bannerImg1='', that.bannerImg2='', that.bannerImg3=''
                   that.$message.success('添加成功');
                 }else {
-                  that.$message.warning('添加失败');
+                  if(res.message=="数据库中已存在该记录"){
+                    that.$message.error('该条码已存在');
+                  }else {
+                    that.$message.error('修改失败');
+                  }
                   that.current=0
                   that.form.brand=''
                   that.cids=[]
@@ -736,6 +750,7 @@
             }
           }
         },
+        // detailsId(){}
       },
       mounted() {
         this.shopId=localStorage.getItem('shopId')

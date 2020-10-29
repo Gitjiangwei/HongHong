@@ -229,7 +229,9 @@
                   return "自提";
                 }else if(text==2){
                   return "商家配送";
-                }else{
+                }else if(text==3){
+                  return "骑手配送"
+                }else {
                   return text;
                 }
               }
@@ -242,7 +244,7 @@
               filterMultiple: false,
               filters: [
                 { text: '微信', value: '0' },
-                { text: '支付宝', value: '1' },
+                { text: '支付宝', value: '1'},
               ]
             },
             {
@@ -367,7 +369,8 @@
                   Data.push(spuList);
                 }
                 let ss={}
-                if(res.result.pickUp!="自提") {
+                debugger
+                if(res.result.pickUp=="商家配送") {
                   ss = {
                     "ReportType": "gridreport",     /*报表类型 gridreport fastreport 为空 将默认为gridreport  */
                     "ReportName": "PosTicket.grf",     /*报表文件名 POS小票 */
@@ -408,7 +411,48 @@
                       + ']',
                     "Data": JSON.stringify(Data),
                   }
-                }else {
+                } else if(res.result.pickUp=="骑手配送") {
+                  ss = {
+                    "ReportType": "gridreport",     /*报表类型 gridreport fastreport 为空 将默认为gridreport  */
+                    "ReportName": "PosTicket.grf",     /*报表文件名 POS小票 */
+                    "ReportVersion": 1,              /*可选。报表版本, 为空则默认1  如果本地报表的版本过低 将从 ReportUrl 地址进行下载更新*/
+                    //"ReportUrl": "http://111.67.202.157:9099/report/PosTicket.grf",                  /*可选。为空 将不更新本地报表 , 如果本地报表不存在可以从该地址自动下载*/
+                    "ReportUrl": "",                  /*可选。为空 将不更新本地报表 , 如果本地报表不存在可以从该地址自动下载*/
+                    "Copies": 1,                  /*可选。打印份数，支持指定打印份数。默认1份,如果为零,不打印,只返回报表生成的pdf,jpg等文件*/
+                    "PrinterName": "",      /*可选。指定打印机，为空的话 使用默认打印机, 请在 控制面板 -> 设备和打印机 中查看您的打印机的名称 */
+                    "PrintOffsetX": 0,                 /*可选。打印右偏移，单位厘米。报表的水平方向上的偏移量，向右为正，向左为负。*/
+                    "PrintOffsetY": 0,                /*可选。打印下偏移，单位厘米。 报表的垂直方向上的偏移量，向下为正，向上为负。*/
+                    "token": "aa",      /*可选。只要token值在列表中 方可打印*/
+                    "taskId": "1234567",     /*可选。多个打印任务同时打印时，根据该id确定返回的是哪个打印任务。 */
+                    "exportfilename": "",      /*可选。自定义 导出 文件名称 为空 或者 自定义名称 如 test */
+                    "exportfiletype": "",      /*可选。自定义 导出 文件格式 为空 或者 自定义名称 如 pdf  */
+
+                    "Parameter": '['  ///*参数，type 默认为空即可,已经在报表端设置了 备用字段
+                      + '{"type": "", "name": "title","value": "#哄哄到家","required": false},'
+                      + '{"type": "", "name": "shopName","value": "' + res.result.shopName + '","required": false},'
+                      + '{"type": "", "name": "shopAddress","value": "' + res.result.shopAddress + '","required": false},'
+                      + '{"type": "", "name": "orders","value": "' + res.result.orders + '","required": false},'
+                      + '{"type": "", "name": "saleNum","value": "' + res.result.saleNum + '","required": false},'
+                      + '{"type": "", "name": "saleSum","value": "' + res.result.saleSum + '","required": false},'
+                      + '{"type": "", "name": "postFree","value": "' + res.result.postFree + '","required": false},'
+                      + '{"type": "", "name": "practical","value": "' + res.result.practical + '","required": false},'
+                      + '{"type": "", "name": "pickUp","value": "' + res.result.pickUp + '","required": false},'
+                      + '{"type": "", "name": "shippingAddress","value": "' + res.result.distributionVo.shippingAddress + '","required": false},'
+                      + '{"type": "", "name": "contact","value": "' + res.result.distributionVo.contact + '","required": false},'
+                      + '{"type": "", "name": "call","value": "' + res.result.distributionVo.call + '","required": false},'
+                      + '{"type": "", "name": "buyerMessage","value": "' + res.result.buyerMessage + '","required": false},'
+                      + '{"type": "", "name": "priceTotle","value": "' + res.result.priceTotle + '","required": false},'
+                      + ']',
+
+                    "Field": '['  ///*字段， type ftBlob (base64格式) ,ftString ftInteger ftBoolean, ftFloat, ftCurrency,ftDateTime,  size (ftString 设置为实际长度,其他的设置为0,例如 ftInteger ftBlob 等设置为0 )
+                      + '{"type": "ftString", "name": "spuName","size": 255,"required": true},'
+                      + '{"type": "ftString", "name": "shuliang","size": 255,"required": false},'
+                      + '{"type": "ftString", "name": "je","size": 255,"required": false},'
+                      + '{"type": "ftString", "name": "unitPriceTotle","size": 255,"required": false},'
+                      + ']',
+                    "Data": JSON.stringify(Data),
+                  }
+                }else if(res.result.pickUp=="自提"){
                   ss = {
                     "ReportType": "gridreport",     /*报表类型 gridreport fastreport 为空 将默认为gridreport  */
                     "ReportName": "PosTicket.grf",     /*报表文件名 POS小票 */
@@ -506,6 +550,7 @@
           var params = this.getQueryParams();//查询条件
           getAction(this.url.list, params).then((res) => {
             if (res.success) {
+              debugger
               this.dataSource = res.result.list;
               this.ipagination.total = res.result.total;
             }

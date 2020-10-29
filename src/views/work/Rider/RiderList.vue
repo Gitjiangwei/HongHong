@@ -37,6 +37,47 @@
     </div>
 
 
+
+
+    <!--    棋手结算弹出框-->
+    <a-modal
+      title="选择时间"
+      :visible="addvisible"
+      :confirm-loading="confirmLoading"
+      @ok="handleOk"
+      @cancel="handleCancel"
+    >
+      <a-form :form="form" :label-col="{ span: 6 }" :wrapper-col="{ span: 12 }">
+        <a-form-item label="选择时间段" hasFeedback>
+          <a-range-picker
+            :ranges="{ Today: [moment(), moment()], 'This Month': [moment(), moment().endOf('month')] }"
+            show-time
+            format="YYYY/MM/DD HH:mm:ss"
+            @change="onChange"
+          />
+
+        </a-form-item>
+
+      </a-form>
+    </a-modal>
+
+
+<!--    骑手结算明细弹出框-->
+    <a-modal
+      title="明细"
+      :visible="addvisiblerider"
+      :confirm-loading="confirmLoadingrider"
+      @ok="handleOkrider"
+      @cancel="handleCancelrider"
+    >
+
+      <a-table :columns="columnsrider" :data-source="dataSourcerider">
+      </a-table>
+
+
+
+    </a-modal>
+
     <!-- table区域-begin -->
     <div>
       <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
@@ -73,6 +114,12 @@
                   <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>
+
+                <a-menu-item>
+                <a-popconfirm title="骑手结算?" @confirm="() => jiesuan(record.id)">
+                  <a>结算</a>
+                </a-popconfirm>
+              </a-menu-item>
             </a-menu>
           </a-dropdown>
         </span>
@@ -90,6 +137,9 @@
   import {filterObj,timeFix} from '@/utils/util';
   import JEllipsis from "@/components/jeecg/JEllipsis";
   import RiderModel from './modules/RiderModel'
+  import pick from 'lodash.pick'
+  import moment from 'moment'
+
 
   export default {
     name:"RiderList",
@@ -101,6 +151,17 @@
     },
     data(){
       return{
+        dataSourcerider:[],
+        riderId:"",
+        timeArry:"",
+        dateFormat: 'YYYY/MM/DD',
+        monthFormat: 'YYYY/MM',
+        addvisible:false,
+        addvisiblerider:false,
+        confirmLoading:false,
+        confirmLoadingrider:false,
+        model:{},
+        form: this.$form.createForm(this),
         description: '骑手管理页面',
         loading: false,
         // 查询条件
@@ -128,15 +189,16 @@
             dataIndex: 'telphone',
           },
           {
+            title: '初始密码',
+            align:"center",
+            dataIndex: 'password',
+          },
+          {
             title: '身份证号码',
             align:"center",
             dataIndex: 'idenitiy',
           },
-          {
-            title: '接单数',
-            align:"center",
-            dataIndex: 'orderNumber'
-          },
+
           {
             title: '负责地区',
             align:"center",
@@ -158,6 +220,23 @@
             dataIndex: 'action',
             align:"center",
             scopedSlots: { customRender: 'action' },
+          }
+        ],
+        columnsrider: [
+          {
+            title: '骑手名称',
+            align:"center",
+            dataIndex: 'riderName',
+          },
+          {
+            title: '接单数',
+            align:"center",
+            dataIndex: 'orderCount'
+          },
+          {
+            title: '结算金额',
+            align:"center",
+            dataIndex: 'sendPrice'
           }
         ],
         //数据集
@@ -190,6 +269,58 @@
       this.loadData();
     },
     methods:{
+      moment,
+      onChange(date, dateString){
+
+        this.timeArry=dateString
+      },
+      jiesuan(e){
+        this.riderId=e
+        this.addvisible=true
+      },
+
+      handleOk(){
+        this.timeArry.forEach(e=>{
+          this.timeArry[0]=this.timeArry[0].replace('/', '-')
+          this.timeArry[1]=this.timeArry[1].replace('/', '-')
+
+
+        })
+        console.log(this.timeArry)
+        getAction('/kunze/riders/send/queryRiderAccount',{riderId:this.riderId,startTime:this.timeArry[0],endTime:this.timeArry[1]}).then(e=>{
+          console.log(e)
+          debugger
+          if(e.success==true){
+            if(e.result.riderId!=null){
+              this.dataSourcerider=[]
+              this.dataSourcerider.push(e.result)
+              this.addvisiblerider=true
+              this.$message.success('结算成功');
+              this.addvisible=false
+            }else {
+              this.$message.warning('暂无可结算订单');
+            }
+
+
+
+          }else {
+            this.$message.error('结算失败');
+          }
+
+        })
+
+
+      },
+      handleCancel(){
+        this.addvisible=false
+      },
+      handleCancelrider(){
+        this.addvisiblerider=false
+      },
+      handleOkrider(){
+        this.addvisiblerider=false
+
+      },
       loadData(arg) {
         //加载数据 若传入参数1则加载第一页的内容
         if (arg === 1) {
@@ -197,6 +328,7 @@
         }
         var params = this.getQueryParams();//查询条件
         getAction(this.url.list, params).then((res) => {
+          debugger
           if (res.success) {
             this.dataSource = res.result.list;
             this.ipagination.total = res.result.total;

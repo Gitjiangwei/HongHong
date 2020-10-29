@@ -7,7 +7,7 @@
           <div style="width:100% ;height: 100%">
             <a-row>
               <a-col  style="border-right:2px solid  rgba(246, 246, 246, 1) " :xl="6" :lg="12" :md="12" :sm="24" :xs="24">
-                <div class="card-item" >
+                <div class="card-item" style="float: none">
                   <a-col>
                     <div class="img" @click="handleTurn('0')">
                       <img src="@/assets/money.png" alt="" @click="mmm">
@@ -25,8 +25,12 @@
                   </a-col>
                 </div>
               </a-col>
+
+
+
+
               <a-col  style="border-right:2px solid  rgba(246, 246, 246, 1) " :xl="6" :lg="12" :md="12" :sm="24" :xs="24">
-                <div class="card-item" >
+                <div class="card-item" style="float: none">
                   <a-col>
                     <div class="img" @click="handleTurn('1')">
                       <img src="@/assets/toDay.png" alt="" @click="mmm">
@@ -35,17 +39,31 @@
                       <div class="font-item" style="line-height: 68px;">日利润</div>
                       <div class="font-item" style="line-height: 40px; font-size: 26px">{{toDayTotalPrice | NumberFormat}} &nbsp;<span style="color: #D5D6D9;font-size: 12px">元</span> </div>
                       <div class="font-item" style="line-height: 26px;font-size: 12px; width: 150%; margin: 20px 0 0 -58%;border-top: 1px solid #E8E8E8">
-                        订单交易额：<span style="font-weight:bold; color: #2eabff">{{toDayMoney | NumberFormat}}</span> 元
-                        （含配送费：交易完成：<span style="font-weight: bold">{{toDayokTotal}}</span>单<span style="color: #00DB00;font-weight: bold">{{toDayOkPayment|NumberFormat}}</span>元，退款<span style="font-weight: bold">{{toDayRefundTotal}}</span>单<span style="color: #00DB00;font-weight: bold">{{toDayRefundPayment|NumberFormat}}</span>元）；
+                        订单交易额：
+                        <span style="font-weight:bold; color: #2eabff">{{toDayMoney | NumberFormat}}</span>
+                        元 （含配送费：交易完成：
+                        <span style="font-weight: bold">{{toDayokTotal}}</span>
+                        单
+                        <span style="color: #00DB00;font-weight: bold">{{toDayOkPayment|NumberFormat}}</span>
+                        元，退款
+                        <span style="font-weight: bold">{{toDayRefundTotal}}</span>
+                        单
+                        <span style="color: #00DB00;font-weight: bold">{{toDayRefundPayment|NumberFormat}}</span>元）；
                         <!--配送费：<span style="font-weight:bold; color: #2eabff">{{postFree | NumberFormat}}</span> 元；-->
-                        手续费：<span style="font-weight:bold; color: #2eabff">{{toDayChargeTotal | NumberFormat}}</span> 元
+                        手续费：
+                        <span style="font-weight:bold; color: #2eabff">{{toDayChargeTotal | NumberFormat}}</span>
+                        元
                       </div>
                     </div>
                   </a-col>
                 </div>
               </a-col>
+
+
+
+
               <a-col :xl="6" :lg="12" :md="12" :sm="24" :xs="24" style="border-right:2px solid  rgba(246, 246, 246, 1) ">
-                <div class="card-item" >
+                <div class="card-item" style="float: none">
                   <div class="img">
                     <img src="@/assets/commodity.png" alt="">
                   </div>
@@ -56,7 +74,7 @@
                 </div>
               </a-col>
               <a-col :xl="6" :lg="12" :md="12" :sm="24" :xs="24">
-                <div class="card-item">
+                <div class="card-item" style="float: none">
                   <div class="img">
                     <img src="@/assets/dd.png" alt="">
                   </div>

@@ -249,6 +249,9 @@
           console.log(res)
           if (res.success) {
             this.dataSource = res.result.list;
+            this.dataSource.forEach(e=>{
+              e.arr=1
+            })
             this.ipagination.total = res.result.total;
           }
         })
@@ -259,6 +262,8 @@
         this.$refs.SuperModules.title = "新增超市信息";
       },
       handleEdit:function(record){
+        console.log(record)
+debugger
 
         let opens=[]
         console.log(record)

@@ -56,6 +56,40 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
+          label="初始密码"
+          hasFeedback
+        >
+          <a-input placeholder="请输入初始密码" minlegth="6" maxlength="10"
+                   v-decorator="['password', {rules: [{ required: true, message: '请输入密码', }]}]"/>
+        </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="骑手等级"
+          hasFeedback
+        >
+
+          <a-select
+            v-decorator="[
+          'level',
+          { rules: [{ required: true, message: '请选择骑手等级' }] },
+        ]"
+            placeholder="选择骑手等级"
+          >
+            <a-select-option value="1">
+              普通骑手
+            </a-select-option>
+            <a-select-option value="0">
+              管理员
+            </a-select-option>
+          </a-select>
+
+
+        </a-form-item>
+
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
           label="接单数"
           hasFeedback
         >
@@ -114,6 +148,9 @@
           idenitiy: {
             rules: [{required: true,validator: this.validateidenitiy}]
           },
+          password: {
+            rules: [{required: true,validator: this.password}]
+          },
         },
         url: {
           add:"/kunze/rider/saveRider",
@@ -151,12 +188,13 @@
         this.edit({});
       },
       edit(record) {
+        debugger
         let that = this;
         that.visible = true;
         that.form.resetFields();
         that.model = Object.assign({}, record);
         that.$nextTick(() => {
-          that.form.setFieldsValue(pick(this.model, 'id','riderName', 'idenitiy','telphone','orderNum'))
+          that.form.setFieldsValue(pick(this.model, 'id','riderName', 'idenitiy','telphone','orderNum','password','lever'))
         });
       },
       isDisabledAuth(code){
@@ -170,8 +208,11 @@
       handleOk() {
         const that = this;
         // 触发表单验证
+
         this.form.validateFields((err, values) => {
+
           if (!err) {
+
             that.confirmLoading = true;
             let httpurl = '';
             let method = '';
@@ -183,6 +224,7 @@
               method = 'post';
             }
             let formData = Object.assign(this.model, values);
+
             formData.province = that.city[0];
             formData.city = that.city[1];
             formData.area = that.city[2];
@@ -190,6 +232,8 @@
             //时间格式化
             /*            formData.startBusiness = formData.startBusiness ? formData.startBusiness.format('HH:mm') : null;
                         formData.endBusiness = formData.endBusiness ? formData.endBusiness.format('HH:mm') : null;*/
+
+
             httpAction(httpurl, formData, method).then((res) => {
               if (res.success) {
                 that.$message.success(res.message);
@@ -260,6 +304,7 @@
           }
         }
       }
+
     }
   }
 </script>

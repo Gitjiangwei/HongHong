@@ -12,12 +12,17 @@
       <a-form layout="inline">
         <a-row :gutter="24">
 
-          <a-col :span="8">
+          <a-col :span="6">
             <a-form-item label="商品名称" >
               <a-input placeholder="请输入商品名称"  v-model="queryParam.title"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="8">
+          <a-col :span="6">
+            <a-form-item label="商品名称" >
+              <a-input placeholder="请输入商品名称"  v-model="queryParam.title"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="6">
             <a-form-item label="商品分类">
               <a-cascader
                 :field-names="{ label: 'name', value: 'id', children: 'childrenList'}"
@@ -28,7 +33,7 @@
               />
             </a-form-item>
           </a-col>
-          <a-col :span="8"  >
+          <a-col :span="6"  >
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                 <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
                 <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>

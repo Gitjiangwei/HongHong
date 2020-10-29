@@ -27,12 +27,8 @@
           </a-row>
           <a-row>
             <a-col :span="6">
-              <a-form-item label="品牌" prop="brand" >
-                <a-select v-model="search.brandId" placeholder="选择品牌" :default-value=form.brand >
-                  <a-select-option  v-for="v in brand" :value=v.bid :key="v.keys" >
-                    {{v.bname}}
-                  </a-select-option>
-                </a-select>
+              <a-form-item label="商品条码">
+                <a-input placeholder="商品条码" v-model="search.barCode"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">
@@ -46,12 +42,21 @@
                 />
               </a-form-item>
             </a-col>
+            <a-col :span="6">
+              <a-form-item label="有无条形码">
+                <a-select v-model="search.barCodeParam"  >
+                  <a-select-option value="">全部</a-select-option>
+                  <a-select-option value='1'>无条码</a-select-option>
+                  <a-select-option value='0'>有条码</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
             <a-col :span="2">
             </a-col>
             <a-col :span="4">
-            <a-button type="primary" icon="search" @click="searchShop">
-              搜索
-            </a-button>
+                <a-button type="primary" icon="search" @click="searchShop">
+                  搜索
+                </a-button>
             </a-col>
           </a-row>
         </a-form>
@@ -214,7 +219,13 @@
                     </a-form-item>
                   </a-col>
                 </a-row>
-
+                <a-row>
+                  <a-col :span="12">
+                    <a-form-item label="商品条码"  hasFeedback>
+                      <a-input  type="number"  placeholder="请填写国码或者自编码" v-decorator="['barCode', {rules: [{ required: true, message: '请输入商品条码', }]}]"  />
+                    </a-form-item>
+                  </a-col>
+                </a-row>
                 <a-row>
                   <a-col :span="12">
                     <a-form-item label="spu轮播图" hasFeedback>
@@ -596,6 +607,7 @@
             { title: '图片', dataIndex: 'image', key: 'image',scopedSlots: { customRender: 'image' } },
             { title: '所属分类', dataIndex: 'cname', key: 'cname' },
             { title: '商品名称', dataIndex: 'title', key: 'title' },
+            { title: '商品条码', dataIndex: 'barCode', key: 'barCode' },
             { title: '是否上架', dataIndex: 'saleable', key: 'saleable', scopedSlots: { customRender: 'saleable' } },
             { title: '编辑', dataIndex: 'isflag', key: 'isflag', scopedSlots: { customRender: 'bianji' } },
           ],
@@ -625,9 +637,10 @@
           search:{
             shopId:"",
             title:'',
-            brandId:'',
+            barCode:'',
             cid3:'',
-            saleable:""
+            saleable:"",
+            barCodeParam:""
           },
           shopId:'',
           ids:[],
@@ -840,6 +853,7 @@
           })
         },
         onChange(value){
+          this.xiucids=value
           this.fenl=1
           this.cids=value
           let that=this
@@ -849,10 +863,11 @@
           that.specTemplate={}
           this.specifications=[]
           that.dxuandatas=[]
-
+          debugger
           getAction('/kunze/spec/specList',{categoryId:value[2]}).then((res)=>{
-            // console.log(res)
+            console.log(res)
             console.log(JSON.parse(res.result.specifications))
+            debugger
             if(res.result==null){
               that.dxuandatas=[]
             }else {
@@ -930,10 +945,17 @@
 
       //确定修改基本信息
         modifyBasic(){
-          debugger
+
           let that=this
           this.formTranslate.validateFields((err, values) => {
-            if(values.subTitle && values.title ){
+            if(values.subTitle && values.title && values.barCode){
+              console.log(typeof parseInt(values.barCode))
+              if(values.barCode.length>16){
+                this.$message.warning('商品条码不得大于16位');
+                return;
+              }
+
+              debugger
               console.log(values)
               that.form.spuimage=values.spuimage
               that.form.spuimage1=values.spuimage1
@@ -951,6 +973,7 @@
                 "images": values.spuimage1 + ',' + values.spuimage2 + ',' + values.spuimage3,
                 'shopId': this.shopId,
                 "id": this.spu.id,
+                'barCode': values.barCode,
                 'spuDetail': {
                   'afterService': values.afterService,
                   'description': values.description,
@@ -977,6 +1000,11 @@
                   that.$message.success('修改成功');
                   this.getAllProducts(this.shopId)
                 }else {
+                  if(res.message=="数据库中已存在该记录"){
+                    that.$message.error('该条码已存在');
+                  }else {
+                    that.$message.error('修改失败');
+                  }
                   that.form.brand = ""
                   that.cids = []
                   this.form.spuimage = ""
@@ -987,7 +1015,7 @@
                   that.form.title = ''
                   // that.xiuBrandvisible = false
                   // that.visible = false
-                  that.$message.error('修改失败');
+
                 }
               })
             }
@@ -1075,14 +1103,15 @@
         searchShop(){
           let that=this
           getAction('/kunze/spu/spuList',{
-            pageNo :that.ipagination.current,
+            pageNo :"1",
             pageSize : that.ipagination.pageSize,
             shopId : that.shopId,
-            brandId:that.search.brandId,
+            barCode:that.search.barCode,
             cid3:that.search.cid3,
             title:that.search.title,
             saleable:that.search.saleable,
-            id:that.search.shopId
+            id:that.search.shopId,
+            barCodeParam:that.search.barCodeParam
           }).then((res)=>{
             that.data=res.result.list
             let key=0
@@ -1157,7 +1186,7 @@
           this.form.skuimage=e.skuimage
           this.$nextTick(() => {
 
-            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description','newPrice'))
+            this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description','newPrice','barCode'))
 
           });
 
@@ -1396,6 +1425,7 @@
             console.log(that.spu)
 
             this.form.title=this.spu.title
+            this.form.barCode=this.spu.barCode
             this.form.subTitle=this.spu.subTitle
             this.brand.forEach(e=>{
               if(e.bname==this.spu.bname){
@@ -1407,7 +1437,7 @@
             this.form.spuimage2=this.spu.images[1]
             this.form.spuimage3=this.spu.images[2]
             this.$nextTick(() => {
-              this.formTranslate.setFieldsValue(pick(this.form, 'title', 'subTitle','price','newPrice','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description'))
+              this.formTranslate.setFieldsValue(pick(this.form, 'title','barCode', 'subTitle','price','newPrice','stock','brand','skuimage','spuimage','spuimage1','spuimage2','spuimage3','afterService','packingList','description'))
             });
             this.visible=true
           })
@@ -1432,7 +1462,13 @@
           getAction('/kunze/spu/spuList',{
             pageNo :that.ipagination.current,
             pageSize : that.ipagination.pageSize,
-            shopId : e
+            shopId : e,
+              barCode:that.search.barCode,
+            cid3:that.search.cid3,
+            title:that.search.title,
+            saleable:that.search.saleable,
+            id:that.search.shopId,
+            barCodeParam:that.search.barCodeParam
           }).then((res)=>{
             console.log(res)
             that.data=res.result.list
@@ -1543,6 +1579,7 @@
                     that.form.price=values.price
                     that.form.newPrice=values.newPrice
                     that.form.skuimage=values.skuimage
+                    this.skuVos=[]
                     this.skuVos.push({
                       id: that.sku.id,
                       price: values.price,
@@ -1554,11 +1591,15 @@
 
                     });
 
-                    let spuBo = {
+                let spuBo = {
                       'shopId': this.shopId,
                       "id": this.spu.id,
+                      "cid1":this.xiucids[0],
+                      "cid2":this.xiucids[1],
+                      "cid3":this.xiucids[2],
                       'skuVos': this.skuVos,
                     }
+                    debugger
                   httpAction('/kunze/spu/updateSpu', spuBo, 'post').then((res) => {
                     console.log(res)
                     if (res.success == true) {

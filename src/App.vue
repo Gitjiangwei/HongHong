@@ -54,8 +54,6 @@
       // beforeunload事件在页面刷新时先触发
       window.addEventListener('beforeunload', (e) => {
         sessionStorage.setItem('store', JSON.stringify(this.$store.state))
-
-
       })
 
       window.addEventListener("beforeunload", e => {
@@ -93,9 +91,9 @@
         //判断是窗口关闭还是刷新
         localStorage.setItem('time',this._gap_time)
         if (this._gap_time <= 5) {
-
-          postAction('/sys/logout').then(() => {
-
+          postAction('/sys/logout').then((res) => {
+            localStorage.setItem('shopId','')
+            window.localStorage.clear()
           })
         }
       },
