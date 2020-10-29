@@ -52,7 +52,7 @@
             <a-button type="primary" disabled style="margin-right: 20px">
               上一步
             </a-button>
-            <a-button type="primary" @click="nextStep" >
+            <a-button type="primary" @click="nextStep">
               下一步
             </a-button>
           </div>
@@ -63,8 +63,8 @@
           <template v-if="current==1">
             <a-form
               :form="formTranslate"
-              :label-col="labelCol"
-              :wrapper-col="wrapperCol"
+              :label-col="{span:9}"
+              :wrapper-col="{span:15}"
             >
                     <a-form-item label="分类" hasFeedback >
                       <a-input v-model="fenl"  type="hidden" />
@@ -126,7 +126,7 @@
 
             </a-form>
             <div style="margin-left: 35%">
-              <a-button type="primary"  style="margin-right: 20px" @click="nextStep1">
+              <a-button type="primary"  style="margin-right: 20px" @click="nextStep1" >
                 上一步
               </a-button>
               <a-button type="primary" @click="determine" style="margin-right: 20px">
@@ -143,8 +143,8 @@
           <template v-if="current==2">
             <a-form
               :model="form"
-              :label-col="labelCol"
-              :wrapper-col="wrapperCol"
+              :label-col="{span:10}"
+              :wrapper-col="{span:14}"
             >
                     <a-form-item label="商品图片" >
                       <j-image-upload class="avatar-uploader" text="上传" v-model="fileList" ></j-image-upload>
@@ -167,7 +167,7 @@
                     </a-form-item>
 
             </a-form>
-            <div style="margin-left: 35%">
+            <div style="margin-left: 45%">
               <a-button type="primary"  style="margin-right: 20px" @click="nextStep3">
                 上一步
               </a-button>

@@ -40,7 +40,7 @@
           </span>
         </a-table>
       </template>
-      <a-button  type="primary" @click="addxiFenzhu" style="margin-left: 80%" >添加分組</a-button>
+      <a-button  type="primary" @click="addxiFenzhu" style="margin-left: 53%" >添加分組</a-button>
     </a-modal>
 
 
@@ -867,6 +867,7 @@
  .nnn{
    display: flex;
    justify-content: space-between;
+   content:"";
  }
 
 </style>

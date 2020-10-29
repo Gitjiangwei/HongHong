@@ -74,7 +74,7 @@
     <!--    修改商品品牌弹出框-->
     <a-drawer
       title="修改商品品牌"
-      :width="720"
+      :width="480"
       :visible="xiuBrandvisible"
       :body-style="{ paddingBottom: '80px' }"
       @close="xiuBrandClose"

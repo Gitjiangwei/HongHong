@@ -50,9 +50,7 @@
                         单
                         <span style="color: #00DB00;font-weight: bold">{{toDayRefundPayment|NumberFormat}}</span>元）；
                         <!--配送费：<span style="font-weight:bold; color: #2eabff">{{postFree | NumberFormat}}</span> 元；-->
-                        手续费：
-                        <span style="font-weight:bold; color: #2eabff">{{toDayChargeTotal | NumberFormat}}</span>
-                        元
+                        手续费：<span style="font-weight:bold; color: #2eabff">{{toDayChargeTotal | NumberFormat}}</span> 元
                       </div>
                     </div>
                   </a-col>
