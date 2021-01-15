@@ -66,12 +66,20 @@
         @change="handleTableChange">
 
         <!-- 状态渲染模板 -->
+        <template slot="pickUp" slot-scope="pickUp">
+
+          <template v-if="pickUp==1 && shopType==1" color="blue">自提</template>
+          <template v-if="pickUp==1 && shopType==2" color="blue">到店就餐</template>
+          <template v-if="pickUp==2" color="blue">商家配送</template>
+          <template v-if="pickUp==3" color="blue">骑手配送</template>
+        </template>
         <template slot="customRenderStatus" slot-scope="payType">
           <a-tag v-if="payType==0" color="green">微信</a-tag>
           <a-tag v-if="payType==1" color="blue">支付宝</a-tag>
         </template>
         <span slot="action" slot-scope="text, record">
           <a @click="handleDetail(record)">查看</a>
+<!--          handleDetail-->
           <span v-if="record.status==2">
             <a-divider type="vertical" />
           <a-dropdown>
@@ -89,7 +97,7 @@
           </a-dropdown>
           </span>
           <span v-if="record.status==5">
-            <a-divider type="vertical" />
+            <a-divider type="vertical"/>
           <a-dropdown>
             <a class="ant-dropdown-link">是否退款<a-icon type="down" /></a>
             <a-menu slot="overlay">
@@ -99,9 +107,7 @@
                 </a-popconfirm>
               </a-menu-item>
               <a-menu-item>
-
                     <a>拒绝</a>
-
               </a-menu-item>
             </a-menu>
           </a-dropdown>
@@ -118,7 +124,7 @@
 <script>
   import ARow from "ant-design-vue/es/grid/Row";
   import { JeecgListMixin } from '@/mixins/JeecgListMixin';
-  import {deleteAction, getAction, postAction} from '@/api/manage';
+  import {deleteAction, getAction, postAction,httpAction} from '@/api/manage';
   import {filterObj,timeFix} from '@/utils/util';
   import $ from 'jquery';
   import OrderDetail from "./model/OrderDetail"
@@ -151,7 +157,7 @@
               }
             },
             {
-              title: '超市',
+              title: '店铺',
               align: "center",
               dataIndex: 'shopName'
             },
@@ -183,6 +189,11 @@
              customRender: (text) => {
                return <span style='color: green; font-weight:bold'>{text}</span>;
               }
+            },
+            {
+              title: '座位号',
+              align: "center",
+              dataIndex: 'seat',
             },
             {
               title: '下单时间',
@@ -224,17 +235,18 @@
               title: '提货方式',
               align: "center",
               dataIndex: 'pickUp',
-              customRender: (text) => {
-                if(text==1){
-                  return "自提";
-                }else if(text==2){
-                  return "商家配送";
-                }else if(text==3){
-                  return "骑手配送"
-                }else {
-                  return text;
-                }
-              }
+              scopedSlots: {customRender: 'pickUp'},
+              // customRender: (text) => {
+              //   if(text==1){
+              //     return "自提";
+              //   }else if(text==2){
+              //     return "商家配送";
+              //   }else if(text==3){
+              //     return "骑手配送"
+              //   }else {
+              //     return text;
+              //   }
+              // }
             },
             {
               title: '付款方式',
@@ -280,6 +292,7 @@
           },
           isFlag:"1",
           shopId:"",
+          shopType:"",
           shopName:"",
           selectedRowKeys: [],
           selectedRows: [],
@@ -293,16 +306,22 @@
       },
       created(){
         let shopId =localStorage.getItem('shopId');
+         this.shopType =localStorage.getItem('shopType');
+
         if (shopId == undefined || shopId == "" || shopId == null || shopId == "null"){
           this.isFlag = 2;
         }
         this.shopId = shopId;
-        this.loadData();
+        this.loadDatas();
       },
       mounted(){
         var that = this;
+
         Utils.$on('orderList', function (msg) {
-          that.loadData(1);
+          that.loadDatas(1,'niu');
+          console.log(that.dataSource)
+
+          // console.log('niu牛牛')
         })
       },
       methods:{
@@ -325,10 +344,10 @@
               console.log(res)
               if(res.success==true){
                 this.$message.success('退款成功');
-                this.loadData();
+                this.loadDatas();
               }else {
                 this.$message.warning('退款失败');
-                this.loadData();
+                this.loadDatas();
               }
             })
           })
@@ -347,15 +366,20 @@
           })
         },
         preview(orderId){
+
             let params = {
               orderId:orderId,
               status:"2",
             }
             postAction(this.url.dayin,params).then((res)=>{
               if(res.success){
-                //if(this.j == 1) {
+
+
+
+
+                debugger
                   this.$message.success("接单成功！");
-                  this.loadData();
+                  this.loadDatas();
                   this.onClearSelected();
                 //}
                 let Data = [];
@@ -369,7 +393,6 @@
                   Data.push(spuList);
                 }
                 let ss={}
-                debugger
                 if(res.result.pickUp=="商家配送") {
                   ss = {
                     "ReportType": "gridreport",     /*报表类型 gridreport fastreport 为空 将默认为gridreport  */
@@ -453,6 +476,7 @@
                     "Data": JSON.stringify(Data),
                   }
                 }else if(res.result.pickUp=="自提"){
+                  if(res.result.shopType==2){
                   ss = {
                     "ReportType": "gridreport",     /*报表类型 gridreport fastreport 为空 将默认为gridreport  */
                     "ReportName": "PosTicket.grf",     /*报表文件名 POS小票 */
@@ -477,8 +501,9 @@
                       + '{"type": "", "name": "saleSum","value": "' + res.result.saleSum + '","required": false},'
                       + '{"type": "", "name": "postFree","value": "' + res.result.postFree + '","required": false},'
                       + '{"type": "", "name": "practical","value": "' + res.result.practical + '","required": false},'
-                      + '{"type": "", "name": "pickUp","value": "' + res.result.pickUp + '","required": false},'
-                      + '{"type": "", "name": "shippingAddress","value": "' + "到店自取" + '","required": false},'
+                      + '{"type": "", "name": "pickUp","value": "' + "在店就餐" + '","required": false},'
+                      + '{"type": "", "name": "Parameter1","value": "' + res.result.seat + '","required": false},'
+                      + '{"type": "", "name": "shippingAddress","value": "' + "在店就餐" + '","required": false},'
                       + '{"type": "", "name": "contact","value": "' + res.result.distributionVo.contact + '","required": false},'
                       + '{"type": "", "name": "call","value": "' + res.result.distributionVo.call + '","required": false},'
                       + '{"type": "", "name": "buyerMessage","value": "' + res.result.buyerMessage + '","required": false},'
@@ -492,6 +517,49 @@
                       + '{"type": "ftString", "name": "unitPriceTotle","size": 255,"required": false},'
                       + ']',
                     "Data": JSON.stringify(Data),
+                  }
+                  }else if(res.result.shopType==1){
+                    ss = {
+                      "ReportType": "gridreport",     /*报表类型 gridreport fastreport 为空 将默认为gridreport  */
+                      "ReportName": "PosTicket.grf",     /*报表文件名 POS小票 */
+                      "ReportVersion": 1,              /*可选。报表版本, 为空则默认1  如果本地报表的版本过低 将从 ReportUrl 地址进行下载更新*/
+                      //"ReportUrl": "http://111.67.202.157:9099/report/PosTicket.grf",                  /*可选。为空 将不更新本地报表 , 如果本地报表不存在可以从该地址自动下载*/
+                      "ReportUrl": "",                  /*可选。为空 将不更新本地报表 , 如果本地报表不存在可以从该地址自动下载*/
+                      "Copies": 1,                  /*可选。打印份数，支持指定打印份数。默认1份,如果为零,不打印,只返回报表生成的pdf,jpg等文件*/
+                      "PrinterName": "",      /*可选。指定打印机，为空的话 使用默认打印机, 请在 控制面板 -> 设备和打印机 中查看您的打印机的名称 */
+                      "PrintOffsetX": 0,                 /*可选。打印右偏移，单位厘米。报表的水平方向上的偏移量，向右为正，向左为负。*/
+                      "PrintOffsetY": 0,                /*可选。打印下偏移，单位厘米。 报表的垂直方向上的偏移量，向下为正，向上为负。*/
+                      "token": "aa",      /*可选。只要token值在列表中 方可打印*/
+                      "taskId": "1234567",     /*可选。多个打印任务同时打印时，根据该id确定返回的是哪个打印任务。 */
+                      "exportfilename": "",      /*可选。自定义 导出 文件名称 为空 或者 自定义名称 如 test */
+                      "exportfiletype": "",      /*可选。自定义 导出 文件格式 为空 或者 自定义名称 如 pdf  */
+
+                      "Parameter": '['  ///*参数，type 默认为空即可,已经在报表端设置了 备用字段
+                        + '{"type": "", "name": "title","value": "#哄哄到家","required": false},'
+                        + '{"type": "", "name": "shopName","value": "' + res.result.shopName + '","required": false},'
+                        + '{"type": "", "name": "shopAddress","value": "' + res.result.shopAddress + '","required": false},'
+                        + '{"type": "", "name": "orders","value": "' + res.result.orders + '","required": false},'
+                        + '{"type": "", "name": "saleNum","value": "' + res.result.saleNum + '","required": false},'
+                        + '{"type": "", "name": "saleSum","value": "' + res.result.saleSum + '","required": false},'
+                        + '{"type": "", "name": "postFree","value": "' + res.result.postFree + '","required": false},'
+                        + '{"type": "", "name": "practical","value": "' + res.result.practical + '","required": false},'
+                        + '{"type": "", "name": "pickUp","value": "' + res.result.pickUp + '","required": false},'
+                        // + '{"type": "", "name": "Parameter1","value": "' + res.result.seat + '","required": false},'
+                        + '{"type": "", "name": "shippingAddress","value": "' + "到店自取" + '","required": false},'
+                        + '{"type": "", "name": "contact","value": "' + res.result.distributionVo.contact + '","required": false},'
+                        + '{"type": "", "name": "call","value": "' + res.result.distributionVo.call + '","required": false},'
+                        + '{"type": "", "name": "buyerMessage","value": "' + res.result.buyerMessage + '","required": false},'
+                        + '{"type": "", "name": "priceTotle","value": "' + res.result.priceTotle + '","required": false},'
+                        + ']',
+
+                      "Field": '['  ///*字段， type ftBlob (base64格式) ,ftString ftInteger ftBoolean, ftFloat, ftCurrency,ftDateTime,  size (ftString 设置为实际长度,其他的设置为0,例如 ftInteger ftBlob 等设置为0 )
+                        + '{"type": "ftString", "name": "spuName","size": 255,"required": true},'
+                        + '{"type": "ftString", "name": "shuliang","size": 255,"required": false},'
+                        + '{"type": "ftString", "name": "je","size": 255,"required": false},'
+                        + '{"type": "ftString", "name": "unitPriceTotle","size": 255,"required": false},'
+                        + ']',
+                      "Data": JSON.stringify(Data),
+                    }
                   }
                 }
                 var ip = "127.0.0.1";
@@ -524,7 +592,7 @@
         },
         modalFormOk() {
           // 新增/修改 成功时，重载列表
-          this.loadData();
+          this.loadDatas();
         },
         handleCancel() {
           this.close()
@@ -542,17 +610,21 @@
           //this.model.shopName = data.id;
           this.shopName = data.shopName;
         },
-        loadData(arg) {
+        loadDatas(arg,n) {
           //加载数据 若传入参数1则加载第一页的内容
           if (arg === 1) {
             this.ipagination.current = 1;
           }
           var params = this.getQueryParams();//查询条件
           getAction(this.url.list, params).then((res) => {
+            console.log(res.success)
+            console.log(res.result.list)
             if (res.success) {
-              debugger
               this.dataSource = res.result.list;
               this.ipagination.total = res.result.total;
+              if(n=='niu'){
+                this.preview(res.result.list[0].orderId)
+              }
             }
           })
         },
@@ -571,10 +643,10 @@
             postAction('/kunze/wechatpay/doRefund',params).then((res)=>{
               if(res.success==true){
                 this.$message.success('订单成功拒绝');
-                this.loadData();
+                this.loadDatas();
               }else {
                 this.$message.warning('订单拒绝失败');
-                this.loadData();
+                this.loadDatas();
               }
             })
           })
@@ -582,15 +654,24 @@
         searchReset() {
           var that = this;
           that.queryParam = {}
-          that.loadData(1);
+          that.loadDatas(1);
         },
         getQueryParams() {
+
           var param = Object.assign({}, this.queryParam, this.isorter);
           param.pageNo = this.ipagination.current;
           param.pageSize = this.ipagination.pageSize;
-          param.shopId = this.shopId;
-          console.log(localStorage.getItem('shopId'))
-          return filterObj(param);
+debugger
+          if(localStorage.getItem('shopType')==3){
+            param.county=localStorage.getItem('area')
+            param.shopId = "";
+          }else {
+
+            param.shopId = localStorage.getItem('shopId');
+          }
+
+          console.log(param,"3232")
+          return param;
         },
         onSelectChange(selectedRowKeys, selectionRows) {
           this.selectedRowKeys = selectedRowKeys;
@@ -601,7 +682,7 @@
           this.selectionRows = [];
         },
         searchQuery(){
-          this.loadData(1);
+          this.loadDatas(1);
         },
         handleTableChange(pagination, filters, sorter) {
           //分页、排序、筛选变化时触发
@@ -612,7 +693,7 @@
             this.isorter.order = "ascend" == sorter.order ? "asc" : "desc"
           }
           this.ipagination = pagination;
-          this.loadData();
+          this.loadDatas();
         },
       }
     }

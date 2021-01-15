@@ -51,7 +51,8 @@ export function deleteAction(url,parameter) {
   return axios({
     url: url,
     method: 'delete',
-    params: parameter
+    params: parameter,
+    traditional: true
   })
 }
 

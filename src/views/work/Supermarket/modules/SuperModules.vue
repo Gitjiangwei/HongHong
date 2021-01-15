@@ -153,7 +153,28 @@
                 <a-select-option value="2">
                   饭店
                 </a-select-option>
+                <a-select-option value="3">
+                  代理
+                </a-select-option>
               </a-select>
+        </a-form-item>
+
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="销售模式"
+          hasFeedback>
+          <a-select  style="width: 120px" v-decorator="['businessType',{ rules: [{ required: true, message: '请选择销售模式' }] },]" @change="handleSelectChange">
+            <a-select-option value="1">
+              配送
+            </a-select-option>
+            <a-select-option value="2">
+              到店
+            </a-select-option>
+            <a-select-option value="3">
+              都有
+            </a-select-option>
+          </a-select>
         </a-form-item>
       </a-form>
     </a-spin>
@@ -184,6 +205,7 @@
       return{
         ispostFree:false,
         shopType:'请选择商铺类型',
+        businessType:'',
         title: "操作",
         options:[],   //地址级联下啦数据
         optionss:[],   //地址级联下啦数据
@@ -296,7 +318,7 @@
           this.model.endBusiness = time[1];
         }
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model, 'shopName', 'nightPostFree','postFree','shopAddress','shopType','personCharge','telphone','afterSale','idenitiy', 'startBusiness', 'endBusiness','isFlag','distributionModel'))
+          this.form.setFieldsValue(pick(this.model, 'shopName', 'nightPostFree','postFree','shopAddress','shopType','businessType','personCharge','telphone','afterSale','idenitiy', 'startBusiness', 'endBusiness','isFlag','distributionModel'))
           //时间格式化
           this.form.setFieldsValue({startBusiness: this.model.startBusiness ? moment(this.model.startBusiness, 'HH:mm') : null});
           this.form.setFieldsValue({endBusiness: this.model.endBusiness ? moment(this.model.endBusiness, 'HH:mm') : null});
@@ -347,10 +369,22 @@
             formData.endBusiness = formData.endBusiness ? formData.endBusiness.format('HH:mm') : null;
             console.log(formData.shopType)
             if(formData.shopType=='超市' || formData.shopType==1){
-              formData.shopType=1
+              formData.shopType = 1
+            }else if(formData.shopType=='饭店' || formData.shopType==2){
+              formData.shopType = 2
             }else {
-              formData.shopType=2
+              formData.shopType = 3
             }
+
+
+            if(formData.businessType == '配送' || formData.businessType==1){
+              formData.businessType=1
+            }else if(formData.businessType=='到店' || formData.businessType==2){
+              formData.businessType=2
+            }else {
+              formData.businessType=3
+            }
+
             // if(formData.distributionModel==2){
             //   that.ispostFree=true
             // }

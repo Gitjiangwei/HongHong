@@ -85,7 +85,7 @@
     </a-row>
 
     <a-card :loading="loading" :bordered="false" :body-style="{padding: '0'}">
-      
+
       <div class="salesCard">
         <a-tabs default-active-key="1" size="large" :tab-bar-style="{marginBottom: '24px' }" >
           <div class="extra-wrapper" slot="tabBarExtraContent">
@@ -96,7 +96,7 @@
               <a @click="loaderboard(0,2)">本周</a>
               <a @click="loaderboard(0,3)">本月</a>
               <a @click="loaderboard(0,4)">本年</a>
-              
+
             </div>
             <!--<a-range-picker :style="{width: '256px'}" />-->
           </div>
@@ -110,7 +110,7 @@
               </a-col>
             </a-row>
           </a-tab-pane>
-          
+
          <!-- <a-tab-pane tab="销售趋势" key="2">
             <a-row>
               <a-col :xl="16" :lg="12" :md="12" :sm="24" :xs="24">
@@ -395,6 +395,7 @@
         this.$refs.ShopProfitList.title = choice;
       },
       loaderboard (more,choiceTime) {
+        debugger
         if(more==0&&choiceTime==0){
           this.loads();
           this.loaderOrder();
@@ -407,6 +408,7 @@
           choiceTime:choiceTime,
         };
         getAction(this.url.loaderboard,params).then((res) => {
+          console.log(res)
           if (res.success) {
             debugger;
             for (let i = 0; i < res.result.list.length; i++) {

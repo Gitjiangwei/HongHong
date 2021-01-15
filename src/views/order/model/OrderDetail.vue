@@ -124,6 +124,7 @@
         debugger;
         this.status = record.status;
         let {result} = await getAction(this.url.detail,{orderId:this.orderId});
+        console.log(result)
         this.address = result.distributionVo.shippingAddress;
         this.buyerMessage = result.buyerMessage;
         this.salesNum = result.saleNum;

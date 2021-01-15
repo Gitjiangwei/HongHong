@@ -70,7 +70,9 @@ export const JeecgListMixin = {
       }
       var params = this.getQueryParams();//查询条件
       this.loading = true;
+
       getAction(this.url.list, params).then((res) => {
+
         if (res.success) {
           this.dataSource = res.result.records;
           this.ipagination.total = res.result.total;
@@ -105,7 +107,16 @@ export const JeecgListMixin = {
       param.field = this.getQueryField();
       param.pageNo = this.ipagination.current;
       param.pageSize = this.ipagination.pageSize;
-      return filterObj(param);
+      if(!param.roleId){
+        param.roleId = '1295277712524460034'
+      }
+      if(localStorage.getItem('area')!='undefined'){
+        param.county = localStorage.getItem('area')
+      }else {
+        param.county = ''
+      }
+
+      return param;
     },
     getQueryField() {
       //TODO 字段权限控制
@@ -169,12 +180,13 @@ export const JeecgListMixin = {
       }
     },
     handleDelete: function (id) {
+      console.log(typeof id)
       if(!this.url.delete){
         this.$message.error("请设置url.delete属性!")
         return
       }
       var that = this;
-      deleteAction(that.url.delete, {id: id}).then((res) => {
+      deleteAction(that.url.delete, {id:id}).then((res) => {
         if (res.success) {
           that.$message.success(res.message);
           that.loadData();

@@ -65,7 +65,7 @@
         <span slot="action" slot-scope="text, record">
           <a @click="handleDetail(record)">查看</a>
           <span v-if="record.status==2">
-            <a-divider type="vertical" />
+            <a-divider type="vertical"/>
           <a-dropdown>
             <a class="ant-dropdown-link">是否接单 <a-icon type="down" /></a>
             <a-menu slot="overlay">
@@ -242,9 +242,8 @@
 
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
-
             this.dataSource = res.result.list;
-            this.ipagination.total = res.result.total;
+            this.ipagination.total = res.result.total;AppFileList
           }
         })
       },

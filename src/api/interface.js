@@ -5,9 +5,10 @@ import { axios } from '@/utils/request'
 // 获取所有一级分类
 export function fenlei(parameter) {
   return axios({
-    url: '/kunze/category/qryList',
-    method: 'get',
-    data: parameter
+    url: '/kunze/category/getHotelMenu',
+    method: 'post',
+    data: parameter,
+    contentType:'application/form-data',
   })
 }
 

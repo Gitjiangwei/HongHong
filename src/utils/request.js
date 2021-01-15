@@ -15,7 +15,7 @@ console.log("baseProject= ",baseProject)
 const service = axios.create({
   //baseURL: '/jeecg-boot',
   baseURL: baseProject, // api base_url
-  timeout: 19000 // 请求超时时间
+  timeout: 999999 // 请求超时时间
 })
 
 const err = (error) => {

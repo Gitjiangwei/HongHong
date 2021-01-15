@@ -274,6 +274,9 @@
                 localStorage.setItem('shopId',res.result.shopId)
                 localStorage.setItem('area',res.result.area)
                 localStorage.setItem('shopType',res.result.shopType)
+                localStorage.setItem('province',res.result.province)
+                localStorage.setItem('city',res.result.city)
+                localStorage.setItem('area',res.result.area)
                 localStorage.setItem('distributionModel',res.result.distributionModel)
                 this.departConfirm(res)
               }).catch((err) => {

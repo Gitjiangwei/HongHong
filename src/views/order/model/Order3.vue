@@ -70,6 +70,7 @@
           distModel:localStorage.getItem('distributionModel')
         }
         if(this.status==4) {
+          debugger
           postAction(this.url.edit, orderStatus).then((res) => {
             if(res.success){
               this.dataSource=[];

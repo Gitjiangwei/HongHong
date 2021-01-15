@@ -750,6 +750,7 @@
             }
           }
         },
+
         // detailsId(){}
       },
       mounted() {

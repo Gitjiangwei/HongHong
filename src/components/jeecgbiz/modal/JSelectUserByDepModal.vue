@@ -161,6 +161,7 @@
             pageNo: 1,
             pageSize: values.length
           }).then((res) => {
+            debugger
             if (res.success) {
               let selectedRowKeys = []
               let realNames = []
@@ -187,6 +188,7 @@
           this.loading = true
           let params = this.getQueryParams()//查询条件
           await getUserList(params).then((res) => {
+            debugger
             if (res.success) {
               this.dataSource = res.result.records
               this.ipagination.total = res.result.total

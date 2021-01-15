@@ -28,7 +28,7 @@
           <a-cascader
             :field-names="{ label: 'name', value: 'id', children: 'children' }"
             :options="options"
-            :default-value=options
+            v-decorator="['options', {rules: [{ required: true, message: '选择地址', }]}]"
             placeholder="选择地址"
             @change="onChange"
 
@@ -194,7 +194,7 @@
         that.form.resetFields();
         that.model = Object.assign({}, record);
         that.$nextTick(() => {
-          that.form.setFieldsValue(pick(this.model, 'id','riderName', 'idenitiy','telphone','orderNum','password','lever'))
+          that.form.setFieldsValue(pick(this.model, 'id','riderName','options', 'idenitiy','telphone','orderNum','password','lever'))
         });
       },
       isDisabledAuth(code){

@@ -78,6 +78,7 @@
               params.username = username;
             }
             getAction("/sys/user/querySysUser", params).then((res) => {
+              debugger
               if (res.success) {
                 var userList = {
                   username: res.result.username,

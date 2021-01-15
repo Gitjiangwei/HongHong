@@ -80,6 +80,18 @@
           <a-input placeholder="请选择超市" maxlength="256" @click="handleShopList"
                    v-decorator="['shopName', {rules: [{ required: true, message: '请选择超市', }]}]"/>
         </a-form-item>
+
+        <a-form-item label="代理区域" :labelCol="labelCol"  v-if="dlShow==true" :wrapperCol="wrapperCol">
+
+        <a-cascader
+          :field-names="{ label: 'name', value: 'id', children: 'children' }"
+          :options="options"
+          :default-value=options
+          placeholder="选择地址"
+          @change="onChange"
+
+        />
+        </a-form-item>
         <!--部门分配-->
         <a-form-item label="部门分配" :labelCol="labelCol" v-if="shopShow==true" :wrapperCol="wrapperCol" v-show="!departDisabled">
           <a-input-search
@@ -191,7 +203,10 @@
     data () {
       return {
         brand:[],
+        city:[],
+        options:[],
         shShow: false,
+        dlShow: false,
         departDisabled: false, //是否是我的部门调用该页面
         roleDisabled: false, //是否是角色维护调用该页面
         modalWidth:800,
@@ -281,7 +296,7 @@
           syncUserByUserName:"/process/extActProcess/doSyncUserByUserName",//同步用户到工作流
         },
         identity:"1",
-        staterShop:"1",
+        staterShop:"2",
         fileList:[],
       }
     },
@@ -296,7 +311,36 @@
         return this.url.fileUpload;
       }
     },
+    mounted () {
+      this.getRegionInfo()
+    },
     methods: {
+      onChange(value){
+        console.log(value)
+
+        this.city=value
+      },
+
+      //获取地址
+      getRegionInfo(){
+        getAction('kunze/user/getRegionInfo').then((res)=>{
+          // if(res.result[0].children)
+          // console.log(res)
+          this.options=res.result[0].children
+          this.options.forEach(e=>{
+            e.label=e.id
+            e.children.forEach((e=>{
+              e.label=e.id
+              e.children.forEach((e=>{
+                e.label=e.id
+
+              }))
+            }))
+          })
+        })
+      },
+
+
       //获取超市
 /*      getshop(){
         let param = new URLSearchParams()
@@ -331,8 +375,18 @@
       },
       initialRoleList(){
         queryall().then((res)=>{
+          debugger
           if(res.success){
-            this.roleList = res.result;
+            if(localStorage.getItem('shopType')==3){
+              res.result.forEach(e=>{
+                if(e.id == "1258324827190714370" || e.id == "1295277712524460034"){
+                  this.roleList.push(e)
+                }
+              })
+            }else {
+              this.roleList = res.result;
+            }
+
           }else{
             console.log(res.message);
           }
@@ -363,7 +417,7 @@
         this.edit({activitiSync:'1'});
       },
       edit (record) {
-        debugger;
+        // debugger;
         this.resetScreenSize(); // 调用此方法,根据屏幕宽度自适应调整抽屉的宽度
         let that = this;
         that.initialRoleList();
@@ -462,12 +516,17 @@
             formData.identity=this.identity;
             formData.staterShop=this.staterShop;
             formData.shopId = this.shopId;
+            formData.province = this.city[0];
+            formData.city = this.city[1];
+            formData.county = this.city[2];
+            debugger
             //如果是上级择传入departIds,否则为空
             if(this.identity==="2"){
               formData.departIds=this.departIds.join(",");
             }else{
               formData.departIds="";
             }
+
             // that.addDepartsToUser(that,formData); // 调用根据当前用户添加部门信息的方法
             let obj;
             if(!this.model.id){
@@ -682,17 +741,29 @@
         }
       },
       shopShowChange(e){
+        console.log(this.selectedRole)
         debugger
         console.log(e)
         if(e!=null && e != "" && e != undefined) {
-          if (e[0] === "1258324827190714370" ||e[0] === "1295277712524460034") {
+          if (e[0] === "1258324827190714370" || e[0] === "1295277712524460034" || e[0] ==="1344118780149637121") {
             this.shShow = true;
             this.shopShow = false;
+            this.dlShow = true;
           } else {
             this.shShow = false;
             this.shopShow = true;
+            this.dlShow = false;
           }
+          // if(e[0] ==="1344118780149637121"){
+          //   this.dlShow = true;
+          //   this.shShow = true;
+          // }else {
+          //   this.dlShow = false;
+          //
+          // }
+
         }else {
+          this.dlShow = false;
           this.shShow = false;
           this.shopShow = true;
         }

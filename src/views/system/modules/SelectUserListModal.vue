@@ -193,6 +193,7 @@
         }
         let params = this.getQueryParams();//查询条件
         getUserList(params).then((res)=>{
+          debugger
           if(res.success){
             this.dataSource = res.result.records;
             this.ipagination.total = res.result.total;

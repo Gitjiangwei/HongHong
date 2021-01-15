@@ -131,7 +131,7 @@
             }
           },
           {
-            title: '超市名称',
+            title: '代理',
             align:"center",
             width: 100,
             dataIndex: 'shopName',
@@ -251,14 +251,6 @@
             this.dataSource = res.result.list;
             this.dataSource.forEach(e=>{
               e.arr=1
-              if(e.businessType == '1'){
-                e.businessType = '配送'
-              }else if(e.businessType = '2'){
-                e.businessType = '到店'
-              }else {
-                e.businessType = '都有'
-              }
-
             })
             this.ipagination.total = res.result.total;
           }
@@ -271,14 +263,16 @@
       },
       handleEdit:function(record){
         console.log(record)
-debugger
+        debugger
 
         let opens=[]
         console.log(record)
         if(record.shopType==2){
           record.shopType='饭店'
-        }else {
+        }else if(record.shopType==1){
           record.shopType='超市'
+        }else {
+          record.shopType='代理'
         }
         opens.push(record.province)
         opens.push(record.city)
@@ -314,15 +308,15 @@ debugger
       },
       handleDelete:function(ids){
         let that = this;
-         deleteAction(this.url.delete,{ids:ids}).then((res) =>{
-           if(res.success){
-             that.$message.success(res.message);
-             that.loadData();
-             that.onClearSelected();
-           }else {
-             that.$message.warning(res.message);
-           }
-         })
+        deleteAction(this.url.delete,{ids:ids}).then((res) =>{
+          if(res.success){
+            that.$message.success(res.message);
+            that.loadData();
+            that.onClearSelected();
+          }else {
+            that.$message.warning(res.message);
+          }
+        })
       },
       //批量删除
       batchDel:function(){
@@ -341,13 +335,13 @@ debugger
             content:"是否确认删除选中数据！",
             onOk:function () {
               deleteAction(that.url.delete,{ids:ids}).then((res) =>{
-                  if(res.success){
-                    that.$message.success(res.message);
-                    that.loadData();
-                    that.onClearSelected();
-                  }else {
-                    that.$message.warning(res.message);
-                  }
+                if(res.success){
+                  that.$message.success(res.message);
+                  that.loadData();
+                  that.onClearSelected();
+                }else {
+                  that.$message.warning(res.message);
+                }
               })
             }
           })
@@ -369,10 +363,7 @@ debugger
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
         param.isFlag = this.filters.isFlag;
-        if(localStorage.getItem('shopType')==3){
-          param.area = localStorage.getItem('area')
-          // param.shopType = 2
-        }
+        param.shopType = 3
         return filterObj(param);
       },
       getQueryField() {

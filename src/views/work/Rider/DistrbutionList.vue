@@ -302,7 +302,7 @@
         //   this.ipagination.current = 1;
         // }
         // var params = this.getQueryParams();//查询条件
-        postAction(this.url.list, {riderAccountHistory:e,pageSize:this.ipagination.pageSize,pageNo:this.ipagination.current }).then((res) => {
+        postAction(this.url.list, {riderAccountHistory:e,pageSize:this.ipagination.pageSize,pageNo:this.ipagination.current,area:localStorage.getItem('area') }).then((res) => {
           if (res.success) {
             this.dataSource = res.result.list;
             this.ipagination.total = res.result.total;

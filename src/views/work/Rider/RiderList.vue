@@ -405,6 +405,9 @@
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
         param.isFlag = this.filters.isFlag;
+        if(localStorage.getItem('shopType')==3) {
+          param.area = localStorage.getItem('area')
+        }
         return filterObj(param);
       },
       getQueryField() {

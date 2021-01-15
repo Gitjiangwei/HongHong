@@ -261,7 +261,11 @@ name: "transfer",
       this.selectionRows = selectionRows;
     },
     loadData(){
-      getAction('/kunze/riders/send/querySendOrderList',{isTurn:1,pageSize:this.ipaginationTurn.pageSize,pageNo:this.ipaginationTurn.current}).then(res=>{
+      let area = ""
+      if(localStorage.getItem('shopType')==3){
+        area = localStorage.getItem('area')
+      }
+      getAction('/kunze/riders/send/querySendOrderList',{isTurn:1,pageSize:this.ipaginationTurn.pageSize,pageNo:this.ipaginationTurn.current,area:area}).then(res=>{
         console.log(res)
 
         this.dataSourcerider=res.result.list

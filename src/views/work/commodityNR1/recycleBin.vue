@@ -1458,6 +1458,7 @@
         //获取所有商品
         getAllProducts(e){
           let that=this
+          debugger
           // console.log(that.shopId)
           getAction('/kunze/spu/spuList',{
             pageNo :that.ipagination.current,
@@ -1777,7 +1778,7 @@
         },
         //获取饭店所有商品
         getAllsp(){
-          // debugger
+          debugger
           let param = new URLSearchParams()
           param.append('shopId',this.shopId)
           param.append('pageNo',this.ipagination.current)
@@ -1785,7 +1786,7 @@
           postAction('/kunze/sku/queryHotelSku',param).then((res)=>{
             console.log(res)
             this.hoteldata=res.result.list
-
+            this.ipagination.total = res.result.total
             let key=0
             this.hoteldata.forEach(e=>{
               console.log(e)

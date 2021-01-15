@@ -76,6 +76,7 @@
     created() {
       //Step.2 加载用户数据
       getUserList().then((res) => {
+        debugger
         if (res.success) {
           this.dataSource = res.result.records;
           this.ipagination.total = res.result.total;

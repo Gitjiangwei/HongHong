@@ -10850,6 +10850,11 @@ url-parse@^1.1.8, url-parse@^1.4.3:
     querystringify "^2.1.1"
     requires-port "^1.0.0"
 
+url-search-params-polyfill@^8.1.0:
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/url-search-params-polyfill/-/url-search-params-polyfill-8.1.0.tgz#5c15b69687165bfd4f6c7d8a161d70d85385885b"
+  integrity sha512-MRG3vzXyG20BJ2fox50/9ZRoe+2h3RM7DIudVD2u/GY9MtayO1Dkrna76IUOak+uoUPVWbyR0pHCzxctP/eDYQ==
+
 url@^0.11.0:
   version "0.11.0"
   resolved "https://registry.npmjs.org/url/-/url-0.11.0.tgz#3838e97cfc60521eb73c525a8e55bfdd9e2e28f1"
@@ -10914,6 +10919,13 @@ uuid@^3.0.1, uuid@^3.3.2:
   version "3.4.0"
   resolved "https://registry.npmjs.org/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
   integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
+
+v-distpicker@^1.2.6:
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/v-distpicker/-/v-distpicker-1.2.6.tgz#b73100f9cfbae974a8214c124b73d90b6542b2a9"
+  integrity sha512-/yCeflDNQbzElol5dc6gCIqFGNOebqGNROD96BJazFBOmhhkHICwP5cvW+Zl4KvqskDnEhnvjOIVA4UJ1SbeGQ==
+  dependencies:
+    vue "^2.6.10"
 
 validate-npm-package-license@^3.0.1:
   version "3.0.4"

@@ -392,6 +392,7 @@
         this.loadData2()
       },
       loadData2(arg) {
+        debugger
         if (!this.url.list2) {
           this.$message.error('请设置url.list2属性!')
           return

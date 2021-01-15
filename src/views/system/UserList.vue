@@ -14,17 +14,29 @@
           </a-col>
 
           <a-col :md="6" :sm="8">
-            <a-form-item label="性别">
-              <a-select v-model="queryParam.sex" placeholder="请选择性别">
-                <a-select-option value="">请选择</a-select-option>
-                <a-select-option value="1">男性</a-select-option>
-                <a-select-option value="2">女性</a-select-option>
+            <a-form-item label="角色">
+              <a-select default-value="1295277712524460034" v-model="queryParam.roleId" placeholder="请选角色" >
+                <a-select-option value="1295277712524460034">饭店</a-select-option>
+                <a-select-option value="1258324827190714370">超市</a-select-option>
+                <a-select-option value="1284415797577457665">安卓包上传</a-select-option>
+                <a-select-option value="1344118780149637121">代理</a-select-option>
+                <a-select-option value="f6817f48af4fb3af11b9e8bf182f618b">管理员</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
 
 
           <template v-if="toggleSearchStatus">
+            <a-col :md="6" :sm="8">
+              <a-form-item label="性别">
+                <a-select v-model="queryParam.sex" placeholder="请选择性别">
+                  <a-select-option value="">请选择</a-select-option>
+                  <a-select-option value="1">男性</a-select-option>
+                  <a-select-option value="2">女性</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+
             <a-col :md="6" :sm="8">
               <a-form-item label="真实名字">
                 <a-input placeholder="请输入真实名字" v-model="queryParam.realname"></a-input>
@@ -122,45 +134,45 @@
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
 
-          <a-divider type="vertical"/>
+<!--          <a-divider type="vertical"/>-->
 
-          <a-dropdown>
-            <a class="ant-dropdown-link">
-              更多 <a-icon type="down"/>
-            </a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a href="javascript:;" @click="handleDetail(record)">详情</a>
-              </a-menu-item>
+<!--          <a-dropdown>-->
+<!--            <a class="ant-dropdown-link">-->
+<!--              更多 <a-icon type="down"/>-->
+<!--            </a>-->
+<!--            <a-menu slot="overlay">-->
+<!--              <a-menu-item>-->
+<!--                <a href="javascript:;" @click="handleDetail(record)">详情</a>-->
+<!--              </a-menu-item>-->
 
-              <a-menu-item>
-                <a href="javascript:;" @click="handleChangePassword(record.username)">密码</a>
-              </a-menu-item>
+<!--              <a-menu-item>-->
+<!--                <a href="javascript:;" @click="handleChangePassword(record.username)">密码</a>-->
+<!--              </a-menu-item>-->
 
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
+<!--              <a-menu-item>-->
+<!--                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">-->
+<!--                  <a>删除</a>-->
+<!--                </a-popconfirm>-->
+<!--              </a-menu-item>-->
 
-              <a-menu-item v-if="record.status==1">
-                <a-popconfirm title="确定冻结吗?" @confirm="() => handleFrozen(record.id,2,record.username)">
-                  <a>冻结</a>
-                </a-popconfirm>
-              </a-menu-item>
+<!--              <a-menu-item v-if="record.status==1">-->
+<!--                <a-popconfirm title="确定冻结吗?" @confirm="() => handleFrozen(record.id,2,record.username)">-->
+<!--                  <a>冻结</a>-->
+<!--                </a-popconfirm>-->
+<!--              </a-menu-item>-->
 
-              <a-menu-item v-if="record.status==2">
-                <a-popconfirm title="确定解冻吗?" @confirm="() => handleFrozen(record.id,1,record.username)">
-                  <a>解冻</a>
-                </a-popconfirm>
-              </a-menu-item>
+<!--              <a-menu-item v-if="record.status==2">-->
+<!--                <a-popconfirm title="确定解冻吗?" @confirm="() => handleFrozen(record.id,1,record.username)">-->
+<!--                  <a>解冻</a>-->
+<!--                </a-popconfirm>-->
+<!--              </a-menu-item>-->
 
-              <a-menu-item>
-                <a href="javascript:;" @click="handleAgentSettings(record.username)">代理人</a>
-              </a-menu-item>
+<!--              <a-menu-item>-->
+<!--                <a href="javascript:;" @click="handleAgentSettings(record.username)">代理人</a>-->
+<!--              </a-menu-item>-->
 
-            </a-menu>
-          </a-dropdown>
+<!--            </a-menu>-->
+<!--          </a-dropdown>-->
         </span>
 
 
@@ -279,7 +291,7 @@
         url: {
           imgerver: window._CONFIG['staticDomainURL'],
           syncUser: "/process/extActProcess/doSyncUser",
-          list: "/sys/user/list",
+          list: "/sys/user/selectUserByArea",
           delete: "/sys/user/delete",
           deleteBatch: "/sys/user/deleteBatch",
           exportXlsUrl: "/sys/user/exportXls",

@@ -188,6 +188,7 @@
         }
         var params = this.getQueryParams();//查询条件
         getAction(this.url.list, params).then((res) => {
+          debugger
           if (res.success) {
             this.dataSource1 = res.result.records;
             this.ipagination.total = res.result.total;

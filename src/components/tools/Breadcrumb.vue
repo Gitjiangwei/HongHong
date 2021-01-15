@@ -19,10 +19,9 @@ export default {
     },
   created () {
     this.getBreadcrumb()
-  },
+  } ,
   methods: {
     getBreadcrumb() {
-
       console.log('this.$route.matched', this.$route.matched)
 
       this.breadList = []
@@ -32,7 +31,9 @@ export default {
       this.$route.matched.forEach((item) => {
         // item.meta.name === 'dashboard' ? item.path = '/dashboard' : this.$route.path === item.path
           this.breadList.push(item)
+           console.log(this.breadList,'侧边栏')
       })
+
     }
   },
   watch: {

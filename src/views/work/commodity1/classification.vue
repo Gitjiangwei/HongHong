@@ -93,8 +93,7 @@
   import 'url-search-params-polyfill'
 
 
-  export default {
-    components: {
+  export default {    components: {
       JImageUpload
     },
     data() {
@@ -364,7 +363,6 @@
               this.form.name=''
 
             })
-
           }
         })
 

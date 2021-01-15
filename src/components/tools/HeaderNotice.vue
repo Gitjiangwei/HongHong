@@ -139,12 +139,13 @@
             return;
           }
           this.loadData()
-        },6000)
+        }, 6000)
       },
       loadData (){
         try {
           // 获取系统消息
           getAction(this.url.listCementByUser).then((res) => {
+
             if (res.success) {
               this.announcement1 = res.result.anntMsgList;
               this.msg1Count = res.result.anntMsgTotal;
@@ -174,7 +175,9 @@
         }, 200)
       },
       showAnnouncement(record){
+        // debugger
         putAction(this.url.editCementSend,{anntId:record.id}).then((res)=>{
+          // debugger
           if(res.success){
             this.loadData();
           }
@@ -204,7 +207,7 @@
       initWebSocket: function () {
         // WebSocket与普通的请求所用协议有所不同，ws等同于http，wss等同于https
         var userId = store.getters.userInfo.id;
-        // debugger;
+
         var url = window._CONFIG['domianURL'].replace("https://","wss://").replace("http://","ws://")+"/websocket/"+userId;
         console.log(url);
         this.websock = new WebSocket(url);
@@ -223,6 +226,7 @@
         this.reconnect();
       },
       websocketOnmessage: function (e) {
+        debugger
         console.log("-----接收消息-------",e.data);
         var data = eval("(" + e.data + ")"); //解析对象
         if(data.cmd == "topic"){
@@ -234,6 +238,7 @@
             message: '订单消息',
             description: `您有一条新的订单，请注意查收`,
           });
+
           this.voicePrompt('您有一条新的叿叿订单，请注意查收');
           // let audio = new Audio();
           // audio.src = "../../assets/ordderyy.acc";

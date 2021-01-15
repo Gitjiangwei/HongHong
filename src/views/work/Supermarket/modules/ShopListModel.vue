@@ -200,6 +200,10 @@
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
+        if(localStorage.getItem('shopType')==3){
+          param.area = localStorage.getItem('area')
+          // param.shopType = 2
+        }
         return filterObj(param);
       },
       getQueryField() {

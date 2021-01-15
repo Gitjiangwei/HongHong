@@ -126,10 +126,12 @@
         if (record.address == undefined){
           record.filelist = [];
         } else {
+
           let fileName = record.address.substring(4);
           let file = {
             fileName: fileName
           };
+          this.avatar=record.address
           record.filelist = [file];
         }
         that.form.resetFields();
@@ -143,12 +145,14 @@
         });
       },
       uploadFileRequest(data){
+
 /*        const timeStamp = new Date() - 0
         const nowDate = this.getDate();*/
         const copyFile = new File([data.file], `${data.file.name}`)
         this.formData=new FormData();
         this.formData.append("file",copyFile);
         this.formData.append("headers",this.headers);
+        debugger
         httpAction(this.url.fileUpload,this.formData,"post").then((res)=>{
           debugger;
           if (res.success) {
@@ -159,7 +163,7 @@
         })
       },
       handleChange(info) {
-        debugger;
+
         if(info.file.status == undefined){
           info.fileList.some((item,i) => {
             if(item.uid == info.file.uid){
