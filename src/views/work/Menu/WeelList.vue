@@ -335,6 +335,7 @@
       },
       handleEdit:function(record){
         this.$refs.WeelModel.edit(record);
+        debugger
         this.$refs.WeelModel.title = "修改轮播图信息";
       },
       handleDelete:function(record){
@@ -441,12 +442,15 @@
       handleTableChange(pagination, filters, sorter) {
         //分页、排序、筛选变化时触发
         console.log(sorter);
+        console.log(filters);
+        console.log(pagination);
+
         //TODO 筛选
         if (Object.keys(sorter).length > 0) {
           this.isorter.column = sorter.field;
           this.isorter.order = "ascend" == sorter.order ? "asc" : "desc"
         }
-        this.filters.isFlag = filters.isFlag[0];
+        // this.filters.isFlag = filters.isFlag[0];
         this.ipagination = pagination;
         this.loadData();
       },

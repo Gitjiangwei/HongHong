@@ -122,6 +122,17 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
+          label="是否付钱"
+        >
+          <a-radio-group buttonStyle="solid" v-decorator="[ 'isBuy', {'initialValue':'0'}]">
+            <a-radio-button :value="'0'">付款</a-radio-button>
+            <a-radio-button :value="'1'">不付款</a-radio-button>
+          </a-radio-group>
+        </a-form-item>
+
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
           label="配送费"
           hasFeedback
           v-if="ispostFree==true"
@@ -176,6 +187,24 @@
             </a-select-option>
           </a-select>
         </a-form-item>
+
+<!--        <a-form-item-->
+<!--          :labelCol="labelCol"-->
+<!--          :wrapperCol="wrapperCol"-->
+<!--          label="销售模式"-->
+<!--          hasFeedback>-->
+<!--          <a-select  style="width: 120px" v-decorator="['businessType',{ rules: [{ required: true, message: '请选择销售模式' }] },]" @change="handleSelectChange">-->
+<!--            <a-select-option value="1">-->
+<!--              配送-->
+<!--            </a-select-option>-->
+<!--            <a-select-option value="2">-->
+<!--              到店-->
+<!--            </a-select-option>-->
+<!--            <a-select-option value="3">-->
+<!--              都有-->
+<!--            </a-select-option>-->
+<!--          </a-select>-->
+<!--        </a-form-item>-->
       </a-form>
     </a-spin>
     <div class="drawer-bootom-button" v-show="!disableSubmit">
