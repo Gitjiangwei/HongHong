@@ -219,7 +219,7 @@
             }
             let formData = Object.assign(this.model, values);
             formData.wheelImages = that.fileList;
-            // debugger;
+            debugger;
             //时间格式化
 /*            formData.startBusiness = formData.startBusiness ? formData.startBusiness.format('HH:mm') : null;
             formData.endBusiness = formData.endBusiness ? formData.endBusiness.format('HH:mm') : null;*/
